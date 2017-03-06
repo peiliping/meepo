@@ -9,6 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -19,7 +20,7 @@ import java.util.List;
  * Created by peiliping on 17-2-21.
  */
 
-@Controller public class Web {
+@Controller public class TaskController {
 
     @Autowired private Environment env;
 
@@ -29,7 +30,7 @@ import java.util.List;
         return "Hello World!";
     }
 
-    @RequestMapping("/checktasksconfig") @ResponseBody public List<TaskContext> checkTaskConfig() throws Exception {
+    @RequestMapping("/task/prereload") @ResponseBody public List<TaskContext> taskCheck() throws Exception {
         TaskContext context = initTasksContext();
         List<String> taskNames = Lists.newArrayList(context.get(Constants.PROJECT_NAME).split("\\s"));
         List<TaskContext> taskConfigs = Lists.newArrayList();
@@ -37,7 +38,11 @@ import java.util.List;
         return taskConfigs;
     }
 
-    @RequestMapping("/runtask") @ResponseBody public String runTask(String taskName) throws Exception {
+    @RequestMapping("/task/list") @ResponseBody public List<TaskContext> listTasks() throws Exception {
+        return tasksManager.listTasks();
+    }
+
+    @RequestMapping("/task/{taskName}/run") @ResponseBody public String taskRun(@PathVariable String taskName) throws Exception {
         TaskContext context = initTasksContext();
         List<String> taskNames = Lists.newArrayList(context.get(Constants.PROJECT_NAME).split("\\s"));
         Validate.isTrue(StringUtils.isNotBlank(taskName));
@@ -47,7 +52,7 @@ import java.util.List;
         return status ? (taskName + " is running ...") : (taskName + " boot failed ...");
     }
 
-    @RequestMapping("/killtask") @ResponseBody public String killTask(String taskName) throws Exception {
+    @RequestMapping("/task/{taskName}/kill") @ResponseBody public String taskKill(@PathVariable String taskName) throws Exception {
         boolean status = tasksManager.forceStopTask(taskName);
         return status ? (taskName + " is killing ...") : (taskName + " kill failed ...");
     }

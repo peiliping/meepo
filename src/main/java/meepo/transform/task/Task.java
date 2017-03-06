@@ -2,7 +2,6 @@ package meepo.transform.task;
 
 import com.google.common.collect.Lists;
 import com.lmax.disruptor.EventProcessor;
-import jdk.nashorn.internal.runtime.Source;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;

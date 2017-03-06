@@ -1,5 +1,6 @@
 package meepo.transform.task;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import meepo.transform.config.TaskContext;
 import org.apache.commons.lang3.tuple.Pair;
@@ -7,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -38,6 +40,13 @@ import java.util.concurrent.ConcurrentMap;
         return true;
     }
 
+    public List<TaskContext> listTasks() {
+        List<TaskContext> result = Lists.newArrayList();
+        List<Pair<TaskContext, Task>> t = Lists.newArrayList(this.container.values());
+        t.forEach(item -> result.add(item.getLeft()));
+        return result;
+    }
+
     public boolean forceStopTask(String taskName) {
         if (!this.container.containsKey(taskName)) {
             return false;
@@ -45,6 +54,7 @@ import java.util.concurrent.ConcurrentMap;
         Task task = this.container.get(taskName).getRight();
         try {
             task.close();
+            this.container.remove(taskName);
         } catch (Exception e) {
             LOG.error("Close Task [" + taskName + "] Failed : ", e);
             return false;
