@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by peiliping on 17-3-3.
@@ -30,6 +31,8 @@ public class Task implements Closeable {
     protected String taskName;
 
     protected long createTime;
+
+    protected AtomicBoolean RUNNING = new AtomicBoolean(false);
 
     protected long finishedTime;
 
@@ -94,10 +97,12 @@ public class Task implements Closeable {
                     .newInstance(this.taskName, i, this.sourceContext, this.channel));
         }
         this.sources.forEach(as -> this.sourcesPool.submit(as));
+        this.RUNNING.set(true);
     }
 
     @Override public void close() throws IOException {
         LOG.info("Task[" + this.taskName + "]" + "is closing ...");
+        this.RUNNING.set(false);
         this.sources.forEach(as -> as.end());
         this.sourcesPool.shutdownNow();
         while (!this.channel.isEmpty()) {

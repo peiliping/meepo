@@ -3,6 +3,7 @@ package meepo.transform.task;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import meepo.transform.config.TaskContext;
+import meepo.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by peiliping on 17-3-6.
@@ -19,6 +23,18 @@ import java.util.concurrent.ConcurrentMap;
     protected static final Logger LOG = LoggerFactory.getLogger(TasksManager.class);
 
     private ConcurrentMap<String, Pair<TaskContext, Task>> container = Maps.newConcurrentMap();
+
+    private ThreadPoolExecutor selfMonitor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+
+    public TasksManager() {
+        this.selfMonitor.submit(() -> {
+            while (true) {
+                Util.sleep(60);
+                List<String> keys = Lists.newArrayList(container.keySet());
+                keys.forEach(s -> container.get(s).getRight().checkSourcesFinished());
+            }
+        });
+    }
 
     public boolean addTask(TaskContext tc) {
         if (this.container.containsKey(tc.getTaskName())) {
