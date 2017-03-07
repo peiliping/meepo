@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Created by peiliping on 17-3-6.
@@ -31,7 +32,10 @@ import java.util.concurrent.TimeUnit;
             while (true) {
                 Util.sleep(60);
                 List<String> keys = Lists.newArrayList(container.keySet());
-                keys.forEach(s -> container.get(s).getRight().checkSourcesFinished());
+                keys.forEach(s -> {
+                    if (container.get(s).getRight().checkSourcesFinished())
+                        container.remove(s);
+                });
             }
         });
     }

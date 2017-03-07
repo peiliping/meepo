@@ -74,8 +74,8 @@ public class DBSource extends AbstractSource {
         this.stepSize = context.getInteger("stepSize", 100);
         this.start = context.getLong("start", ps.getLeft());
         this.end = context.getLong("end", ps.getRight());
-        long vStart = start - (start % this.stepSize);
-        this.currentPos = Math.max(vStart + index * this.stepSize, start);
+        long vStart = this.start - (this.start % this.stepSize);
+        this.currentPos = Math.max(vStart + index * this.stepSize, this.start);
 
         this.sql = buildSQL();
     }
@@ -91,7 +91,7 @@ public class DBSource extends AbstractSource {
         }
         boolean status = executeQuery(this.currentPos, Math.min(this.currentPos + this.stepSize, this.end));
         if (status) {
-            currentPos += super.totalSourceNum * this.stepSize;
+            this.currentPos += super.totalSourceNum * this.stepSize;
         }
     }
 
@@ -99,7 +99,9 @@ public class DBSource extends AbstractSource {
         return "SELECT " + this.columnNames + " FROM " + this.tableName + " WHERE " + this.primaryKeyName + " > ? AND " + this.primaryKeyName + " <= ? " + this.extraSQL;
     }
 
-    protected boolean executeQuery(final long start, final long end) {
+    protected boolean executeQuery(long start, long end) {
+        tmpStart = start;
+        tmpEnd = end;
         Boolean result = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
         return (result != null && result);
     }
@@ -109,11 +111,16 @@ public class DBSource extends AbstractSource {
         Util.closeDataSource(this.dataSource);
     }
 
+    private long tmpStart;
+
+    private long tmpEnd;
+
+
     class Handler extends ICallable<Boolean> {
 
         @Override public void handleParams(PreparedStatement p) throws Exception {
-            p.setLong(1, start);
-            p.setLong(2, end);
+            p.setLong(1, tmpStart);
+            p.setLong(2, tmpEnd);
         }
 
         @Override public Boolean handleResultSet(ResultSet r) throws Exception {
