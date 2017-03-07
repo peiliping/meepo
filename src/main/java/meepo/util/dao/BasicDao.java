@@ -44,8 +44,8 @@ public class BasicDao {
         });
     }
 
-    public static Triple<List<String>, List<Integer>, Map<String, Integer>> parserSchema(DataSource ds, String tableName, String columsNames, String primaryKeyName) {
-        String sql = "SELECT " + columsNames + " FROM " + tableName + " WHERE " + primaryKeyName + " = 0" + " LIMIT 1";
+    public static Triple<List<String>, List<Integer>, Map<String, Integer>> parserSchema(DataSource ds, String tableName, String columNames, String primaryKeyName) {
+        String sql = "SELECT " + columNames + " FROM " + tableName + " WHERE " + primaryKeyName + " = 0" + " LIMIT 1";
         return excuteQuery(ds, sql, new ResultSetICallable<Triple<List<String>, List<Integer>, Map<String, Integer>>>() {
             @Override public Triple<List<String>, List<Integer>, Map<String, Integer>> handleResultSet(ResultSet r) throws Exception {
                 Map<String, Integer> map = Maps.newHashMap();

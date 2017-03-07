@@ -94,8 +94,8 @@ public class Task implements Closeable {
         this.sinks.forEach(ep -> this.sinksPool.submit(ep));
 
         for (int i = 0; i < this.sourceNum; i++) {
-            this.sources.add(this.sourceClazz.getConstructor(String.class, int.class, TaskContext.class, RingbufferChannel.class)
-                    .newInstance(this.taskName, i, this.sourceContext, this.channel));
+            this.sources.add(this.sourceClazz.getConstructor(String.class, int.class, int.class, TaskContext.class, RingbufferChannel.class)
+                    .newInstance(this.taskName, i, this.sourceNum, this.sourceContext, this.channel));
         }
         this.sources.forEach(as -> this.sourcesPool.submit(as));
         this.RUNNING.set(true);

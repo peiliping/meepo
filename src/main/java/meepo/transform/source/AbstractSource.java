@@ -25,10 +25,13 @@ public abstract class AbstractSource implements ISource {
 
     protected long tmpIndex;
 
-    public AbstractSource(String name, int index, TaskContext context, RingbufferChannel rb) {
+    protected int totalSourceNum;
+
+    public AbstractSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         this.taskName = name;
-        this.channel = rb;
         this.indexOfSources = index;
+        this.totalSourceNum = totalNum;
+        this.channel = rb;
     }
 
     @Override public void start() {

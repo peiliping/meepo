@@ -24,6 +24,58 @@ public class Util {
 
     public static DataSource createDataSource(TaskContext context) {
         try {
+            Validate.notNull(context.get("url"));
+            Validate.notNull(context.get("username"));
+            Validate.notNull(context.get("password"));
+
+            if (context.get("driverClassName") == null) {
+                context.put("driverClassName", "com.mysql.jdbc.Driver");
+            }
+            if (context.get("initialSize") == null) {
+                context.put("initialSize", "1");
+            }
+            if (context.get("minIdle") == null) {
+                context.put("minIdle", "1");
+            }
+            if (context.get("maxActive") == null) {
+                context.put("maxActive", "100");
+            }
+            if (context.get("defaultAutoCommit") == null) {
+                context.put("defaultAutoCommit", "true");
+            }
+            if (context.get("timeBetweenEvictionRunsMillis") == null) {
+                context.put("timeBetweenEvictionRunsMillis", "300000");
+            }
+            if (context.get("minEvictableIdleTimeMillis") == null) {
+                context.put("minEvictableIdleTimeMillis", "300000");
+            }
+            if (context.get("validationQuery") == null) {
+                context.put("validationQuery", "SELECT 'x' FROME DUAL");
+            }
+            if (context.get("testWhileIdle") == null) {
+                context.put("testWhileIdle", "true");
+            }
+            if (context.get("testOnBorrow") == null) {
+                context.put("testOnBorrow", "false");
+            }
+            if (context.get("testOnReturn") == null) {
+                context.put("testOnReturn", "false");
+            }
+            if (context.get("poolPreparedStatements") == null) {
+                context.put("poolPreparedStatements", "true");
+            }
+            if (context.get("maxPoolPreparedStatementPerConnectionSize") == null) {
+                context.put("maxPoolPreparedStatementPerConnectionSize", "20");
+            }
+            if (context.get("removeAbandoned") == null) {
+                context.put("removeAbandoned", "true");
+            }
+            if (context.get("removeAbandonedTimeout") == null) {
+                context.put("removeAbandonedTimeout", "1200");
+            }
+            if (context.get("logAbandoned") == null) {
+                context.put("logAbandoned", "true");
+            }
             return DruidDataSourceFactory.createDataSource(context.getParameters());
         } catch (Exception e) {
             LOG.error("Create DataSource Error : ", context.toString());
