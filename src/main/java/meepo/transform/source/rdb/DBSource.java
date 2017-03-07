@@ -45,15 +45,17 @@ public class DBSource extends AbstractSource {
 
     protected String extraSQL;
 
-    protected long currentPos = 0;
-
     protected Long start;
 
     protected Long end;
 
+    protected long currentPos = 0;
+
+    protected long tmpEnd;
+
     protected String sql;
 
-    protected ICallable<Boolean> handler = new Handler();
+    protected ICallable<Boolean> handler;
 
     public DBSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
@@ -78,6 +80,7 @@ public class DBSource extends AbstractSource {
         this.currentPos = Math.max(vStart + index * this.stepSize, this.start);
 
         this.sql = buildSQL();
+        this.handler = new Handler();
     }
 
     @Override public Object[] eventFactory() {
@@ -89,7 +92,8 @@ public class DBSource extends AbstractSource {
             super.RUNNING = false;
             return;
         }
-        boolean status = executeQuery(this.currentPos, Math.min(this.currentPos + this.stepSize, this.end));
+        this.tmpEnd = Math.min(this.currentPos + this.stepSize, this.end);
+        boolean status = executeQuery();
         if (status) {
             this.currentPos += super.totalSourceNum * this.stepSize;
         }
@@ -99,9 +103,7 @@ public class DBSource extends AbstractSource {
         return "SELECT " + this.columnNames + " FROM " + this.tableName + " WHERE " + this.primaryKeyName + " > ? AND " + this.primaryKeyName + " <= ? " + this.extraSQL;
     }
 
-    protected boolean executeQuery(long start, long end) {
-        tmpStart = start;
-        tmpEnd = end;
+    protected boolean executeQuery() {
         Boolean result = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
         return (result != null && result);
     }
@@ -111,22 +113,17 @@ public class DBSource extends AbstractSource {
         Util.closeDataSource(this.dataSource);
     }
 
-    private long tmpStart;
-
-    private long tmpEnd;
-
-
     class Handler extends ICallable<Boolean> {
 
         @Override public void handleParams(PreparedStatement p) throws Exception {
-            p.setLong(1, tmpStart);
+            p.setLong(1, currentPos);
             p.setLong(2, tmpEnd);
         }
 
         @Override public Boolean handleResultSet(ResultSet r) throws Exception {
             while (r.next() && RUNNING) {
                 DataEvent de = feedOne();
-                for (int i = 1; i <= columnsArray.size(); i++) {
+                for (int i = 1; i <= columnsNum; i++) {
                     de.getSource()[i - 1] = r.getObject(i);
                 }
                 channel.pushBySeq(tmpIndex);
