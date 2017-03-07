@@ -8,6 +8,7 @@ import meepo.transform.sink.AbstractSink;
 import meepo.transform.sink.SinkType;
 import meepo.transform.source.AbstractSource;
 import meepo.transform.source.SourceType;
+import meepo.util.Constants;
 import meepo.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,19 +66,19 @@ public class Task implements Closeable {
 
     public void init(TaskContext taskContext) {
         {
-            this.sourceContext = new TaskContext(this.taskName + "-Source", taskContext.getSubProperties("source."));
+            this.sourceContext = new TaskContext(this.taskName + "-" + Constants.SOURCE, taskContext.getSubProperties(Constants.SOURCE_));
             this.sourceClazz = (SourceType.valueOf(this.sourceContext.getString("type", SourceType.SIMPLENUMSOURCE.name()))).clazz;
             this.sourceNum = sourceContext.getInteger("workersNum", 1);
             this.sourcesPool = new ThreadPoolExecutor(this.sourceNum, this.sourceNum, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
         }
         {
-            TaskContext channelContext = new TaskContext(this.taskName + "-Channel", taskContext.getSubProperties("channel."));
+            TaskContext channelContext = new TaskContext(this.taskName + "-" + Constants.CHANNEL, taskContext.getSubProperties(Constants.CHANNEL_));
             int bufferSize = channelContext.getInteger("bufferSize", 1024);
             int tolerableDelaySeconds = channelContext.getInteger("delay", 3);
             this.channel = new RingbufferChannel(bufferSize, this.sourceNum, tolerableDelaySeconds);
         }
         {
-            this.sinkContext = new TaskContext(this.taskName + "-Sink", taskContext.getSubProperties("sink."));
+            this.sinkContext = new TaskContext(this.taskName + "-" + Constants.SINK, taskContext.getSubProperties(Constants.SINK_));
             this.sinkClazz = (SinkType.valueOf(this.sinkContext.getString("type", SinkType.SLOWLOGSINK.name()))).clazz;
             this.sinkNum = this.sinkContext.getInteger("workersNum", 1);
             this.sinksPool = new ThreadPoolExecutor(this.sinkNum, this.sinkNum, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
