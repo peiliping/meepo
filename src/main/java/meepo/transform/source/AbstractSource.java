@@ -39,6 +39,10 @@ public abstract class AbstractSource implements ISource {
         LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " starting at " + new Date());
     }
 
+    @Override public void stop() {
+        this.RUNNING = false;
+    }
+
     @Override public void end() {
         this.RUNNING = false;
         LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " ending at " + new Date());

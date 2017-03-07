@@ -58,7 +58,6 @@ public class DBSource extends AbstractSource {
         this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
         this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.tableName));
-        this.stepSize = context.getInteger("stepSize", 100);
         this.columnNames = context.getString("columnNames", "*");
         this.extraSQL = context.getString("extraSQL", "");
 
@@ -70,6 +69,7 @@ public class DBSource extends AbstractSource {
         this.columnsNum = this.columnsArray.size();
 
         Pair<Long, Long> ps = BasicDao.autoGetStartEndPoint(this.dataSource, this.tableName, this.primaryKeyName);
+        this.stepSize = context.getInteger("stepSize", 100);
         this.start = context.getLong("start", ps.getLeft());
         this.end = context.getLong("end", ps.getRight());
         long vStart = start - (start % this.stepSize);
@@ -105,7 +105,7 @@ public class DBSource extends AbstractSource {
             }
 
             @Override public Boolean handleResultSet(ResultSet r) throws Exception {
-                while (r.next()) {
+                while (r.next() && RUNNING) {
                     DataEvent de = feedOne();
                     for (int i = 1; i <= columnsArray.size(); i++) {
                         de.getSource()[i - 1] = r.getObject(i);
@@ -116,5 +116,10 @@ public class DBSource extends AbstractSource {
             }
         });
         return (result != null && result);
+    }
+
+    @Override public void end() {
+        super.end();
+        Util.closeDataSource(this.dataSource);
     }
 }

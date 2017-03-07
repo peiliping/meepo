@@ -104,7 +104,7 @@ public class Task implements Closeable {
     @Override public void close() throws IOException {
         LOG.info("Task[" + this.taskName + "]" + "is closing ...");
         this.RUNNING.set(false);
-        this.sources.forEach(as -> as.end());
+        this.sources.forEach(as -> as.stop());
         this.sourcesPool.shutdownNow();
         while (!this.channel.isEmpty()) {
             Util.sleep(1);

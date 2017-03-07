@@ -15,6 +15,8 @@ public interface ISource extends Runnable {
 
     void work();
 
+    void stop();
+
     void end();
 
     boolean isRunning();

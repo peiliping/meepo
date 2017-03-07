@@ -1,5 +1,6 @@
 package meepo.util;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
 import meepo.transform.config.TaskContext;
 import org.apache.commons.lang3.Validate;
@@ -7,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.io.Closeable;
 
 /**
  * Created by peiliping on 17-3-6.
@@ -18,6 +20,13 @@ public class Util {
     public static void sleep(long sec) {
         try {
             Thread.sleep(sec * 1000);
+        } catch (InterruptedException e) {
+        }
+    }
+
+    public static void sleepMS(long ms) {
+        try {
+            Thread.sleep(ms);
         } catch (InterruptedException e) {
         }
     }
@@ -82,5 +91,17 @@ public class Util {
             Validate.isTrue(false);
         }
         return null;
+    }
+
+    public static void closeDataSource(DataSource ds) {
+        try {
+            if (ds instanceof DruidDataSource) {
+                ((DruidDataSource) ds).close();
+            } else if (ds instanceof Closeable) {
+                ((Closeable) ds).close();
+            }
+        } catch (Exception e) {
+            LOG.error("Close DataSource Error :", e);
+        }
     }
 }
