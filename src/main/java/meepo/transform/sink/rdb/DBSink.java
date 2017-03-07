@@ -42,11 +42,11 @@ public class DBSink extends AbstractSink {
 
     protected String sql;
 
+    protected Handler handler;
+
     protected long count;
 
     protected long lastcommit;
-
-    protected Handler handler;
 
     public DBSink(String name, int index, TaskContext context) {
         super(name, index, context);
@@ -64,14 +64,12 @@ public class DBSink extends AbstractSink {
         this.columnsNum = this.columnsArray.size();
 
         this.sql = buildSQL();
-
         this.handler = new Handler();
     }
 
     @Override public void onEvent(Object event) throws Exception {
-        DataEvent de = (DataEvent) event;
         this.handler.prepare();
-        this.handler.feed(de);
+        this.handler.feed((DataEvent) event);
         this.count++;
         if (this.count - this.lastcommit >= this.stepSize) {
             this.handler.flush();
@@ -114,14 +112,9 @@ public class DBSink extends AbstractSink {
                 }
             } catch (Exception e) {
                 LOG.error("DBSink-Handler-Prepare Error :", e);
-                try {
-                    p.close();
-                    c.close();
-                } catch (Exception e2) {
-                    LOG.error("DBSink-Handler-Prepare Error :", e2);
-                }
                 c = null;
                 p = null;
+                prepare();
             }
         }
 
@@ -132,7 +125,9 @@ public class DBSink extends AbstractSink {
                 }
                 p.addBatch();
             } catch (Exception e) {
-                LOG.error("Data Error : " + de.toString(), e);
+                LOG.error("DBSink-Handler-Feed Error :" + de.toString(), e);
+                Util.sleep(1);
+                feed(de);
             }
         }
 
@@ -141,8 +136,7 @@ public class DBSink extends AbstractSink {
                 p.executeBatch();
                 c.commit();
             } catch (Exception e) {
-                LOG.error("Data Error : ", e);
-
+                LOG.error("DBSink-Handler-Flush Error :", e);
             } finally {
                 try {
                     p.close();
