@@ -24,4 +24,5 @@ public class SlowLogSink extends AbstractSink {
     @Override public void timeOut() {
         super.LOG.info("time out.");
     }
+    
 }

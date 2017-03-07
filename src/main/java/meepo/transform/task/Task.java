@@ -105,13 +105,20 @@ public class Task implements Closeable {
         LOG.info("Task[" + this.taskName + "]" + "is closing ...");
         this.RUNNING.set(false);
         this.sources.forEach(as -> as.stop());
-        this.sourcesPool.shutdownNow();
+        if (!this.sourcesPool.isShutdown()) {
+            this.sourcesPool.shutdownNow();
+        }
         while (!this.channel.isEmpty()) {
             Util.sleep(1);
         }
+        Util.sleep(5);
         this.sinks.forEach(ep -> ep.halt());
-        this.sinksPool.shutdownNow();
-        this.finishedTime = System.currentTimeMillis();
+        if (!this.sinksPool.isShutdown()) {
+            this.sinksPool.shutdownNow();
+        }
+        if (this.finishedTime == 0) {
+            this.finishedTime = System.currentTimeMillis();
+        }
         LOG.info("Task[" + this.taskName + "]" + " closed ..." + new Date());
     }
 

@@ -53,6 +53,8 @@ public class DBSource extends AbstractSource {
 
     protected String sql;
 
+    protected ICallable<Boolean> handler = new Handler();
+
     public DBSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
@@ -98,28 +100,31 @@ public class DBSource extends AbstractSource {
     }
 
     protected boolean executeQuery(final long start, final long end) {
-        Boolean result = BasicDao.excuteQuery(this.dataSource, sql, new ICallable<Boolean>() {
-            @Override public void handleParams(PreparedStatement p) throws Exception {
-                p.setLong(1, start);
-                p.setLong(2, end);
-            }
-
-            @Override public Boolean handleResultSet(ResultSet r) throws Exception {
-                while (r.next() && RUNNING) {
-                    DataEvent de = feedOne();
-                    for (int i = 1; i <= columnsArray.size(); i++) {
-                        de.getSource()[i - 1] = r.getObject(i);
-                    }
-                    channel.pushBySeq(tmpIndex);
-                }
-                return true;
-            }
-        });
+        Boolean result = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
         return (result != null && result);
     }
 
     @Override public void end() {
         super.end();
         Util.closeDataSource(this.dataSource);
+    }
+
+    class Handler extends ICallable<Boolean> {
+
+        @Override public void handleParams(PreparedStatement p) throws Exception {
+            p.setLong(1, start);
+            p.setLong(2, end);
+        }
+
+        @Override public Boolean handleResultSet(ResultSet r) throws Exception {
+            while (r.next() && RUNNING) {
+                DataEvent de = feedOne();
+                for (int i = 1; i <= columnsArray.size(); i++) {
+                    de.getSource()[i - 1] = r.getObject(i);
+                }
+                channel.pushBySeq(tmpIndex);
+            }
+            return true;
+        }
     }
 }

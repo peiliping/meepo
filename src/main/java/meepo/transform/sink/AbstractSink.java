@@ -1,16 +1,19 @@
 package meepo.transform.sink;
 
 import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.LifecycleAware;
 import com.lmax.disruptor.TimeoutHandler;
 import com.lmax.disruptor.WorkHandler;
 import meepo.transform.config.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
+
 /**
  * Created by peiliping on 17-3-3.
  */
-public abstract class AbstractSink implements EventHandler, WorkHandler, TimeoutHandler {
+public abstract class AbstractSink implements EventHandler, WorkHandler, TimeoutHandler, LifecycleAware {
 
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractSink.class);
 
@@ -31,5 +34,13 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     @Override public void onTimeout(long sequence) throws Exception {
         timeOut();
+    }
+
+    @Override public void onStart() {
+        LOG.info(this.taskName + "-Sink-" + this.indexOfSinks + "[" + this.getClass().getSimpleName() + "]" + " starting at " + new Date());
+    }
+
+    @Override public void onShutdown() {
+        LOG.info(this.taskName + "-Sink-" + this.indexOfSinks + "[" + this.getClass().getSimpleName() + "]" + " ending at " + new Date());
     }
 }
