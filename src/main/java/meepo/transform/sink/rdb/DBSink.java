@@ -120,8 +120,8 @@ public class DBSink extends AbstractSink {
 
         void feed(DataEvent de) {
             try {
-                for (int i = 0; i < de.getSource().length; i++) {
-                    p.setObject(i + 1, de.getSource()[i], typesArray.get(i));
+                for (int i = 0; i < de.getTarget().length; i++) {
+                    p.setObject(i + 1, de.getTarget()[i], typesArray.get(i));
                 }
                 p.addBatch();
             } catch (Exception e) {

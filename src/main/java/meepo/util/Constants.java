@@ -25,4 +25,8 @@ public class Constants {
 
     public static final String DATASOURCE_ = "datasource.";
 
+    public static final String PLUGIN = "plugin";
+
+    public static final String PLUGIN_ = "plugin.";
+
 }

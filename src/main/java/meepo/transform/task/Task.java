@@ -73,9 +73,7 @@ public class Task implements Closeable {
         }
         {
             TaskContext channelContext = new TaskContext(this.taskName + "-" + Constants.CHANNEL, taskContext.getSubProperties(Constants.CHANNEL_));
-            int bufferSize = channelContext.getInteger("bufferSize", 1024);
-            int tolerableDelaySeconds = channelContext.getInteger("delay", 3);
-            this.channel = new RingbufferChannel(bufferSize, this.sourceNum, tolerableDelaySeconds);
+            this.channel = new RingbufferChannel(this.sourceNum, channelContext);
         }
         {
             this.sinkContext = new TaskContext(this.taskName + "-" + Constants.SINK, taskContext.getSubProperties(Constants.SINK_));
