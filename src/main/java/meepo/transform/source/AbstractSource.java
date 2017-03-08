@@ -1,12 +1,15 @@
 package meepo.transform.source;
 
+import lombok.Getter;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by peiliping on 17-3-2.
@@ -26,6 +29,8 @@ public abstract class AbstractSource implements ISource {
     protected long tmpIndex;
 
     protected int totalSourceNum;
+
+    @Getter protected List<Pair<String, Integer>> schema;
 
     public AbstractSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         this.taskName = name;

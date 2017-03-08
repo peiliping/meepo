@@ -4,11 +4,14 @@ import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.LifecycleAware;
 import com.lmax.disruptor.TimeoutHandler;
 import com.lmax.disruptor.WorkHandler;
+import lombok.Getter;
 import meepo.transform.config.TaskContext;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by peiliping on 17-3-3.
@@ -20,6 +23,8 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
     protected String taskName;
 
     protected int indexOfSinks;
+
+    @Getter protected List<Pair<String, Integer>> schema;
 
     public AbstractSink(String name, int index, TaskContext context) {
         this.taskName = name;

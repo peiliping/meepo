@@ -89,12 +89,14 @@ public class Task implements Closeable {
             sinkHandlers[i] = this.sinkClazz.getConstructor(String.class, int.class, TaskContext.class).newInstance(this.taskName, i, this.sinkContext);
         }
         this.sinks.addAll(this.channel.start(sinkHandlers));
-        this.sinks.forEach(ep -> this.sinksPool.submit(ep));
 
         for (int i = 0; i < this.sourceNum; i++) {
             this.sources.add(this.sourceClazz.getConstructor(String.class, int.class, int.class, TaskContext.class, RingbufferChannel.class)
                     .newInstance(this.taskName, i, this.sourceNum, this.sourceContext, this.channel));
         }
+
+        this.channel.autoMatchSchema(this.sources.get(0).getSchema(), sinkHandlers[0].getSchema());
+        this.sinks.forEach(ep -> this.sinksPool.submit(ep));
         this.sources.forEach(as -> this.sourcesPool.submit(as));
         this.RUNNING.set(true);
     }

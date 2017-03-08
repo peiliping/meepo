@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Created by peiliping on 17-3-7.
@@ -34,12 +35,6 @@ public class DBSource extends AbstractSource {
     protected int stepSize;
 
     protected String columnNames;
-
-    protected List<String> columnsArray = Lists.newArrayList();
-
-    protected List<Integer> typesArray = Lists.newArrayList();
-
-    protected Map<String, Integer> columnsType = Maps.newHashMap();
 
     protected int columnsNum;
 
@@ -65,12 +60,11 @@ public class DBSource extends AbstractSource {
         this.columnNames = context.getString("columnNames", "*");
         this.extraSQL = context.getString("extraSQL", "");
 
-        Triple<List<String>, List<Integer>, Map<String, Integer>> schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
-        this.columnsArray.addAll(schema.getLeft());
-        this.typesArray.addAll(schema.getMiddle());
-        this.columnsType.putAll(schema.getRight());
+        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
+        final List<String> columnsArray = Lists.newArrayList();
+        super.schema.forEach(item -> columnsArray.add(item.getLeft()));
         this.columnNames = StringUtils.join(columnsArray, ",");
-        this.columnsNum = this.columnsArray.size();
+        this.columnsNum = super.schema.size();
 
         Pair<Long, Long> ps = BasicDao.autoGetStartEndPoint(this.dataSource, this.tableName, this.primaryKeyName);
         this.stepSize = context.getInteger("stepSize", 100);

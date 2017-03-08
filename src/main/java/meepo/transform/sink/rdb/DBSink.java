@@ -1,7 +1,6 @@
 package meepo.transform.sink.rdb;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
@@ -9,13 +8,11 @@ import meepo.util.Constants;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Triple;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by peiliping on 17-3-7.
@@ -31,12 +28,6 @@ public class DBSink extends AbstractSink {
     protected int stepSize;
 
     protected String columnNames;
-
-    protected List<String> columnsArray = Lists.newArrayList();
-
-    protected List<Integer> typesArray = Lists.newArrayList();
-
-    protected Map<String, Integer> columnsType = Maps.newHashMap();
 
     protected int columnsNum;
 
@@ -56,12 +47,11 @@ public class DBSink extends AbstractSink {
         this.stepSize = context.getInteger("stepSize", 100);
         this.columnNames = context.getString("columnNames", "*");
 
-        Triple<List<String>, List<Integer>, Map<String, Integer>> schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
-        this.columnsArray.addAll(schema.getLeft());
-        this.typesArray.addAll(schema.getMiddle());
-        this.columnsType.putAll(schema.getRight());
+        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
+        final List<String> columnsArray = Lists.newArrayList();
+        super.schema.forEach(item -> columnsArray.add(item.getLeft()));
         this.columnNames = StringUtils.join(columnsArray, ",");
-        this.columnsNum = this.columnsArray.size();
+        this.columnsNum = super.schema.size();
 
         this.sql = buildSQL();
         this.handler = new Handler();
@@ -121,7 +111,7 @@ public class DBSink extends AbstractSink {
         void feed(DataEvent de) {
             try {
                 for (int i = 0; i < de.getTarget().length; i++) {
-                    p.setObject(i + 1, de.getTarget()[i], typesArray.get(i));
+                    p.setObject(i + 1, de.getTarget()[i], schema.get(i).getRight());
                 }
                 p.addBatch();
             } catch (Exception e) {
