@@ -15,10 +15,7 @@ public abstract class AbstractPlugin {
 
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractPlugin.class);
 
-    protected TaskContext context;
-
     public AbstractPlugin(TaskContext context) {
-        this.context = context;
     }
 
     public abstract void convert(DataEvent de);

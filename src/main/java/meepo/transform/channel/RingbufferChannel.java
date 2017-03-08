@@ -70,7 +70,7 @@ public class RingbufferChannel {
     }
 
     public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
-
+        this.plugin.autoMatchSchema(source, sink);
     }
 
     private void checkRunning() {
@@ -87,9 +87,7 @@ public class RingbufferChannel {
     }
 
     public void pushBySeq(long seq) {
-        if (this.plugin != null) {
-            this.plugin.convert(this.ringBuffer.get(seq));
-        }
+        this.plugin.convert(this.ringBuffer.get(seq));
         this.ringBuffer.publish(seq);
     }
 
