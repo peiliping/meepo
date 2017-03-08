@@ -1,5 +1,6 @@
 package meepo.transform.sink;
 
+import com.google.common.collect.Lists;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.LifecycleAware;
 import com.lmax.disruptor.TimeoutHandler;
@@ -24,7 +25,7 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     protected int indexOfSinks;
 
-    @Getter protected List<Pair<String, Integer>> schema;
+    @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
 
     public AbstractSink(String name, int index, TaskContext context) {
         this.taskName = name;

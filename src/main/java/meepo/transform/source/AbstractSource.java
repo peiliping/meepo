@@ -1,5 +1,6 @@
 package meepo.transform.source;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.RingbufferChannel;
@@ -30,7 +31,7 @@ public abstract class AbstractSource implements ISource {
 
     protected int totalSourceNum;
 
-    @Getter protected List<Pair<String, Integer>> schema;
+    @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
 
     public AbstractSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         this.taskName = name;

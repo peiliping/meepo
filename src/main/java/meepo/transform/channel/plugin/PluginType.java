@@ -1,5 +1,7 @@
 package meepo.transform.channel.plugin;
 
+import meepo.transform.channel.plugin.TypeConvert.TypeConvertPlugin;
+
 /**
  * Created by peiliping on 17-3-6.
  */
