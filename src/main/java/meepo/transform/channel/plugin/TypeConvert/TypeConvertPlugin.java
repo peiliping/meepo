@@ -53,7 +53,7 @@ public class TypeConvertPlugin extends DefaultPlugin {
         }
         if (this.notMatch.size() > 0) {
             this.needConvert = true;
-            LOG.info("Convert Result :", JSON.toJSONString(this.notMatch));
+            LOG.info("Convert Result :" + JSON.toJSONString(this.notMatch));
         }
     }
 }
