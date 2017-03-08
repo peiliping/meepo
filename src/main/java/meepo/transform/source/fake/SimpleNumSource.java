@@ -14,8 +14,8 @@ public class SimpleNumSource extends AbstractSource {
         super(name, index, totalNum, context, rb);
     }
 
-    @Override public Object[] eventFactory() {
-        return new Long[2];
+    @Override public void eventFactory(DataEvent de) {
+        de.setSource(new Long[2]);
     }
 
     @Override public void work() {

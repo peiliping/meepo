@@ -83,8 +83,8 @@ public class DBSource extends AbstractSource {
         this.handler = new Handler();
     }
 
-    @Override public Object[] eventFactory() {
-        return new Object[this.columnsNum];
+    @Override public void eventFactory(DataEvent de) {
+        de.setSource(new Object[this.columnsNum]);
     }
 
     @Override public void work() {

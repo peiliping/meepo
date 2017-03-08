@@ -10,6 +10,8 @@ import lombok.ToString;
  */
 @Setter @Getter @ToString public class DataEvent {
 
+    protected boolean init = false;
+
     protected Object[] source;
 
     protected Object[] target;
