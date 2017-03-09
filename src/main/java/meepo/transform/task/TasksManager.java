@@ -43,6 +43,9 @@ import java.util.concurrent.TimeUnit;
         if (this.container.containsKey(tc.getTaskName())) {
             return false;
         }
+        if (this.container.size() >= 5) {
+            return false;
+        }
         Object r = this.container.putIfAbsent(tc.getTaskName(), Pair.of(tc, new Task(tc.getTaskName())));
         if (r != null) {
             return false;
