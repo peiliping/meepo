@@ -29,6 +29,8 @@ public class DBSink extends AbstractSink {
 
     protected String columnNames;
 
+    protected String paramsStr;// ?,?,?,?
+
     protected int columnsNum;
 
     protected String sql;
@@ -49,8 +51,13 @@ public class DBSink extends AbstractSink {
 
         super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
         final List<String> columnsArray = Lists.newArrayList();
-        super.schema.forEach(item -> columnsArray.add(item.getLeft()));
+        final List<String> paramsArray = Lists.newArrayList();
+        super.schema.forEach(item -> {
+            paramsArray.add("?");
+            columnsArray.add(item.getLeft());
+        });
         this.columnNames = StringUtils.join(columnsArray, ",");
+        this.paramsStr = StringUtils.join(paramsArray, ",");
         this.columnsNum = super.schema.size();
 
         this.sql = buildSQL();
@@ -80,11 +87,7 @@ public class DBSink extends AbstractSink {
     }
 
     public String buildSQL() {
-        String v = "?";
-        for (int i = 1; i < this.columnsNum; i++) {
-            v = v + ",?";
-        }
-        return "INSERT INTO " + this.tableName + " (" + this.columnNames + ") VALUES ( " + v + ")";
+        return "INSERT INTO " + this.tableName + " (" + this.columnNames + ") VALUES ( " + this.paramsStr + ")";
     }
 
     class Handler {
