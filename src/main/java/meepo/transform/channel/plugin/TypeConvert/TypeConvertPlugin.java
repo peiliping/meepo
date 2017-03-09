@@ -39,7 +39,7 @@ public class TypeConvertPlugin extends DefaultPlugin {
         _autoMatchSchema(source, sink);
     }
 
-    public void _autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+    protected void _autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
         Validate.isTrue(source.size() == sink.size());
         for (int i = 0; i < source.size(); i++) {
             Pair<String, Integer> l = source.get(i);

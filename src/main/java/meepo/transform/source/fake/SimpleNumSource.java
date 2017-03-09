@@ -22,6 +22,6 @@ public class SimpleNumSource extends AbstractSource {
         DataEvent de = super.feedOne();
         de.getSource()[0] = Long.valueOf(super.indexOfSources);
         de.getSource()[1] = super.tmpIndex;
-        super.channel.pushBySeq(super.tmpIndex);
+        super.pushOne();
     }
 }

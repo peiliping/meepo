@@ -64,6 +64,10 @@ public abstract class AbstractSource implements ISource {
         return de;
     }
 
+    @Override public void pushOne() {
+        this.channel.pushBySeq(this.tmpIndex);
+    }
+
     @Override public void run() {
         start();
         while (RUNNING) {

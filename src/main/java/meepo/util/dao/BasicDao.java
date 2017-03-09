@@ -1,10 +1,8 @@
 package meepo.util.dao;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by peiliping on 17-3-7.
@@ -82,6 +79,60 @@ public class BasicDao {
             }
         }
         return null;
+    }
+
+    public static <E> boolean excuteBatchAdd(DataSource ds, String sql, ICallable<E> cal) {
+        Connection c = null;
+        PreparedStatement p = null;
+        try {
+            c = ds.getConnection();
+            c.setAutoCommit(false);
+            p = c.prepareStatement(sql);
+            cal.handleParams(p);
+            if (p.isClosed()) {
+                return excuteBatchAdd(ds, sql, cal);
+            }
+            p.executeBatch();
+            c.commit();
+            return true;
+        } catch (Exception e) {
+            LOG.error("basicdao.excuteBatchAdd", e);
+            return false;
+        } finally {
+            try {
+                if (c != null)
+                    c.close();
+            } catch (SQLException e) {
+                LOG.error("basicdao.excuteBatchAdd", e);
+            }
+        }
+    }
+
+    public static <E> boolean excuteLoadData(DataSource ds, String sql, InputStream data) {
+        Connection c = null;
+        PreparedStatement p = null;
+        int result = 0;
+        try {
+            c = ds.getConnection();
+            p = c.prepareStatement(sql);
+            if (p.isWrapperFor(com.mysql.jdbc.Statement.class)) {
+                com.mysql.jdbc.PreparedStatement mysqlStatement = p.unwrap(com.mysql.jdbc.PreparedStatement.class);
+                mysqlStatement.setLocalInfileInputStream(data);
+                result = mysqlStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            LOG.error("basicdao.excuteLoadData", e);
+        } finally {
+            try {
+                if (p != null)
+                    p.close();
+                if (c != null)
+                    c.close();
+            } catch (SQLException e) {
+                LOG.error("basicdao.excutequery", e);
+            }
+        }
+        return result > 0;
     }
 
 }
