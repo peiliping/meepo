@@ -1,14 +1,11 @@
 package meepo.util;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.parquet.schema.OriginalType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 import java.util.List;
@@ -20,8 +17,6 @@ import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
  * Created by peiliping on 17-3-9.
  */
 public class ParquetTypeMapping {
-
-    protected static final Logger LOG = LoggerFactory.getLogger(ParquetTypeMapping.class);
 
     public static final Map<PrimitiveType.PrimitiveTypeName, Integer> P2J = Maps.newHashMap();
     public static final Map<Integer, PrimitiveType.PrimitiveTypeName> J2P = Maps.newHashMap();

@@ -1,6 +1,5 @@
 package meepo.transform.sink.parquet;
 
-import com.alibaba.fastjson.JSON;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
