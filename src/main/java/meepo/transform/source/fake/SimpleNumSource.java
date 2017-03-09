@@ -10,12 +10,12 @@ import meepo.transform.source.AbstractSource;
  */
 public class SimpleNumSource extends AbstractSource {
 
-    public SimpleNumSource(String name, int index, TaskContext context, RingbufferChannel rb) {
-        super(name, index, context, rb);
+    public SimpleNumSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
+        super(name, index, totalNum, context, rb);
     }
 
-    @Override public Object[] eventFactory() {
-        return new Long[2];
+    @Override public void eventFactory(DataEvent de) {
+        de.setSource(new Long[2]);
     }
 
     @Override public void work() {

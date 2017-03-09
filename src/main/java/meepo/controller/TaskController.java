@@ -30,7 +30,7 @@ import java.util.List;
         return "Hello World!";
     }
 
-    @RequestMapping("/task/prereload") @ResponseBody public List<TaskContext> taskCheck() throws Exception {
+    @RequestMapping("/task/preload") @ResponseBody public List<TaskContext> taskCheck() throws Exception {
         TaskContext context = initTasksContext();
         List<String> taskNames = Lists.newArrayList(context.get(Constants.PROJECT_NAME).split("\\s"));
         List<TaskContext> taskConfigs = Lists.newArrayList();

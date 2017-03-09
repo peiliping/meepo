@@ -3,8 +3,15 @@ package meepo.transform.channel;
 import com.google.common.collect.Lists;
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.ProducerType;
+import meepo.transform.channel.plugin.AbstractPlugin;
+import meepo.transform.channel.plugin.PluginType;
+import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
+import meepo.util.Constants;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class RingbufferChannel {
 
+    protected static final Logger LOG = LoggerFactory.getLogger(RingbufferChannel.class);
+
     private final RingBuffer<DataEvent> ringBuffer;
 
     private final SequenceBarrier seqBarrier;
@@ -23,11 +32,22 @@ public class RingbufferChannel {
 
     private Sequence consumerSequence;
 
-    public RingbufferChannel(int bufferSize, int sourcesCount, int tolerableDelaySeconds) {
+    private AbstractPlugin plugin;
+
+    public RingbufferChannel(int sourcesCount, TaskContext context) {
+        int bufferSize = context.getInteger("bufferSize", 1024);
+        int tolerableDelaySeconds = context.getInteger("delay", 3);
         ProducerType producerType = sourcesCount > 1 ? ProducerType.MULTI : ProducerType.SINGLE;
         this.ringBuffer = RingBuffer.create(producerType, DataEvent.INT_ENEVT_FACTORY, bufferSize,
                 new TimeoutBlockingWaitStrategy(tolerableDelaySeconds, TimeUnit.SECONDS));//LiteTimeoutBlockingWaitStrategy(tolerableDelaySeconds, TimeUnit.SECONDS)
         this.seqBarrier = this.ringBuffer.newBarrier();
+        TaskContext pluginContext = new TaskContext(context.getTaskName() + "-" + Constants.PLUGIN, context.getSubProperties(Constants.PLUGIN_));
+        Class<? extends AbstractPlugin> pluginClazz = (PluginType.valueOf(pluginContext.getString("type", PluginType.DEFAULT.name()))).clazz;
+        try {
+            this.plugin = pluginClazz.getConstructor(TaskContext.class).newInstance(pluginContext);
+        } catch (Exception e) {
+            LOG.error("RingBuffer Plugin Init Error : ", e);
+        }
     }
 
     public List<EventProcessor> start(AbstractSink... handlers) {
@@ -49,6 +69,10 @@ public class RingbufferChannel {
         return wps;
     }
 
+    public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+        this.plugin.autoMatchSchema(source, sink);
+    }
+
     private void checkRunning() {
         Validate.isTrue(!this.STARTED.get());
         this.STARTED.set(true);
@@ -63,6 +87,7 @@ public class RingbufferChannel {
     }
 
     public void pushBySeq(long seq) {
+        this.plugin.convert(this.ringBuffer.get(seq));
         this.ringBuffer.publish(seq);
     }
 

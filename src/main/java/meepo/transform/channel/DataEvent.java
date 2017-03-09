@@ -10,7 +10,9 @@ import lombok.ToString;
  */
 @Setter @Getter @ToString public class DataEvent {
 
-    protected Object[] source;
+    protected transient boolean init = false;
+
+    protected transient Object[] source;
 
     protected Object[] target;
 

@@ -9,16 +9,20 @@ import meepo.util.Util;
  */
 public class SlowLogSink extends AbstractSink {
 
+    private int sleep;
+
     public SlowLogSink(String name, int index, TaskContext context) {
         super(name, index, context);
+        this.sleep = context.getInteger("sleep", 1000);
     }
 
     @Override public void onEvent(Object event) throws Exception {
-        Util.sleep(1);
+        Util.sleepMS(sleep);
         super.LOG.info("event : " + event);
     }
 
     @Override public void timeOut() {
         super.LOG.info("time out.");
     }
+    
 }

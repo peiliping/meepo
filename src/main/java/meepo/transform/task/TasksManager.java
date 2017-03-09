@@ -31,13 +31,19 @@ import java.util.concurrent.TimeUnit;
             while (true) {
                 Util.sleep(60);
                 List<String> keys = Lists.newArrayList(container.keySet());
-                keys.forEach(s -> container.get(s).getRight().checkSourcesFinished());
+                keys.forEach(s -> {
+                    if (container.get(s).getRight().checkSourcesFinished())
+                        container.remove(s);
+                });
             }
         });
     }
 
     public boolean addTask(TaskContext tc) {
         if (this.container.containsKey(tc.getTaskName())) {
+            return false;
+        }
+        if (this.container.size() >= 5) {
             return false;
         }
         Object r = this.container.putIfAbsent(tc.getTaskName(), Pair.of(tc, new Task(tc.getTaskName())));
