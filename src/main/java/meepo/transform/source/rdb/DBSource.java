@@ -1,7 +1,6 @@
 package meepo.transform.source.rdb;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
@@ -12,14 +11,11 @@ import meepo.util.dao.BasicDao;
 import meepo.util.dao.ICallable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Created by peiliping on 17-3-7.

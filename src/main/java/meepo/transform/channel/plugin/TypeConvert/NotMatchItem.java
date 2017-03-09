@@ -20,11 +20,14 @@ import java.util.Map;
     private final static String SPLIT = "->";
 
     static {
-        HANDLERS.put(Types.TIMESTAMP + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
-        HANDLERS.put(Types.DATE + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
+        HANDLERS.put(Types.INTEGER + SPLIT + Types.BIGINT, o -> Long.valueOf((Integer) o));
 
         HANDLERS.put(Types.BIGINT + SPLIT + Types.TIMESTAMP, o -> new Date((Long) o));
         HANDLERS.put(Types.BIGINT + SPLIT + Types.DATE, o -> new Date((Long) o));
+
+        HANDLERS.put(Types.TIMESTAMP + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
+
+        HANDLERS.put(Types.DATE + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
     }
 
     private int columnIndex;
