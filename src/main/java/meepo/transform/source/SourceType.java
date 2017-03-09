@@ -18,7 +18,6 @@ public enum SourceType {
 
     PARQUETFILESOURCE(ParquetFileSource.class);
 
-
     public Class<? extends AbstractSource> clazz;
 
     SourceType(Class<? extends AbstractSource> clazz) {

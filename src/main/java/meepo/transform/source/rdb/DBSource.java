@@ -32,8 +32,6 @@ public class DBSource extends AbstractSource {
 
     protected String columnNames;
 
-    protected int columnsNum;
-
     protected String extraSQL;
 
     protected Long start;
@@ -56,11 +54,11 @@ public class DBSource extends AbstractSource {
         this.columnNames = context.getString("columnNames", "*");
         this.extraSQL = context.getString("extraSQL", "");
 
-        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
         final List<String> columnsArray = Lists.newArrayList();
+        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
         super.schema.forEach(item -> columnsArray.add(item.getLeft()));
         this.columnNames = StringUtils.join(columnsArray, ",");
-        this.columnsNum = super.schema.size();
+        super.columnsNum = super.schema.size();
 
         Pair<Long, Long> ps = BasicDao.autoGetStartEndPoint(this.dataSource, this.tableName, this.primaryKeyName);
         this.stepSize = context.getInteger("stepSize", 100);
@@ -70,11 +68,23 @@ public class DBSource extends AbstractSource {
         this.currentPos = Math.max(vStart + index * this.stepSize, this.start);
 
         this.sql = buildSQL();
-        this.handler = new Handler();
-    }
+        this.handler = new ICallable<Boolean>() {
+            @Override public void handleParams(PreparedStatement p) throws Exception {
+                p.setLong(1, currentPos);
+                p.setLong(2, tmpEnd);
+            }
 
-    @Override public void eventFactory(DataEvent de) {
-        de.setSource(new Object[this.columnsNum]);
+            @Override public Boolean handleResultSet(ResultSet r) throws Exception {
+                while (r.next() && RUNNING) {
+                    DataEvent de = feedOne();
+                    for (int i = 1; i <= columnsNum; i++) {
+                        de.getSource()[i - 1] = r.getObject(i);
+                    }
+                    pushOne();
+                }
+                return true;
+            }
+        };
     }
 
     @Override public void work() {
@@ -83,8 +93,7 @@ public class DBSource extends AbstractSource {
             return;
         }
         this.tmpEnd = Math.min(this.currentPos + this.stepSize, this.end);
-        boolean status = executeQuery();
-        if (status) {
+        if (executeQuery()) {
             this.currentPos += super.totalSourceNum * this.stepSize;
         }
     }
@@ -101,24 +110,5 @@ public class DBSource extends AbstractSource {
     @Override public void end() {
         super.end();
         Util.closeDataSource(this.dataSource);
-    }
-
-    class Handler extends ICallable<Boolean> {
-
-        @Override public void handleParams(PreparedStatement p) throws Exception {
-            p.setLong(1, currentPos);
-            p.setLong(2, tmpEnd);
-        }
-
-        @Override public Boolean handleResultSet(ResultSet r) throws Exception {
-            while (r.next() && RUNNING) {
-                DataEvent de = feedOne();
-                for (int i = 1; i <= columnsNum; i++) {
-                    de.getSource()[i - 1] = r.getObject(i);
-                }
-                pushOne();
-            }
-            return true;
-        }
     }
 }

@@ -21,15 +21,17 @@ public abstract class AbstractSource implements ISource {
 
     protected String taskName;
 
-    protected int indexOfSources;
+    protected boolean RUNNING = false;
 
     protected RingbufferChannel channel;
 
-    protected boolean RUNNING = false;
-
-    protected long tmpIndex;
+    protected int indexOfSources;
 
     protected int totalSourceNum;
+
+    protected int columnsNum;
+
+    protected long tmpIndex;
 
     @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
 
@@ -42,7 +44,7 @@ public abstract class AbstractSource implements ISource {
 
     @Override public void start() {
         this.RUNNING = true;
-        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " starting at " + new Date());
+        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " start at " + new Date());
     }
 
     @Override public void stop() {
@@ -51,17 +53,19 @@ public abstract class AbstractSource implements ISource {
 
     @Override public void end() {
         this.RUNNING = false;
-        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " ending at " + new Date());
+        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " end at " + new Date());
     }
+
+    private DataEvent de;
 
     @Override public DataEvent feedOne() {
         this.tmpIndex = this.channel.getNextSeq();
-        DataEvent de = this.channel.getBySeq(this.tmpIndex);
-        if (!de.isInit()) {
-            eventFactory(de);
-            de.setInit(true);
+        this.de = this.channel.getBySeq(this.tmpIndex);
+        if (!this.de.isInit()) {
+            this.de.setSource(new Object[this.columnsNum]);
+            this.de.setInit(true);
         }
-        return de;
+        return this.de;
     }
 
     @Override public void pushOne() {
@@ -70,7 +74,7 @@ public abstract class AbstractSource implements ISource {
 
     @Override public void run() {
         start();
-        while (RUNNING) {
+        while (this.RUNNING) {
             work();
         }
         end();

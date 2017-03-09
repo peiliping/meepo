@@ -67,10 +67,6 @@ public class ParquetFileSource extends AbstractSource {
         }
     }
 
-    @Override public void eventFactory(DataEvent de) {
-        de.setSource(new Object[this.columnsNum]);
-    }
-
     private Group record = null;
 
     private int fileIndex = 0;
