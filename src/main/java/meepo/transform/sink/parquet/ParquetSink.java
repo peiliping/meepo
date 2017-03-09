@@ -1,9 +1,11 @@
 package meepo.transform.sink.parquet;
 
+import com.alibaba.fastjson.JSON;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
 import meepo.util.ParquetTypeMapping;
+import meepo.util.Util;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.Type;
@@ -38,19 +40,18 @@ public class ParquetSink extends AbstractSink {
         this.outputDir = context.get("outputdir");
         this.rollingSize = context.getLong("rollingsize", Long.MAX_VALUE);
         this.hdfsConfDir = context.get("hdfsconfdir");
-        this.types = ParquetTypeMapping.convert2Types(super.schema);
     }
 
     private void initSinkHelper() {
+        if (this.sinkHelper != null) {
+            return;
+        }
         try {
-            if (this.sinkHelper == null) {
-                return;
-            }
             String fileName = this.outputDir + this.tableName + "-" + this.indexOfSinks + "-" + this.part + "-" + System.currentTimeMillis() / 1000 + ".parquet";
             if (this.hdfsConfDir == null) {
-                this.sinkHelper = new ParquetSinkHelper(new Path(fileName), new MessageType(this.tableName, types));
+                this.sinkHelper = new ParquetSinkHelper(new Path(fileName), new MessageType(this.tableName, this.types));
             } else {
-                this.sinkHelper = new ParquetSinkHelper(new Path(fileName), new MessageType(this.tableName, types), this.hdfsConfDir);
+                this.sinkHelper = new ParquetSinkHelper(new Path(fileName), new MessageType(this.tableName, this.types), this.hdfsConfDir);
             }
         } catch (Exception e) {
             LOG.error("Init Parquet File Error :", e);
@@ -58,8 +59,9 @@ public class ParquetSink extends AbstractSink {
     }
 
     @Override public void onStart() {
-        initSinkHelper();
         super.onStart();
+        this.types = ParquetTypeMapping.convert2Types(super.schema);
+        initSinkHelper();
     }
 
     @Override public void onEvent(Object event) throws Exception {
@@ -71,6 +73,7 @@ public class ParquetSink extends AbstractSink {
             }
         } catch (Exception e) {
             LOG.error("ParquetFilesWriter Write Data Error :", e);
+            Util.sleep(3);
         }
     }
 
