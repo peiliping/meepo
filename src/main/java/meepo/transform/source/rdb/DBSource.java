@@ -116,7 +116,7 @@ public class DBSource extends AbstractSource {
                 for (int i = 1; i <= columnsNum; i++) {
                     de.getSource()[i - 1] = r.getObject(i);
                 }
-                channel.pushBySeq(tmpIndex);
+                pushOne();
             }
             return true;
         }

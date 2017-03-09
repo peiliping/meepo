@@ -1,6 +1,7 @@
 package meepo.transform.source;
 
 import meepo.transform.source.fake.SimpleNumSource;
+import meepo.transform.source.parquet.ParquetFileSource;
 import meepo.transform.source.rdb.DBSource;
 import meepo.transform.source.rdb.DBSyncSource;
 
@@ -13,7 +14,9 @@ public enum SourceType {
 
     DBSOURCE(DBSource.class),
 
-    DBSYNCSOURCE(DBSyncSource.class);
+    DBSYNCSOURCE(DBSyncSource.class),
+
+    PARQUETFILESOURCE(ParquetFileSource.class);
 
 
     public Class<? extends AbstractSource> clazz;
