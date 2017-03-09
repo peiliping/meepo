@@ -5,6 +5,7 @@ import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
 import meepo.util.ParquetTypeMapping;
 import meepo.util.Util;
+import org.apache.commons.lang3.Validate;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.Type;
@@ -25,9 +26,9 @@ public class ParquetSink extends AbstractSink {
 
     private long counter;
 
-    private String hdfsConfDir;
-
     private int part = 0;
+
+    private String hdfsConfDir;
 
     private ParquetSinkHelper sinkHelper;
 
@@ -46,7 +47,7 @@ public class ParquetSink extends AbstractSink {
             return;
         }
         try {
-            String fileName = this.outputDir + this.tableName + "-" + this.indexOfSinks + "-" + this.part + "-" + System.currentTimeMillis() / 1000 + ".parquet";
+            String fileName = this.outputDir + this.tableName + "-" + super.indexOfSinks + "-" + this.part + "-" + System.currentTimeMillis() / 1000 + ".parquet";
             if (this.hdfsConfDir == null) {
                 this.sinkHelper = new ParquetSinkHelper(new Path(fileName), new MessageType(this.tableName, this.types));
             } else {
@@ -54,6 +55,7 @@ public class ParquetSink extends AbstractSink {
             }
         } catch (Exception e) {
             LOG.error("Init Parquet File Error :", e);
+            Validate.isTrue(false);
         }
     }
 
@@ -77,15 +79,16 @@ public class ParquetSink extends AbstractSink {
     }
 
     private void closeParquet() {
-        if (this.sinkHelper != null) {
-            try {
-                this.sinkHelper.close();
-                this.sinkHelper = null;
-                this.counter = 0;
-                this.part++;
-            } catch (IOException e) {
-                LOG.error("Close Parquet File Error :", e);
-            }
+        if (this.sinkHelper == null) {
+            return;
+        }
+        try {
+            this.sinkHelper.close();
+            this.sinkHelper = null;
+            this.counter = 0;
+            this.part++;
+        } catch (IOException e) {
+            LOG.error("Close Parquet File Error :", e);
         }
     }
 

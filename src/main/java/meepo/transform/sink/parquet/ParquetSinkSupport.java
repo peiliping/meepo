@@ -35,6 +35,8 @@ public class ParquetSinkSupport extends WriteSupport<Object[]> {
         this.recordConsumer = recordConsumer;
     }
 
+    private Object val;
+
     @Override public void write(Object[] record) {
         if (record.length != this.columns.size()) {
             throw new ParquetEncodingException(
@@ -42,10 +44,10 @@ public class ParquetSinkSupport extends WriteSupport<Object[]> {
         }
         this.recordConsumer.startMessage();
         for (int i = 0; i < this.columns.size(); i++) {
-            Object val = record[i];
-            if (val != null) {
-                this.recordConsumer.startField(columns.get(i).getPath()[0], i);
-                switch (columns.get(i).getType()) {
+            this.val = record[i];
+            if (this.val != null) {
+                this.recordConsumer.startField(this.columns.get(i).getPath()[0], i);
+                switch (this.columns.get(i).getType()) {
                     case BOOLEAN:
                         this.recordConsumer.addBoolean((Boolean) val);
                         break;

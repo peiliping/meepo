@@ -72,7 +72,7 @@ public class Task {
         this.channel = new RingbufferChannel(this.sourceNum, channelContext);
 
         this.sinkContext = new TaskContext(this.taskName + "-" + Constants.SINK, taskContext.getSubProperties(Constants.SINK_));
-        this.sinkClazz = (SinkType.valueOf(this.sinkContext.getString("type", SinkType.SLOWLOGSINK.name()))).clazz;
+        this.sinkClazz = (SinkType.valueOf(this.sinkContext.getString("type"))).clazz;
         this.sinkNum = this.sinkContext.getInteger("workersNum", 1);
         this.sinksPool = new ThreadPoolExecutor(this.sinkNum, this.sinkNum, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
     }
