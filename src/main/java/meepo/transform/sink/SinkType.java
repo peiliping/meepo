@@ -18,7 +18,6 @@ public enum SinkType {
 
     PARQUETSINK(ParquetSink.class);
 
-
     public Class<? extends AbstractSink> clazz;
 
     SinkType(Class<? extends AbstractSink> clazz) {

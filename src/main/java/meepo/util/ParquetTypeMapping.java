@@ -2,7 +2,9 @@ package meepo.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.OriginalType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.Type;
@@ -52,6 +54,16 @@ public class ParquetTypeMapping {
             }
         });
         return types;
+    }
+
+    public static List<Pair<String, Integer>> convert2JDBCTypes(MessageType schema) {
+        List<Pair<String, Integer>> result = Lists.newArrayList();
+        for (Type type : schema.getFields()) {
+            Integer jdbcType = P2J.get(type.asPrimitiveType().getPrimitiveTypeName());
+            Validate.notNull(jdbcType);
+            result.add(Pair.of(type.getName(), jdbcType));
+        }
+        return result;
     }
 
 }

@@ -12,10 +12,7 @@ public class SimpleNumSource extends AbstractSource {
 
     public SimpleNumSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
-    }
-
-    @Override public void eventFactory(DataEvent de) {
-        de.setSource(new Long[2]);
+        super.columnsNum = 2;
     }
 
     @Override public void work() {

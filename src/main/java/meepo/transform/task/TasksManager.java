@@ -20,20 +20,21 @@ import java.util.concurrent.TimeUnit;
  */
 @Component public class TasksManager {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(TasksManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TasksManager.class);
 
     private ConcurrentMap<String, Pair<TaskContext, Task>> container = Maps.newConcurrentMap();
 
-    private ThreadPoolExecutor selfMonitor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    private ThreadPoolExecutor selfMonitor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     public TasksManager() {
         this.selfMonitor.submit(() -> {
             while (true) {
                 Util.sleep(60);
-                List<String> keys = Lists.newArrayList(container.keySet());
+                List<String> keys = Lists.newArrayList(this.container.keySet());
                 keys.forEach(s -> {
-                    if (container.get(s).getRight().checkSourcesFinished())
-                        container.remove(s);
+                    Pair<TaskContext, Task> item = this.container.get(s);
+                    if (item != null && item.getRight().recycle())
+                        this.container.remove(s);
                 });
             }
         });

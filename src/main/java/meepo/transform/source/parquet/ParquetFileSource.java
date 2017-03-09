@@ -31,8 +31,6 @@ public class ParquetFileSource extends AbstractSource {
 
     private ParquetReader<Group>[] readers;
 
-    private int columnsNum;
-
     private MessageType msgType;
 
     public ParquetFileSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
@@ -48,16 +46,11 @@ public class ParquetFileSource extends AbstractSource {
 
         try {
             Path filePath = new Path(inputDir + fileNames.get(0));
-            ParquetMetadata metaData = ParquetFileReader.readFooter(new Configuration(), filePath);
-            this.msgType = metaData.getFileMetaData().getSchema();
-            this.columnsNum = this.msgType.getFieldCount();
+            this.msgType = (ParquetFileReader.readFooter(new Configuration(), filePath)).getFileMetaData().getSchema();
+            super.columnsNum = this.msgType.getFieldCount();
             GroupReadSupport grs = new GroupReadSupport();
             grs.init(new Configuration(), null, this.msgType);
-            for (Type type : this.msgType.getFields()) {
-                Integer jdbcType = ParquetTypeMapping.P2J.get(type.asPrimitiveType().getPrimitiveTypeName());
-                Validate.notNull(jdbcType);
-                super.schema.add(Pair.of(type.getName(), jdbcType));
-            }
+            super.getSchema().addAll(ParquetTypeMapping.convert2JDBCTypes(this.msgType));
             for (int i = 0; i < fileNames.size(); i++) {
                 this.readers[i] = ParquetReader.builder(grs, new Path(inputDir + fileNames.get(i))).build();
             }
@@ -67,13 +60,9 @@ public class ParquetFileSource extends AbstractSource {
         }
     }
 
-    @Override public void eventFactory(DataEvent de) {
-        de.setSource(new Object[this.columnsNum]);
-    }
+    private Group record;
 
-    private Group record = null;
-
-    private int fileIndex = 0;
+    private int fileIndex;
 
     @Override public void work() {
         if (this.fileIndex >= this.readers.length) {
@@ -88,7 +77,7 @@ public class ParquetFileSource extends AbstractSource {
                 return;
             }
             DataEvent de = feedOne();
-            for (int i = 0; i < this.columnsNum; i++) {
+            for (int i = 0; i < super.columnsNum; i++) {
                 if (this.record.getFieldRepetitionCount(i) == 0) {
                     de.getSource()[i] = null;
                     continue;

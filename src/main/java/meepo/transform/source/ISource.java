@@ -11,8 +11,6 @@ public interface ISource extends Runnable {
 
     DataEvent feedOne();
 
-    void eventFactory(DataEvent de);
-
     void pushOne();
 
     void work();

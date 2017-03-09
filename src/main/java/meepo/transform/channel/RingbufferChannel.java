@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class RingbufferChannel {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(RingbufferChannel.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RingbufferChannel.class);
 
     private final RingBuffer<DataEvent> ringBuffer;
 
