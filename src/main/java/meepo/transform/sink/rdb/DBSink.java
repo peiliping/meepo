@@ -31,8 +31,6 @@ public class DBSink extends AbstractSink {
 
     protected String paramsStr;// ?,?,?,?
 
-    protected int columnsNum;
-
     protected String sql;
 
     protected Handler handler;
@@ -58,7 +56,6 @@ public class DBSink extends AbstractSink {
         });
         this.columnNames = StringUtils.join(columnsArray, ",");
         this.paramsStr = StringUtils.join(paramsArray, ",");
-        this.columnsNum = super.schema.size();
 
         this.sql = buildSQL();
         this.handler = new Handler();

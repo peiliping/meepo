@@ -9,7 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -44,7 +44,7 @@ public abstract class AbstractSource implements ISource {
 
     @Override public void start() {
         this.RUNNING = true;
-        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " start at " + new Date());
+        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " start at " + LocalDateTime.now());
     }
 
     @Override public void stop() {
@@ -53,7 +53,7 @@ public abstract class AbstractSource implements ISource {
 
     @Override public void end() {
         this.RUNNING = false;
-        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " end at " + new Date());
+        LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " end at " + LocalDateTime.now());
     }
 
     private DataEvent de;
