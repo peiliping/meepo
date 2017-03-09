@@ -13,8 +13,7 @@ import meepo.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,39 +24,39 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by peiliping on 17-3-3.
  */
-public class Task implements Closeable {
+public class Task {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(Task.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Task.class);
 
-    protected String taskName;
+    private String taskName;
 
-    protected long createTime;
+    private long createTime;
 
-    protected AtomicBoolean RUNNING = new AtomicBoolean(false);
+    private long finishedTime;
 
-    protected long finishedTime;
+    private AtomicBoolean RUNNING = new AtomicBoolean(false);
 
-    protected RingbufferChannel channel;
+    private RingbufferChannel channel;
 
-    protected ThreadPoolExecutor sourcesPool;
+    private ThreadPoolExecutor sourcesPool;
 
-    protected Class<? extends AbstractSource> sourceClazz;
+    private Class<? extends AbstractSource> sourceClazz;
 
-    protected TaskContext sourceContext;
+    private TaskContext sourceContext;
 
-    protected int sourceNum;
+    private int sourceNum;
 
-    protected List<AbstractSource> sources = Lists.newArrayList();
+    private List<AbstractSource> sources = Lists.newArrayList();
 
-    protected ThreadPoolExecutor sinksPool;
+    private ThreadPoolExecutor sinksPool;
 
-    protected Class<? extends AbstractSink> sinkClazz;
+    private Class<? extends AbstractSink> sinkClazz;
 
-    protected TaskContext sinkContext;
+    private TaskContext sinkContext;
 
-    protected int sinkNum;
+    private int sinkNum;
 
-    protected List<EventProcessor> sinks = Lists.newArrayList();
+    private List<EventProcessor> sinks = Lists.newArrayList();
 
     public Task(String name) {
         this.taskName = name;
@@ -65,44 +64,40 @@ public class Task implements Closeable {
     }
 
     public void init(TaskContext taskContext) {
-        {
-            this.sourceContext = new TaskContext(this.taskName + "-" + Constants.SOURCE, taskContext.getSubProperties(Constants.SOURCE_));
-            this.sourceClazz = (SourceType.valueOf(this.sourceContext.getString("type", SourceType.SIMPLENUMSOURCE.name()))).clazz;
-            this.sourceNum = sourceContext.getInteger("workersNum", 1);
-            this.sourcesPool = new ThreadPoolExecutor(this.sourceNum, this.sourceNum, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        }
-        {
-            TaskContext channelContext = new TaskContext(this.taskName + "-" + Constants.CHANNEL, taskContext.getSubProperties(Constants.CHANNEL_));
-            this.channel = new RingbufferChannel(this.sourceNum, channelContext);
-        }
-        {
-            this.sinkContext = new TaskContext(this.taskName + "-" + Constants.SINK, taskContext.getSubProperties(Constants.SINK_));
-            this.sinkClazz = (SinkType.valueOf(this.sinkContext.getString("type", SinkType.SLOWLOGSINK.name()))).clazz;
-            this.sinkNum = this.sinkContext.getInteger("workersNum", 1);
-            this.sinksPool = new ThreadPoolExecutor(this.sinkNum, this.sinkNum, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-        }
+        this.sourceContext = new TaskContext(this.taskName + "-" + Constants.SOURCE, taskContext.getSubProperties(Constants.SOURCE_));
+        this.sourceClazz = (SourceType.valueOf(this.sourceContext.getString("type"))).clazz;
+        this.sourceNum = sourceContext.getInteger("workersNum", 1);
+        this.sourcesPool = new ThreadPoolExecutor(this.sourceNum, this.sourceNum, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+
+        TaskContext channelContext = new TaskContext(this.taskName + "-" + Constants.CHANNEL, taskContext.getSubProperties(Constants.CHANNEL_));
+        this.channel = new RingbufferChannel(this.sourceNum, channelContext);
+
+        this.sinkContext = new TaskContext(this.taskName + "-" + Constants.SINK, taskContext.getSubProperties(Constants.SINK_));
+        this.sinkClazz = (SinkType.valueOf(this.sinkContext.getString("type", SinkType.SLOWLOGSINK.name()))).clazz;
+        this.sinkNum = this.sinkContext.getInteger("workersNum", 1);
+        this.sinksPool = new ThreadPoolExecutor(this.sinkNum, this.sinkNum, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
     }
 
     public void start() throws Exception {
+        LOG.info("Task[" + this.taskName + "]" + " is starting ...");
         AbstractSink[] sinkHandlers = new AbstractSink[this.sinkNum];
         for (int i = 0; i < this.sinkNum; i++) {
             sinkHandlers[i] = this.sinkClazz.getConstructor(String.class, int.class, TaskContext.class).newInstance(this.taskName, i, this.sinkContext);
         }
         this.sinks.addAll(this.channel.start(sinkHandlers));
-
         for (int i = 0; i < this.sourceNum; i++) {
             this.sources.add(this.sourceClazz.getConstructor(String.class, int.class, int.class, TaskContext.class, RingbufferChannel.class)
                     .newInstance(this.taskName, i, this.sourceNum, this.sourceContext, this.channel));
         }
-
         this.channel.autoMatchSchema(this.sources.get(0).getSchema(), sinkHandlers[0].getSchema());
         this.sinks.forEach(ep -> this.sinksPool.submit(ep));
         this.sources.forEach(as -> this.sourcesPool.submit(as));
         this.RUNNING.set(true);
+        LOG.info("Task[" + this.taskName + "]" + " started ...");
     }
 
-    @Override public void close() throws IOException {
-        LOG.info("Task[" + this.taskName + "]" + "is closing ...");
+    public void close() {
+        LOG.info("Task[" + this.taskName + "]" + " is closing ...");
         this.RUNNING.set(false);
         this.sources.forEach(as -> as.stop());
         if (!this.sourcesPool.isShutdown()) {
@@ -119,19 +114,16 @@ public class Task implements Closeable {
         if (this.finishedTime == 0) {
             this.finishedTime = System.currentTimeMillis();
         }
-        LOG.info("Task[" + this.taskName + "]" + " closed ..." + new Date());
+        LOG.info("Task[" + this.taskName + "]" + " closed ..." + LocalDateTime.now());
     }
 
-    public boolean checkSourcesFinished() {
+    public boolean recycle() {
         for (AbstractSource as : this.sources) {
             if (as.isRunning()) {
                 return false;
             }
         }
-        try {
-            close();
-        } catch (IOException e) {
-        }
+        close();
         return true;
     }
 }
