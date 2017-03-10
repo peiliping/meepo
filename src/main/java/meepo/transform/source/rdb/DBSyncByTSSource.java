@@ -2,6 +2,7 @@ package meepo.transform.source.rdb;
 
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
+import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 
 /**
@@ -22,6 +23,11 @@ public class DBSyncByTSSource extends DBSyncSource {
         this.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName);
         this.now = System.currentTimeMillis();
         this.tmpEnd = Math.min(this.currentPos + this.stepSize, Math.min(this.now - this.delay, this.startEnd.getRight()));
+        if (this.tmpEnd == this.currentPos) {
+            this.currentPos = this.now - this.delay;
+            Util.sleep(1);
+            return;
+        }
         if (executeQuery()) {
             super.currentPos = super.tmpEnd;
         }
