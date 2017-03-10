@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,6 +38,16 @@ public class BasicDao {
             @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
                 return Pair.of(r.getLong(1) - 1, r.getLong(2));
+            }
+        });
+    }
+
+    public static Pair<Long, Long> autoGetStartEndDatePoint(DataSource ds, String tableName, String primaryKeyName) {
+        String sql = "SELECT " + "MIN(" + primaryKeyName + ") , MAX(" + primaryKeyName + ") FROM " + tableName;
+        return excuteQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
+            @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
+                Validate.isTrue(r.next());
+                return Pair.of(r.getDate(1).getTime() - 1, r.getDate(2).getTime());
             }
         });
     }
