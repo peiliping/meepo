@@ -41,8 +41,6 @@ public class DBSyncByDateSource extends AbstractSource {
 
     private long start;
 
-    private long end;
-
     private Pair<Long, Long> startEnd;
 
     private long currentPos;
@@ -72,7 +70,6 @@ public class DBSyncByDateSource extends AbstractSource {
         this.delay = context.getLong("delay", 5000L);
         this.now = System.currentTimeMillis();
         this.start = context.getLong("start", this.now - this.delay);
-        this.end = Long.MAX_VALUE;
         this.currentPos = this.start;
 
         this.sql = buildSQL();
