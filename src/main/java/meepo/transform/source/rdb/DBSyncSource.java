@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class DBSyncSource extends DBSource {
 
-    private Pair<Long, Long> startEnd;
+    protected Pair<Long, Long> startEnd;
 
     public DBSyncSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
