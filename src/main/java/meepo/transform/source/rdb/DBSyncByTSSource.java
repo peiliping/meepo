@@ -9,7 +9,7 @@ import org.apache.commons.lang3.Validate;
 /**
  * Created by peiliping on 17-3-10.
  */
-public class DBSyncByTSSource extends DBSyncSource {
+public class DBSyncByTSSource extends DBSyncByIdSource {
 
     private long delay;
 

@@ -9,11 +9,11 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * Created by peiliping on 17-3-7.
  */
-public class DBSyncSource extends DBSource {
+public class DBSyncByIdSource extends DBByIdSource {
 
     protected Pair<Long, Long> startEnd;
 
-    public DBSyncSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
+    public DBSyncByIdSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         Validate.isTrue(totalNum == 1);
         super.end = Long.MAX_VALUE;

@@ -7,27 +7,26 @@ import meepo.util.dao.BasicDao;
 import meepo.util.dao.ICallable;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
- * Created by peiliping on 17-3-11.
+ * Created by peiliping on 17-3-7.
  */
-public class DBByDateSource extends AbstractDBSource {
+public class DBByIdSource extends AbstractDBSource {
 
-    public DBByDateSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
+    public DBByIdSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
-        Pair<Long, Long> ps = BasicDao.autoGetStartEndDatePoint(this.dataSource, this.tableName, this.primaryKeyName);
-        this.stepSize = context.getInteger("stepSize", 60000);
+        Pair<Long, Long> ps = BasicDao.autoGetStartEndPoint(this.dataSource, this.tableName, this.primaryKeyName);
+        this.stepSize = context.getInteger("stepSize", 100);
         this.start = context.getLong("start", ps.getLeft());
         this.end = context.getLong("end", ps.getRight());
         long vStart = this.start - (this.start % this.stepSize);
         this.currentPos = Math.max(vStart + index * this.stepSize, this.start);
         this.handler = new ICallable<Boolean>() {
             @Override public void handleParams(PreparedStatement p) throws Exception {
-                p.setDate(1, new Date(currentPos));
-                p.setDate(2, new Date(tmpEnd));
+                p.setLong(1, currentPos);
+                p.setLong(2, tmpEnd);
             }
 
             @Override public Boolean handleResultSet(ResultSet r) throws Exception {

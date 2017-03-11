@@ -15,7 +15,7 @@ import java.io.Closeable;
  */
 public class Util {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(Util.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 
     public static void sleep(long sec) {
         try {
