@@ -11,9 +11,9 @@ public enum SourceType {
 
     SIMPLENUMSOURCE(SimpleNumSource.class),
 
-    DBSOURCE(DBSource.class),
+    DBBYIDSOURCE(DBByIdSource.class),
 
-    DBSYNCSOURCE(DBSyncSource.class),
+    DBSYNCBYIDSOURCE(DBSyncByIdSource.class),
 
     DBSYNCBYTSSOURCE(DBSyncByTSSource.class),
 
