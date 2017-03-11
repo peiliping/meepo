@@ -18,7 +18,6 @@ public class DBSyncByTSSource extends DBSyncSource {
     public DBSyncByTSSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         Validate.notBlank(context.get("primaryKeyName"));
-        Validate.isTrue(totalNum == 1);
         this.delay = context.getLong("delay", 5000L);
         this.stepSize = context.getInteger("stepSize", 60000);
         if (context.get("start") == null) {
