@@ -18,13 +18,11 @@ public class DBSyncByTSSource extends DBSyncByIdSource {
     public DBSyncByTSSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         Validate.notBlank(context.get("primaryKeyName"));
-        this.delay = context.getLong("delay", 5000L);
         this.stepSize = context.getInteger("stepSize", 60000);
-        if (context.get("start") == null) {
-            this.now = System.currentTimeMillis();
-            super.start = this.now - this.delay;
-            super.currentPos = super.start;
-        }
+        this.delay = context.getLong("delay", 5000L);
+        this.now = System.currentTimeMillis();
+        super.start = context.getLong("start", this.now - this.delay);
+        super.currentPos = super.start;
     }
 
     @Override public void work() {
