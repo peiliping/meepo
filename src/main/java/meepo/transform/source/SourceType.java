@@ -2,10 +2,7 @@ package meepo.transform.source;
 
 import meepo.transform.source.fake.SimpleNumSource;
 import meepo.transform.source.parquet.ParquetFileSource;
-import meepo.transform.source.rdb.DBSource;
-import meepo.transform.source.rdb.DBSyncByDateSource;
-import meepo.transform.source.rdb.DBSyncByTSSource;
-import meepo.transform.source.rdb.DBSyncSource;
+import meepo.transform.source.rdb.*;
 
 /**
  * Created by peiliping on 17-3-6.
@@ -19,6 +16,8 @@ public enum SourceType {
     DBSYNCSOURCE(DBSyncSource.class),
 
     DBSYNCBYTSSOURCE(DBSyncByTSSource.class),
+
+    DBBYDATESOURCE(DBByDateSource.class),
 
     DBSYNCBYDATESOURCE(DBSyncByDateSource.class),
 
