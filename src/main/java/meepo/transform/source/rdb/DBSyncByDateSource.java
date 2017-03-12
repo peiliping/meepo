@@ -20,7 +20,6 @@ public class DBSyncByDateSource extends DBByDateSource {
 
     public DBSyncByDateSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
-        Validate.notBlank(context.get("primaryKeyName"));
         Validate.isTrue(totalNum == 1);
         super.end = Long.MAX_VALUE;
         this.startEnd = BasicDao.autoGetStartEndDatePoint(this.dataSource, this.tableName, this.primaryKeyName);

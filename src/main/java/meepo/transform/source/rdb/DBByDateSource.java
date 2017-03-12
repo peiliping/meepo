@@ -5,6 +5,7 @@ import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.util.dao.BasicDao;
 import meepo.util.dao.ICallable;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.Date;
@@ -18,6 +19,7 @@ public class DBByDateSource extends AbstractDBSource {
 
     public DBByDateSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
+        Validate.notBlank(context.get("primaryKeyName"));
         Pair<Long, Long> ps = BasicDao.autoGetStartEndDatePoint(this.dataSource, this.tableName, this.primaryKeyName);
         this.stepSize = context.getInteger("stepSize", 60000);
         this.start = context.getLong("start", ps.getLeft());

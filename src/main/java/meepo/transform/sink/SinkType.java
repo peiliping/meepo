@@ -14,7 +14,7 @@ public enum SinkType {
 
     DBSINK(DBSink.class),
 
-    DBREPLACE(DBReplaceSink.class),
+    DBREPLACESINK(DBReplaceSink.class),
 
     PARQUETSINK(ParquetSink.class);
 
