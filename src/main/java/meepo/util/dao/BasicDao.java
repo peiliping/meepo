@@ -46,7 +46,7 @@ public class BasicDao {
         return excuteQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
             @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
-                return Pair.of(r.getDate(1).getTime() - 1, r.getDate(2).getTime());
+                return Pair.of(r.getTimestamp(1).getTime() - 1, r.getTimestamp(2).getTime());
             }
         });
     }
