@@ -5,7 +5,7 @@ import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.transform.source.AbstractSource;
-import meepo.transform.source.SourceReportItem;
+import meepo.transform.report.SourceReportItem;
 import meepo.util.ParquetTypeMapping;
 import org.apache.commons.lang3.Validate;
 import org.apache.hadoop.conf.Configuration;

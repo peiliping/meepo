@@ -3,7 +3,7 @@ package meepo.transform.task;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import meepo.transform.config.TaskContext;
-import meepo.transform.source.SourceReportItem;
+import meepo.transform.report.IReportItem;
 import meepo.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -72,7 +72,7 @@ import java.util.concurrent.TimeUnit;
         return result;
     }
 
-    public List<SourceReportItem> report(String taskName) {
+    public List<IReportItem> report(String taskName) {
         if (!this.container.containsKey(taskName)) {
             return null;
         }
