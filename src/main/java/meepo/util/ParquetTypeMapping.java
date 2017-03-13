@@ -38,6 +38,7 @@ public class ParquetTypeMapping {
         J2P.put(Types.FLOAT, FLOAT);
         J2P.put(Types.DOUBLE, DOUBLE);
         J2P.put(Types.VARCHAR, BINARY);
+        J2P.put(Types.LONGVARCHAR, BINARY);
 
         J2J.put(Types.DATE, Types.BIGINT);
         J2J.put(Types.TIMESTAMP, Types.BIGINT);
@@ -59,6 +60,7 @@ public class ParquetTypeMapping {
         final List<Type> types = Lists.newArrayList();
         schema.forEach(item -> {
             PrimitiveType.PrimitiveTypeName tmp = J2P.get(item.getRight());
+            Validate.notNull(tmp);
             if (tmp == PrimitiveType.PrimitiveTypeName.BINARY) {
                 types.add(new PrimitiveType(Type.Repetition.OPTIONAL, tmp, item.getLeft(), OriginalType.UTF8));
             } else {
