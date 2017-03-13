@@ -4,10 +4,11 @@ import com.google.common.collect.Lists;
 import com.lmax.disruptor.EventProcessor;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.IReportItem;
 import meepo.transform.sink.AbstractSink;
 import meepo.transform.sink.SinkType;
 import meepo.transform.source.AbstractSource;
-import meepo.transform.source.SourceReportItem;
+import meepo.transform.report.SourceReportItem;
 import meepo.transform.source.SourceType;
 import meepo.util.Constants;
 import meepo.util.Util;
@@ -96,9 +97,10 @@ public class Task {
         LOG.info("Task[" + this.taskName + "]" + " started ...");
     }
 
-    public synchronized List<SourceReportItem> report() {
-        List<SourceReportItem> result = Lists.newArrayList();
+    public synchronized List<IReportItem> report() {
+        List<IReportItem> result = Lists.newArrayList();
         this.sources.forEach(as -> result.add(as.report()));
+        result.add(this.channel.report());
         return result;
     }
 

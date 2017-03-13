@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.transform.source.AbstractSource;
-import meepo.transform.source.SourceReportItem;
+import meepo.transform.report.SourceReportItem;
 import meepo.util.Constants;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;

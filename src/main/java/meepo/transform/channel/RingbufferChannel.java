@@ -6,6 +6,8 @@ import com.lmax.disruptor.dsl.ProducerType;
 import meepo.transform.channel.plugin.AbstractPlugin;
 import meepo.transform.channel.plugin.PluginType;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.ChannelReportItem;
+import meepo.transform.report.IReportItem;
 import meepo.transform.sink.AbstractSink;
 import meepo.util.Constants;
 import org.apache.commons.lang3.Validate;
@@ -93,6 +95,10 @@ public class RingbufferChannel {
 
     public boolean isEmpty() {
         return this.ringBuffer.remainingCapacity() == this.ringBuffer.getBufferSize();
+    }
+
+    public IReportItem report() {
+        return ChannelReportItem.builder().name("channel").capacity(this.ringBuffer.getBufferSize()).remain(this.ringBuffer.remainingCapacity()).build();
     }
 
 }

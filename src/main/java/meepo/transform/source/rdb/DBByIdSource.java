@@ -17,13 +17,13 @@ public class DBByIdSource extends AbstractDBSource {
 
     public DBByIdSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
-        Pair<Long, Long> ps = BasicDao.autoGetStartEndPoint(this.dataSource, this.tableName, this.primaryKeyName);
-        this.stepSize = context.getInteger("stepSize", 100);
-        this.start = context.getLong("start", ps.getLeft());
-        this.end = context.getLong("end", ps.getRight());
-        long vStart = this.start - (this.start % this.stepSize);
-        this.currentPos = Math.max(vStart + index * this.stepSize, this.start);
-        this.handler = new ICallable<Boolean>() {
+        Pair<Long, Long> ps = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, null);
+        super.stepSize = context.getInteger("stepSize", 100);
+        super.start = context.getLong("start", ps.getLeft());
+        super.end = context.getLong("end", ps.getRight());
+        long vStart = super.start - (super.start % super.stepSize);
+        super.currentPos = Math.max(vStart + index * super.stepSize, super.start);
+        super.handler = new ICallable<Boolean>() {
             @Override public void handleParams(PreparedStatement p) throws Exception {
                 p.setLong(1, currentPos);
                 p.setLong(2, tmpEnd);

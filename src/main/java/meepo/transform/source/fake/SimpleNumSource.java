@@ -4,6 +4,7 @@ import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.transform.source.AbstractSource;
+import meepo.transform.report.SourceReportItem;
 
 /**
  * Created by peiliping on 17-3-6.
@@ -21,4 +22,10 @@ public class SimpleNumSource extends AbstractSource {
         de.getSource()[1] = super.tmpIndex;
         super.pushOne();
     }
+
+    @Override public SourceReportItem report() {
+        return null;
+    }
+
+
 }
