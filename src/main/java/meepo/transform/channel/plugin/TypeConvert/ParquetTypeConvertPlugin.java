@@ -1,5 +1,6 @@
 package meepo.transform.channel.plugin.TypeConvert;
 
+import com.alibaba.fastjson.JSON;
 import meepo.transform.config.TaskContext;
 import meepo.util.ParquetTypeMapping;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,5 +20,7 @@ public class ParquetTypeConvertPlugin extends TypeConvertPlugin {
         sink.addAll(source);
         ParquetTypeMapping.jdbcTypeMatchParquet(sink);
         _autoMatchSchema(source, sink);
+        LOG.info("Source Type : " + JSON.toJSONString(source));
+        LOG.info("Sink Type : " + JSON.toJSONString(sink));
     }
 }
