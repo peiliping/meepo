@@ -32,9 +32,13 @@ public class ParquetTypeMapping {
         P2J.put(DOUBLE, Types.DOUBLE);
         P2J.put(BINARY, Types.VARCHAR);
 
+        J2P.put(Types.TINYINT, INT32);
+        J2P.put(Types.SMALLINT, INT32);
         J2P.put(Types.INTEGER, INT32);
         J2P.put(Types.BIGINT, INT64);
+        J2P.put(Types.BIT, BOOLEAN);
         J2P.put(Types.BOOLEAN, BOOLEAN);
+        J2P.put(Types.REAL, FLOAT);
         J2P.put(Types.FLOAT, FLOAT);
         J2P.put(Types.DOUBLE, DOUBLE);
         J2P.put(Types.VARCHAR, BINARY);
