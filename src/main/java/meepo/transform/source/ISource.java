@@ -21,4 +21,6 @@ public interface ISource extends Runnable {
 
     boolean isRunning();
 
+    SourceReportItem report();
+
 }

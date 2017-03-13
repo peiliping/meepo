@@ -95,7 +95,11 @@ public class Task {
         LOG.info("Task[" + this.taskName + "]" + " started ...");
     }
 
-    public void close() {
+    public synchronized void report() {
+
+    }
+
+    public synchronized void close() {
         LOG.info("Task[" + this.taskName + "]" + " is closing ...");
         this.RUNNING.set(false);
         this.sources.forEach(as -> as.stop());
@@ -116,7 +120,7 @@ public class Task {
         LOG.info("Task[" + this.taskName + "]" + " closed ..." + LocalDateTime.now());
     }
 
-    public boolean recycle() {
+    public synchronized boolean recycle() {
         for (AbstractSource as : this.sources) {
             if (as.isRunning()) {
                 return false;

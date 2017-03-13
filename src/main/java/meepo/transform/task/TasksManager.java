@@ -58,6 +58,7 @@ import java.util.concurrent.TimeUnit;
         } catch (Exception e) {
             LOG.error("Add Task [" + tc.getTaskName() + "] Failed : ", e);
             this.container.remove(tc.getTaskName());
+            task.close();
             return false;
         }
         return true;

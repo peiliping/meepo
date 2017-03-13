@@ -5,6 +5,7 @@ import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.transform.source.AbstractSource;
+import meepo.transform.source.SourceReportItem;
 import meepo.util.ParquetTypeMapping;
 import org.apache.commons.lang3.Validate;
 import org.apache.hadoop.conf.Configuration;
@@ -107,5 +108,10 @@ public class ParquetFileSource extends AbstractSource {
             }
         }
         super.pushOne();
+    }
+    
+    @Override public SourceReportItem report() {
+        return SourceReportItem.builder().name(this.taskName + "-Source-" + this.indexOfSources).start(0).current(this.fileIndex).end(this.readers.length).running(super.RUNNING)
+                .build();
     }
 }
