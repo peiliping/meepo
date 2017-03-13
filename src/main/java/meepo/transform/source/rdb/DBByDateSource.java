@@ -22,12 +22,12 @@ public class DBByDateSource extends AbstractDBSource {
         super(name, index, totalNum, context, rb);
         Validate.notBlank(context.get("primaryKeyName"));
         Pair<Long, Long> ps = BasicDao.autoGetStartEndDatePoint(super.dataSource, super.tableName, super.primaryKeyName, null);
-        this.stepSize = context.getInteger("stepSize", 60000);
-        this.start = context.getLong("start", ps.getLeft());
-        this.end = context.getLong("end", ps.getRight());
+        super.stepSize = context.getInteger("stepSize", 60000);
+        super.start = context.getLong("start", ps.getLeft());
+        super.end = context.getLong("end", ps.getRight());
         long vStart = super.start - (super.start % super.stepSize);
-        this.currentPos = Math.max(vStart + index * super.stepSize, super.start);
-        this.handler = new ICallable<Boolean>() {
+        super.currentPos = Math.max(vStart + index * super.stepSize, super.start);
+        super.handler = new ICallable<Boolean>() {
 
             Timestamp vStart = new Timestamp(System.currentTimeMillis());
             Timestamp vEnd = new Timestamp(System.currentTimeMillis());

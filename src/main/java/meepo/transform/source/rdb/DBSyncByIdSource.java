@@ -14,7 +14,7 @@ public class DBSyncByIdSource extends DBByIdSource {
 
     protected Pair<Long, Long> startEnd;
 
-    private String rollingSql;
+    protected String rollingSql;
 
     public DBSyncByIdSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);

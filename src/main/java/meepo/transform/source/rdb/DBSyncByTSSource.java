@@ -15,12 +15,10 @@ public class DBSyncByTSSource extends DBSyncByIdSource {
 
     private long now;
 
-    private String rollingSql;
-
     public DBSyncByTSSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         Validate.notBlank(context.get("primaryKeyName"));
-        this.stepSize = context.getInteger("stepSize", 60000);
+        super.stepSize = context.getInteger("stepSize", 60000);
         this.delay = context.getLong("delay", 5000L);
         this.now = System.currentTimeMillis();
         super.start = context.getLong("start", this.now - this.delay);
@@ -28,11 +26,11 @@ public class DBSyncByTSSource extends DBSyncByIdSource {
     }
 
     @Override public void work() {
-        this.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
+        super.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, super.rollingSql);
         this.now = System.currentTimeMillis();
-        this.tmpEnd = Math.min(this.currentPos + this.stepSize, Math.min(this.now - this.delay, this.startEnd.getRight()));
-        if (this.tmpEnd == this.currentPos) {
-            this.currentPos = this.now - this.delay;
+        super.tmpEnd = Math.min(super.currentPos + super.stepSize, Math.min(this.now - this.delay, super.startEnd.getRight()));
+        if (super.tmpEnd == super.currentPos) {
+            super.currentPos = this.now - this.delay;
             Util.sleep(1);
             return;
         }
