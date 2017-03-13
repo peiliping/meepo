@@ -66,6 +66,8 @@ public abstract class AbstractDBSource extends AbstractSource {
         this.tmpEnd = Math.min(this.currentPos + this.stepSize, this.end);
         if (executeQuery()) {
             this.currentPos += super.totalSourceNum * this.stepSize;
+        } else {
+            Util.sleep(1);
         }
     }
 

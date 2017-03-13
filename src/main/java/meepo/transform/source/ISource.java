@@ -13,7 +13,7 @@ public interface ISource extends Runnable {
 
     void pushOne();
 
-    void work();
+    void work() throws Exception;
 
     void stop();
 

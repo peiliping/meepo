@@ -37,21 +37,21 @@ public class Task {
 
     private RingbufferChannel channel;
 
-    private ThreadPoolExecutor sourcesPool;
-
     private Class<? extends AbstractSource> sourceClazz;
 
     private TaskContext sourceContext;
+
+    private ThreadPoolExecutor sourcesPool;
 
     private int sourceNum;
 
     private List<AbstractSource> sources = Lists.newArrayList();
 
-    private ThreadPoolExecutor sinksPool;
-
     private Class<? extends AbstractSink> sinkClazz;
 
     private TaskContext sinkContext;
+
+    private ThreadPoolExecutor sinksPool;
 
     private int sinkNum;
 

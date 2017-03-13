@@ -15,6 +15,7 @@ import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.hadoop.example.GroupReadSupport;
 import org.apache.parquet.io.ParquetEncodingException;
 import org.apache.parquet.schema.MessageType;
+import org.apache.parquet.schema.PrimitiveType;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -30,8 +31,11 @@ public class ParquetFileSource extends AbstractSource {
 
     private MessageType msgType;
 
+    private List<PrimitiveType.PrimitiveTypeName> typeNames = Lists.newArrayList();
+
     public ParquetFileSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
+        Validate.isTrue(totalNum == 1);
         String inputDir = context.get("inputdir");
         Validate.notNull(inputDir);
         File dir = Paths.get(inputDir).toFile();
@@ -44,6 +48,7 @@ public class ParquetFileSource extends AbstractSource {
         try {
             Path filePath = new Path(inputDir + fileNames.get(0));
             this.msgType = (ParquetFileReader.readFooter(new Configuration(), filePath)).getFileMetaData().getSchema();
+            this.msgType.getFields().forEach(type -> typeNames.add(type.asPrimitiveType().getPrimitiveTypeName()));
             super.columnsNum = this.msgType.getFieldCount();
             GroupReadSupport grs = new GroupReadSupport();
             grs.init(new Configuration(), null, this.msgType);
@@ -61,50 +66,46 @@ public class ParquetFileSource extends AbstractSource {
 
     private int fileIndex;
 
-    @Override public void work() {
+    @Override public void work() throws Exception {
         if (this.fileIndex >= this.readers.length) {
             super.RUNNING = false;
             return;
         }
-        try {
-            this.record = this.readers[this.fileIndex].read();
-            if (this.record == null) {
-                this.readers[this.fileIndex].close();
-                this.fileIndex++;
-                return;
-            }
-            DataEvent de = feedOne();
-            for (int i = 0; i < super.columnsNum; i++) {
-                if (this.record.getFieldRepetitionCount(i) == 0) {
-                    de.getSource()[i] = null;
-                    continue;
-                }
-                switch (this.msgType.getFields().get(i).asPrimitiveType().getPrimitiveTypeName()) {
-                    case INT32:
-                        de.getSource()[i] = this.record.getInteger(i, 0);
-                        break;
-                    case INT64:
-                        de.getSource()[i] = this.record.getLong(i, 0);
-                        break;
-                    case BOOLEAN:
-                        de.getSource()[i] = this.record.getBoolean(i, 0);
-                        break;
-                    case BINARY:
-                        de.getSource()[i] = this.record.getBinary(i, 0).toStringUsingUTF8();
-                        break;
-                    case FLOAT:
-                        de.getSource()[i] = this.record.getFloat(i, 0);
-                        break;
-                    case DOUBLE:
-                        de.getSource()[i] = this.record.getDouble(i, 0);
-                        break;
-                    default:
-                        throw new ParquetEncodingException("Unsupported column type: " + this.schema.get(i));
-                }
-            }
-            super.pushOne();
-        } catch (Throwable e) {
-            LOG.error("Handle Parquet Data Error", e);
+        this.record = this.readers[this.fileIndex].read();
+        if (this.record == null) {
+            this.readers[this.fileIndex].close();
+            this.fileIndex++;
+            return;
         }
+        DataEvent de = feedOne();
+        for (int i = 0; i < super.columnsNum; i++) {
+            if (this.record.getFieldRepetitionCount(i) == 0) {
+                de.getSource()[i] = null;
+                continue;
+            }
+            switch (this.msgType.getFields().get(i).asPrimitiveType().getPrimitiveTypeName()) {
+                case INT32:
+                    de.getSource()[i] = this.record.getInteger(i, 0);
+                    break;
+                case INT64:
+                    de.getSource()[i] = this.record.getLong(i, 0);
+                    break;
+                case BOOLEAN:
+                    de.getSource()[i] = this.record.getBoolean(i, 0);
+                    break;
+                case BINARY:
+                    de.getSource()[i] = this.record.getBinary(i, 0).toStringUsingUTF8();
+                    break;
+                case FLOAT:
+                    de.getSource()[i] = this.record.getFloat(i, 0);
+                    break;
+                case DOUBLE:
+                    de.getSource()[i] = this.record.getDouble(i, 0);
+                    break;
+                default:
+                    throw new ParquetEncodingException("Unsupported column type: " + this.schema.get(i));
+            }
+        }
+        super.pushOne();
     }
 }

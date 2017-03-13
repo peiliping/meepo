@@ -40,6 +40,8 @@ public class DBSyncByDateSource extends DBByDateSource {
         }
         if (executeQuery()) {
             super.currentPos = super.tmpEnd;
+        } else {
+            Util.sleep(1);
         }
     }
 }
