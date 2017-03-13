@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class BasicDao {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(BasicDao.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BasicDao.class);
 
     public static String autoGetPrimaryKeyName(DataSource ds, String tableName) {
         String sql = "SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where table_name='" + tableName + "' AND COLUMN_KEY='PRI'";

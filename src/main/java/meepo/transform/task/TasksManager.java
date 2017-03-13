@@ -3,6 +3,7 @@ package meepo.transform.task;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import meepo.transform.config.TaskContext;
+import meepo.transform.source.SourceReportItem;
 import meepo.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ import java.util.concurrent.TimeUnit;
         } catch (Exception e) {
             LOG.error("Add Task [" + tc.getTaskName() + "] Failed : ", e);
             this.container.remove(tc.getTaskName());
+            task.close();
             return false;
         }
         return true;
@@ -68,6 +70,14 @@ import java.util.concurrent.TimeUnit;
         List<Pair<TaskContext, Task>> t = Lists.newArrayList(this.container.values());
         t.forEach(item -> result.add(item.getLeft()));
         return result;
+    }
+
+    public List<SourceReportItem> report(String taskName) {
+        if (!this.container.containsKey(taskName)) {
+            return null;
+        }
+        Task task = this.container.get(taskName).getRight();
+        return task.report();
     }
 
     public boolean forceStopTask(String taskName) {

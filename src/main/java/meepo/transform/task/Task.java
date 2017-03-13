@@ -7,6 +7,7 @@ import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
 import meepo.transform.sink.SinkType;
 import meepo.transform.source.AbstractSource;
+import meepo.transform.source.SourceReportItem;
 import meepo.transform.source.SourceType;
 import meepo.util.Constants;
 import meepo.util.Util;
@@ -37,21 +38,21 @@ public class Task {
 
     private RingbufferChannel channel;
 
-    private ThreadPoolExecutor sourcesPool;
-
     private Class<? extends AbstractSource> sourceClazz;
 
     private TaskContext sourceContext;
+
+    private ThreadPoolExecutor sourcesPool;
 
     private int sourceNum;
 
     private List<AbstractSource> sources = Lists.newArrayList();
 
-    private ThreadPoolExecutor sinksPool;
-
     private Class<? extends AbstractSink> sinkClazz;
 
     private TaskContext sinkContext;
+
+    private ThreadPoolExecutor sinksPool;
 
     private int sinkNum;
 
@@ -95,7 +96,13 @@ public class Task {
         LOG.info("Task[" + this.taskName + "]" + " started ...");
     }
 
-    public void close() {
+    public synchronized List<SourceReportItem> report() {
+        List<SourceReportItem> result = Lists.newArrayList();
+        this.sources.forEach(as -> result.add(as.report()));
+        return result;
+    }
+
+    public synchronized void close() {
         LOG.info("Task[" + this.taskName + "]" + " is closing ...");
         this.RUNNING.set(false);
         this.sources.forEach(as -> as.stop());
@@ -116,7 +123,7 @@ public class Task {
         LOG.info("Task[" + this.taskName + "]" + " closed ..." + LocalDateTime.now());
     }
 
-    public boolean recycle() {
+    public synchronized boolean recycle() {
         for (AbstractSource as : this.sources) {
             if (as.isRunning()) {
                 return false;

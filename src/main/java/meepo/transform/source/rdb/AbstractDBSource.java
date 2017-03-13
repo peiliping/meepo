@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.transform.source.AbstractSource;
+import meepo.transform.source.SourceReportItem;
 import meepo.util.Constants;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
@@ -66,6 +67,8 @@ public abstract class AbstractDBSource extends AbstractSource {
         this.tmpEnd = Math.min(this.currentPos + this.stepSize, this.end);
         if (executeQuery()) {
             this.currentPos += super.totalSourceNum * this.stepSize;
+        } else {
+            Util.sleep(1);
         }
     }
 
@@ -81,5 +84,10 @@ public abstract class AbstractDBSource extends AbstractSource {
     @Override public void end() {
         super.end();
         Util.closeDataSource(this.dataSource);
+    }
+
+    @Override public SourceReportItem report() {
+        return SourceReportItem.builder().name(this.taskName + "-Source-" + this.indexOfSources).start(this.start).current(this.currentPos).end(this.end).running(super.RUNNING)
+                .build();
     }
 }

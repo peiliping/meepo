@@ -75,7 +75,11 @@ public abstract class AbstractSource implements ISource {
     @Override public void run() {
         start();
         while (this.RUNNING) {
-            work();
+            try {
+                work();
+            } catch (Throwable e) {
+                LOG.error("Handle Data Error :", e);
+            }
         }
         end();
     }

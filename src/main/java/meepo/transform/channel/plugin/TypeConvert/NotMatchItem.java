@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import meepo.transform.channel.DataEvent;
+import org.apache.commons.lang3.Validate;
 
 import java.sql.Types;
 import java.util.Date;
@@ -44,6 +45,7 @@ import java.util.Map;
 
     public NotMatchItem init() {
         this.handler = HANDLERS.get(this.sourceFieldType + SPLIT + this.targetFieldType);
+        Validate.notNull(this.handler);
         return this;
     }
 
