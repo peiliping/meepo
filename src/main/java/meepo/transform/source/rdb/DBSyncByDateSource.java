@@ -18,11 +18,14 @@ public class DBSyncByDateSource extends DBByDateSource {
 
     private long now;
 
+    private String rollingSql;
+
     public DBSyncByDateSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         Validate.isTrue(totalNum == 1);
         super.end = Long.MAX_VALUE;
-        this.startEnd = BasicDao.autoGetStartEndDatePoint(this.dataSource, this.tableName, this.primaryKeyName);
+        this.rollingSql = BasicDao.buildAutoGetStartEndSql(super.tableName, super.primaryKeyName);
+        this.startEnd = BasicDao.autoGetStartEndDatePoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
         this.delay = context.getLong("delay", 5000L);
         this.now = System.currentTimeMillis();
         super.start = context.getLong("start", this.now - this.delay);
@@ -30,7 +33,7 @@ public class DBSyncByDateSource extends DBByDateSource {
     }
 
     @Override public void work() {
-        this.startEnd = BasicDao.autoGetStartEndDatePoint(super.dataSource, super.tableName, super.primaryKeyName);
+        this.startEnd = BasicDao.autoGetStartEndDatePoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
         this.now = System.currentTimeMillis();
         super.tmpEnd = Math.min(super.currentPos + super.stepSize, Math.min(this.now - this.delay, this.startEnd.getRight()));
         if (super.tmpEnd == super.currentPos) {

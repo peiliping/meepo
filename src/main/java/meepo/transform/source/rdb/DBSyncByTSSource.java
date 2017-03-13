@@ -15,6 +15,8 @@ public class DBSyncByTSSource extends DBSyncByIdSource {
 
     private long now;
 
+    private String rollingSql;
+
     public DBSyncByTSSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         Validate.notBlank(context.get("primaryKeyName"));
@@ -26,7 +28,7 @@ public class DBSyncByTSSource extends DBSyncByIdSource {
     }
 
     @Override public void work() {
-        this.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName);
+        this.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
         this.now = System.currentTimeMillis();
         this.tmpEnd = Math.min(this.currentPos + this.stepSize, Math.min(this.now - this.delay, this.startEnd.getRight()));
         if (this.tmpEnd == this.currentPos) {

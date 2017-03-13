@@ -31,8 +31,14 @@ public class BasicDao {
         });
     }
 
-    public static Pair<Long, Long> autoGetStartEndPoint(DataSource ds, String tableName, String primaryKeyName) {
-        String sql = "SELECT " + "MIN(" + primaryKeyName + ") , MAX(" + primaryKeyName + ") FROM " + tableName;
+    public static String buildAutoGetStartEndSql(String tableName, String primaryKeyName) {
+        return "SELECT " + "MIN(" + primaryKeyName + ") , MAX(" + primaryKeyName + ") FROM " + tableName;
+    }
+
+    public static Pair<Long, Long> autoGetStartEndPoint(DataSource ds, String tableName, String primaryKeyName, String sql) {
+        if (sql == null) {
+            sql = buildAutoGetStartEndSql(tableName, primaryKeyName);
+        }
         return excuteQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
             @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
@@ -41,8 +47,10 @@ public class BasicDao {
         });
     }
 
-    public static Pair<Long, Long> autoGetStartEndDatePoint(DataSource ds, String tableName, String primaryKeyName) {
-        String sql = "SELECT " + "MIN(" + primaryKeyName + ") , MAX(" + primaryKeyName + ") FROM " + tableName;
+    public static Pair<Long, Long> autoGetStartEndDatePoint(DataSource ds, String tableName, String primaryKeyName, String sql) {
+        if (sql == null) {
+            sql = buildAutoGetStartEndSql(tableName, primaryKeyName);
+        }
         return excuteQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
             @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
