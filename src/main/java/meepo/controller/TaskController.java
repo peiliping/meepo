@@ -2,6 +2,7 @@ package meepo.controller;
 
 import com.google.common.collect.Lists;
 import meepo.transform.config.TaskContext;
+import meepo.transform.source.SourceReportItem;
 import meepo.transform.task.TasksManager;
 import meepo.util.Constants;
 import org.apache.commons.lang3.Validate;
@@ -48,6 +49,11 @@ import java.util.List;
         Validate.isTrue(taskNames.contains(taskName));
         TaskContext tc = new TaskContext(taskName, context.getSubProperties(Constants.PROJECT_NAME_ + taskName + "."));
         return this.tasksManager.addTask(tc);
+    }
+
+    @RequestMapping("/task/{taskName}/report") @ResponseBody public List<SourceReportItem> reportTask(@PathVariable String taskName) throws Exception {
+        Validate.notBlank(taskName);
+        return this.tasksManager.report(taskName);
     }
 
     @RequestMapping("/task/{taskName}/kill") @ResponseBody public Boolean killTask(@PathVariable String taskName) throws Exception {

@@ -7,6 +7,7 @@ import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
 import meepo.transform.sink.SinkType;
 import meepo.transform.source.AbstractSource;
+import meepo.transform.source.SourceReportItem;
 import meepo.transform.source.SourceType;
 import meepo.util.Constants;
 import meepo.util.Util;
@@ -95,8 +96,10 @@ public class Task {
         LOG.info("Task[" + this.taskName + "]" + " started ...");
     }
 
-    public synchronized void report() {
-
+    public synchronized List<SourceReportItem> report() {
+        List<SourceReportItem> result = Lists.newArrayList();
+        this.sources.forEach(as -> result.add(as.report()));
+        return result;
     }
 
     public synchronized void close() {
