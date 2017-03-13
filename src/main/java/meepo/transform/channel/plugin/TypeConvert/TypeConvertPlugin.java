@@ -55,5 +55,7 @@ public class TypeConvertPlugin extends DefaultPlugin {
             this.needConvert = true;
             LOG.info("Convert Result :" + JSON.toJSONString(this.notMatch));
         }
+        LOG.info("Source Type : " + JSON.toJSONString(source));
+        LOG.info("Sink Type : " + JSON.toJSONString(sink));
     }
 }
