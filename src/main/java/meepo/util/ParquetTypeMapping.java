@@ -20,9 +20,9 @@ import static org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName.*;
  */
 public class ParquetTypeMapping {
 
-    public static final Map<PrimitiveType.PrimitiveTypeName, Integer> P2J = Maps.newHashMap();
-    public static final Map<Integer, PrimitiveType.PrimitiveTypeName> J2P = Maps.newHashMap();
-    public static final Map<Integer, Integer>                         J2J = Maps.newHashMap();
+    private static final Map<PrimitiveType.PrimitiveTypeName, Integer> P2J = Maps.newHashMap();
+    private static final Map<Integer, PrimitiveType.PrimitiveTypeName> J2P = Maps.newHashMap();
+    private static final Map<Integer, Integer>                         J2J = Maps.newHashMap();
 
     static {
         P2J.put(INT32, Types.INTEGER);
@@ -43,6 +43,18 @@ public class ParquetTypeMapping {
         J2J.put(Types.TIMESTAMP, Types.BIGINT);
     }
 
+    // parquet file source
+    public static List<Pair<String, Integer>> convert2JDBCTypes(MessageType schema) {
+        List<Pair<String, Integer>> result = Lists.newArrayList();
+        for (Type type : schema.getFields()) {
+            Integer jdbcType = P2J.get(type.asPrimitiveType().getPrimitiveTypeName());
+            Validate.notNull(jdbcType);
+            result.add(Pair.of(type.getName(), jdbcType));
+        }
+        return result;
+    }
+
+    //parquet file sink
     public static List<Type> convert2Types(List<Pair<String, Integer>> schema) {
         final List<Type> types = Lists.newArrayList();
         schema.forEach(item -> {
@@ -56,14 +68,16 @@ public class ParquetTypeMapping {
         return types;
     }
 
-    public static List<Pair<String, Integer>> convert2JDBCTypes(MessageType schema) {
-        List<Pair<String, Integer>> result = Lists.newArrayList();
-        for (Type type : schema.getFields()) {
-            Integer jdbcType = P2J.get(type.asPrimitiveType().getPrimitiveTypeName());
-            Validate.notNull(jdbcType);
-            result.add(Pair.of(type.getName(), jdbcType));
+    //parquet type plugin
+    public static void jdbcTypeMatchParquet(List<Pair<String, Integer>> sink) {
+        for (int i = 0; i < sink.size(); i++) {
+            Pair<String, Integer> item = sink.get(i);
+            if (J2J.containsKey(item.getRight())) {
+                Integer newType = J2J.get(item.getRight());
+                Validate.notNull(J2P.get(newType));
+                sink.set(i, Pair.of(item.getLeft(), newType));
+            }
         }
-        return result;
     }
 
 }
