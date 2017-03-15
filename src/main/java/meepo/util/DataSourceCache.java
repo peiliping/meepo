@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import meepo.transform.config.TaskContext;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentMap;
@@ -14,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DataSourceCache {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DataSourceCache.class);
+
     private final static ConcurrentMap<String, Pair<DataSource, AtomicInteger>> CACHES = Maps.newConcurrentMap();
 
     public synchronized static DataSource createDataSource(String name, TaskContext context) {
@@ -22,6 +26,7 @@ public class DataSourceCache {
             item.getRight().incrementAndGet();
             return item.getLeft();
         } else {
+            LOG.info("Create DataSource : " + name);
             DataSource ds = Util.createDataSource(context);
             CACHES.put(name, Pair.of(ds, new AtomicInteger(1)));
             return ds;
@@ -33,6 +38,7 @@ public class DataSourceCache {
         Validate.notNull(item);
         if (item.getRight().decrementAndGet() == 0) {
             Util.closeDataSource(item.getLeft());
+            LOG.info("Close DataSource : " + name);
             CACHES.remove(name);
         }
     }
