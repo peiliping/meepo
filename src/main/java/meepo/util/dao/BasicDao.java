@@ -61,12 +61,17 @@ public class BasicDao {
 
     public static List<Pair<String, Integer>> parserSchema(DataSource ds, String tableName, String columNames, String primaryKeyName) {
         String sql = "SELECT " + columNames + " FROM " + tableName + " WHERE " + primaryKeyName + " = 0" + " LIMIT 1";
+        final boolean original = "*".equals(columNames);
         return excuteQuery(ds, sql, new ResultSetICallable<List<Pair<String, Integer>>>() {
             @Override public List<Pair<String, Integer>> handleResultSet(ResultSet r) throws Exception {
                 List<Pair<String, Integer>> result = Lists.newArrayList();
                 Validate.isTrue(r.getMetaData().getColumnCount() > 0);
                 for (int i = 1; i <= r.getMetaData().getColumnCount(); i++) {
-                    result.add(Pair.of(r.getMetaData().getColumnName(i), r.getMetaData().getColumnType(i)));
+                    String cn = r.getMetaData().getColumnName(i);
+                    if (original) {
+                        cn = "`" + cn + "`";
+                    }
+                    result.add(Pair.of(cn, r.getMetaData().getColumnType(i)));
                 }
                 return result;
             }
