@@ -5,6 +5,7 @@ import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
 import meepo.util.Constants;
+import meepo.util.DataSourceCache;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +42,8 @@ public class DBSink extends AbstractSink {
 
     public DBSink(String name, int index, TaskContext context) {
         super(name, index, context);
-        this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
+        //this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
+        this.dataSource = DataSourceCache.createDataSource(name + "-sink", new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
         this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.tableName));
         this.stepSize = context.getInteger("stepSize", 100);
@@ -80,7 +82,8 @@ public class DBSink extends AbstractSink {
 
     @Override public void onShutdown() {
         super.onShutdown();
-        Util.closeDataSource(this.dataSource);
+        DataSourceCache.close(super.taskName + "-sink");
+        //Util.closeDataSource(this.dataSource);
     }
 
     public String buildSQL() {
