@@ -79,7 +79,7 @@ meepo.parquet2mysql.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewri
 meepo.parquet2mysql.sink.datasource.username = root
 meepo.parquet2mysql.sink.datasource.password = root
 
-##### Mysql 2 Parquet#####
+##### Mysql 2 Parquet #####
 meepo.mysql2parquet.source.type = DBBYIDSOURCE
 meepo.mysql2parquet.source.tableName = app_entity
 meepo.mysql2parquet.source.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
