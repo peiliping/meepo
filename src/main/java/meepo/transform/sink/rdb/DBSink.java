@@ -38,12 +38,18 @@ public class DBSink extends AbstractSink {
 
     protected long count;
 
-    protected long lastcommit;
+    protected long lastCommit;
+
+    protected long lastFlushTS;
+
+    protected boolean sinkSharedDataSource;
 
     public DBSink(String name, int index, TaskContext context) {
         super(name, index, context);
-        //this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
-        this.dataSource = DataSourceCache.createDataSource(name + "-sink", new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
+        this.sinkSharedDataSource = context.getBoolean("sharedDatasource", true);
+        this.dataSource = this.sinkSharedDataSource ?
+                DataSourceCache.createDataSource(name + "-sink", new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_))) :
+                Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
         this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.tableName));
         this.stepSize = context.getInteger("stepSize", 100);
@@ -61,29 +67,34 @@ public class DBSink extends AbstractSink {
 
         this.sql = buildSQL();
         this.handler = new Handler();
+        this.lastFlushTS = System.currentTimeMillis();
     }
 
     @Override public void onEvent(Object event) throws Exception {
         this.handler.prepare();
         this.handler.feed((DataEvent) event);
         this.count++;
-        if (this.count - this.lastcommit >= this.stepSize) {
+        if ((this.count - this.lastCommit >= this.stepSize) || (this.lastFlushTS - System.currentTimeMillis() > 3000)) {
             this.handler.flush();
-            this.lastcommit = this.count;
+            this.lastCommit = this.count;
+            this.lastFlushTS = System.currentTimeMillis();
         }
     }
 
     @Override public void timeOut() {
-        if (this.count - this.lastcommit > 0) {
+        if (this.count - this.lastCommit > 0) {
             this.handler.flush();
-            this.lastcommit = this.count;
+            this.lastCommit = this.count;
+            this.lastFlushTS = System.currentTimeMillis();
         }
     }
 
     @Override public void onShutdown() {
         super.onShutdown();
-        DataSourceCache.close(super.taskName + "-sink");
-        //Util.closeDataSource(this.dataSource);
+        if (this.sinkSharedDataSource)
+            DataSourceCache.close(super.taskName + "-sink");
+        else
+            Util.closeDataSource(this.dataSource);
     }
 
     public String buildSQL() {
