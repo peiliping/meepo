@@ -47,7 +47,7 @@ public class Util {
                 context.put("minIdle", "1");
             }
             if (context.get("maxActive") == null) {
-                context.put("maxActive", "100");
+                context.put("maxActive", "32");
             }
             if (context.get("defaultAutoCommit") == null) {
                 context.put("defaultAutoCommit", "true");
