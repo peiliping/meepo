@@ -12,7 +12,9 @@ public enum PluginType {
 
     TYPECONVERT(TypeConvertPlugin.class),
 
-    PARQUETTYPECONVERT(ParquetTypeConvertPlugin.class);
+    PARQUETTYPECONVERT(ParquetTypeConvertPlugin.class),
+
+    GROUPPLUGIN(GroupPlugin.class);
 
     public Class<? extends AbstractPlugin> clazz;
 
