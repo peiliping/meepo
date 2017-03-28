@@ -50,7 +50,7 @@ import java.util.Map;
     }
 
     public void convert(DataEvent de) {
-        de.getSource()[this.columnIndex] = this.handler.handle(de.getSource()[this.columnIndex]);
+        de.getSource()[this.columnIndex] = de.getSource()[this.columnIndex] == null ? null : this.handler.handle(de.getSource()[this.columnIndex]);
     }
 
     interface Handler {
