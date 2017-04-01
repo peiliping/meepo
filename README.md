@@ -5,14 +5,17 @@ Meepo 配置说明
 meepo = test mysql2mysql mysql2mysqlbydate parquet2mysql mysql2parquet
 
 ##### Test 例子
+```
 meepo.test.source.type = SIMPLENUMSOURCE
 meepo.test.channel.bufferSize = 16
+meepo.test.sink.type = SLOWLOGSINK
 #meepo.test.channel.delay = 3
 #meepo.test.channel.plugin.type = DEFAULT
-meepo.test.sink.type = SLOWLOGSINK
 #meepo.test.sink.sleep = 1000
+```
 
 ##### Mysql 2 Mysql #####
+```
 meepo.mysql2mysql.source.type = DBBYIDSOURCE
 meepo.mysql2mysql.source.tableName = app_entity
 #meepo.mysql2mysql.source.workersNum = 1
@@ -38,8 +41,10 @@ meepo.mysql2mysql.sink.tableName = app_entity2
 meepo.mysql2mysql.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
 meepo.mysql2mysql.sink.datasource.username = root
 meepo.mysql2mysql.sink.datasource.password = root
+```
 
 ##### Mysql 2 Mysql By Date #####
+```
 meepo.mysql2mysqlbydate.source.type = DBBYDATESOURCE
 meepo.mysql2mysqlbydate.source.tableName = app_entity
 meepo.mysql2mysqlbydate.source.primaryKeyName = create_time
@@ -65,8 +70,10 @@ meepo.mysql2mysqlbydate.sink.tableName = app_entity3
 meepo.mysql2mysqlbydate.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
 meepo.mysql2mysqlbydate.sink.datasource.username = root
 meepo.mysql2mysqlbydate.sink.datasource.password = root
+```
 
 ##### Parquet 2 Mysql #####
+```
 meepo.parquet2mysql.source.type = PARQUETFILESOURCE
 meepo.parquet2mysql.source.inputdir = /home/peiliping/dev/logs/
 
@@ -78,8 +85,10 @@ meepo.parquet2mysql.sink.tableName = app_entity3
 meepo.parquet2mysql.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
 meepo.parquet2mysql.sink.datasource.username = root
 meepo.parquet2mysql.sink.datasource.password = root
+```
 
 ##### Mysql 2 Parquet #####
+```
 meepo.mysql2parquet.source.type = DBBYIDSOURCE
 meepo.mysql2parquet.source.tableName = app_entity
 meepo.mysql2parquet.source.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
@@ -94,3 +103,4 @@ meepo.mysql2parquet.sink.tableName = app_entity
 meepo.mysql2parquet.sink.outputdir = /home/peiliping/dev/logs/
 #meepo.mysql2parquet.sink.rollingsize = 
 #meepo.mysql2parquet.sink.hdfsconfdir = 
+```
