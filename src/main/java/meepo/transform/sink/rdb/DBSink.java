@@ -58,9 +58,14 @@ public class DBSink extends AbstractSink {
         super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
         final List<String> columnsArray = Lists.newArrayList();
         final List<String> paramsArray = Lists.newArrayList();
+        final boolean original = "*".equals(this.columnNames);
         super.schema.forEach(item -> {
             paramsArray.add("?");
-            columnsArray.add(item.getLeft());
+            if (original) {
+                columnsArray.add("`" + item.getLeft() + "`");
+            } else {
+                columnsArray.add(item.getLeft());
+            }
         });
         this.columnNames = StringUtils.join(columnsArray, ",");
         this.paramsStr = StringUtils.join(paramsArray, ",");

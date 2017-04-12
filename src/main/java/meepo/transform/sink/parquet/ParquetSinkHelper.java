@@ -18,6 +18,9 @@ public class ParquetSinkHelper extends ParquetWriter<Object[]> {
 
     @SuppressWarnings("deprecation") public ParquetSinkHelper(Path file, MessageType schema) throws IOException {
         super(file, new ParquetSinkSupport(schema), CompressionCodecName.SNAPPY, ParquetWriter.DEFAULT_BLOCK_SIZE / 4, ParquetWriter.DEFAULT_PAGE_SIZE);
+        Schema sca = (new AvroSchemaConverter()).convert(schema);
+        String s = sca.toString();
+        System.out.println(s);
     }
 
     @SuppressWarnings("deprecation") public ParquetSinkHelper(Path file, MessageType schema, String classpath) throws IOException {
