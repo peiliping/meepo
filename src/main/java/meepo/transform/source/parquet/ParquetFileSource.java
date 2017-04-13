@@ -84,7 +84,7 @@ public class ParquetFileSource extends AbstractSource {
                 de.getSource()[i] = null;
                 continue;
             }
-            switch (this.msgType.getFields().get(i).asPrimitiveType().getPrimitiveTypeName()) {
+            switch (this.typeNames.get(i)) {
                 case INT32:
                     de.getSource()[i] = this.record.getInteger(i, 0);
                     break;

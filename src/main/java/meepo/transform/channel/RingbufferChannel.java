@@ -52,7 +52,7 @@ public class RingbufferChannel {
         }
     }
 
-    public List<EventProcessor> start(AbstractSink... handlers) {
+    public List<EventProcessor> integrateSinks(AbstractSink... handlers) {
         checkRunning();
         List<EventProcessor> wps = Lists.newArrayList();
         if (handlers.length == 1) {

@@ -85,7 +85,7 @@ public class Task {
         for (int i = 0; i < this.sinkNum; i++) {
             sinkHandlers[i] = this.sinkClazz.getConstructor(String.class, int.class, TaskContext.class).newInstance(this.taskName, i, this.sinkContext);
         }
-        this.sinks.addAll(this.channel.start(sinkHandlers));
+        this.sinks.addAll(this.channel.integrateSinks(sinkHandlers));
         for (int i = 0; i < this.sourceNum; i++) {
             this.sources.add(this.sourceClazz.getConstructor(String.class, int.class, int.class, TaskContext.class, RingbufferChannel.class)
                     .newInstance(this.taskName, i, this.sourceNum, this.sourceContext, this.channel));
