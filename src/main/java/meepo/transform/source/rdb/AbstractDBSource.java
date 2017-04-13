@@ -53,7 +53,12 @@ public abstract class AbstractDBSource extends AbstractSource {
 
         final List<String> columnsArray = Lists.newArrayList();
         super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
-        super.schema.forEach(item -> columnsArray.add(item.getLeft()));
+        final boolean original = "*".equals(this.columnNames);
+        if (original) {
+            super.schema.forEach(item -> columnsArray.add("`" + item.getLeft() + "`"));
+        } else {
+            super.schema.forEach(item -> columnsArray.add(item.getLeft()));
+        }
         this.columnNames = StringUtils.join(columnsArray, ",");
         super.columnsNum = super.schema.size();
         this.sql = buildSQL();
