@@ -77,10 +77,12 @@ public class DBSink extends AbstractSink {
 
     @Override public void onEvent(Object event) throws Exception {
         this.handler.prepare();
+        super.RUNNING = true;
         this.handler.feed((DataEvent) event);
         this.count++;
         if ((this.count - this.lastCommit >= this.stepSize) || (this.lastFlushTS - System.currentTimeMillis() > 3000)) {
             this.handler.flush();
+            super.RUNNING = false;
             this.lastCommit = this.count;
             this.lastFlushTS = System.currentTimeMillis();
         }
@@ -89,17 +91,20 @@ public class DBSink extends AbstractSink {
     @Override public void timeOut() {
         if (this.count - this.lastCommit > 0) {
             this.handler.flush();
+            super.RUNNING = false;
             this.lastCommit = this.count;
             this.lastFlushTS = System.currentTimeMillis();
         }
     }
 
     @Override public void onShutdown() {
-        super.onShutdown();
-        if (this.sinkSharedDataSource)
+        timeOut();
+        if (this.sinkSharedDataSource) {
             DataSourceCache.close(super.taskName + "-sink");
-        else
+        } else {
             Util.closeDataSource(this.dataSource);
+        }
+        super.onShutdown();
     }
 
     public String buildSQL() {

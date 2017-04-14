@@ -25,6 +25,8 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     protected int indexOfSinks;
 
+    protected boolean RUNNING = false;
+
     @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
 
     public AbstractSink(String name, int index, TaskContext context) {
@@ -48,5 +50,9 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     @Override public void onShutdown() {
         LOG.info(this.taskName + "-Sink-" + this.indexOfSinks + "[" + this.getClass().getSimpleName() + "]" + " ending at " + LocalDateTime.now());
+    }
+
+    public boolean isRunning() {
+        return this.RUNNING;
     }
 }

@@ -59,7 +59,7 @@ import java.util.concurrent.TimeUnit;
         } catch (Exception e) {
             LOG.error("Add Task [" + tc.getTaskName() + "] Failed : ", e);
             this.container.remove(tc.getTaskName());
-            task.close();
+            task.close(true);
             return false;
         }
         return true;
@@ -86,7 +86,7 @@ import java.util.concurrent.TimeUnit;
         }
         Task task = this.container.get(taskName).getRight();
         try {
-            task.close();
+            task.close(true);
             this.container.remove(taskName);
         } catch (Exception e) {
             LOG.error("Close Task [" + taskName + "] Failed : ", e);

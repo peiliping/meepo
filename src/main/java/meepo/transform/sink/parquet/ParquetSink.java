@@ -5,13 +5,17 @@ import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
 import meepo.util.ParquetTypeMapping;
 import meepo.util.Util;
+import org.apache.avro.Schema;
 import org.apache.commons.lang3.Validate;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.parquet.avro.AvroSchemaConverter;
 import org.apache.parquet.schema.MessageType;
-import org.apache.parquet.schema.Type;
 
 import java.io.IOException;
-import java.util.List;
+import java.nio.charset.Charset;
 
 /**
  * Created by peiliping on 17-3-9.
@@ -19,6 +23,8 @@ import java.util.List;
 public class ParquetSink extends AbstractSink {
 
     private String tableName;
+
+    private MessageType messageType;
 
     private String outputDir;
 
@@ -32,8 +38,6 @@ public class ParquetSink extends AbstractSink {
 
     private ParquetSinkHelper sinkHelper;
 
-    private List<Type> types;
-
     public ParquetSink(String name, int index, TaskContext context) {
         super(name, index, context);
         this.tableName = context.getString("tableName");
@@ -42,27 +46,10 @@ public class ParquetSink extends AbstractSink {
         this.hdfsConfDir = context.get("hdfsconfdir");
     }
 
-    private void initSinkHelper() {
-        if (this.sinkHelper != null) {
-            return;
-        }
-        try {
-            String fileName = this.outputDir + this.tableName + "-" + super.indexOfSinks + "-" + this.part + "-" + System.currentTimeMillis() / 1000 + ".parquet";
-            if (this.hdfsConfDir == null) {
-                this.sinkHelper = new ParquetSinkHelper(new Path(fileName), new MessageType(this.tableName, this.types));
-            } else {
-                this.sinkHelper = new ParquetSinkHelper(new Path(fileName), new MessageType(this.tableName, this.types), this.hdfsConfDir);
-            }
-        } catch (Exception e) {
-            LOG.error("Init Parquet File Error :", e);
-            Validate.isTrue(false);
-        }
-    }
-
     @Override public void onStart() {
         super.onStart();
-        this.types = ParquetTypeMapping.convert2Types(super.schema);
-        initSinkHelper();
+        this.messageType = new MessageType(this.tableName, ParquetTypeMapping.convert2Types(super.schema));
+        initHDFS();
     }
 
     @Override public void onEvent(Object event) throws Exception {
@@ -78,6 +65,55 @@ public class ParquetSink extends AbstractSink {
         }
     }
 
+    @Override public void onShutdown() {
+        this.closeParquet();
+        super.onShutdown();
+    }
+
+    @Override public void timeOut() {
+    }
+
+    public void initHDFS() {
+        if (this.hdfsConfDir == null || super.indexOfSinks > 0) {
+            return;
+        }
+        try {
+            FileSystem hdfs = FileSystem.get(createConf(this.hdfsConfDir));
+            Path metap = new Path(this.outputDir + "/.metadata");
+            if (!hdfs.exists(metap)) {
+                hdfs.mkdirs(metap);
+            }
+            Path avscp = new Path(this.outputDir + "/.metadata/schema.avsc");
+            if (!hdfs.exists(avscp)) {
+                FSDataOutputStream fsd = hdfs.create(avscp);
+                Schema avsc = (new AvroSchemaConverter()).convert(this.messageType);
+                fsd.write(avsc.toString().getBytes(Charset.forName("UTF-8")));
+                fsd.flush();
+                fsd.close();
+                hdfs.close();
+            }
+        } catch (Exception e) {
+            LOG.error("Init HDFS Error :", e);
+            Validate.isTrue(false);
+        }
+    }
+
+    private void initSinkHelper() {
+        if (this.sinkHelper != null) {
+            return;
+        }
+        try {
+            String fileName = this.outputDir + "/" + this.tableName + "-" + super.indexOfSinks + "-" + this.part + "-" + System.currentTimeMillis() / 1000 + ".parquet";
+            super.RUNNING = true;
+            this.sinkHelper = (this.hdfsConfDir == null ?
+                    new ParquetSinkHelper(new Path(fileName), this.messageType) :
+                    new ParquetSinkHelper(new Path(fileName), this.messageType, createConf(this.hdfsConfDir)));
+        } catch (Exception e) {
+            LOG.error("Init Parquet File Error :", e);
+            Validate.isTrue(false);
+        }
+    }
+
     private void closeParquet() {
         if (this.sinkHelper == null) {
             return;
@@ -87,16 +123,16 @@ public class ParquetSink extends AbstractSink {
             this.sinkHelper = null;
             this.counter = 0;
             this.part++;
+            super.RUNNING = false;
         } catch (IOException e) {
             LOG.error("Close Parquet File Error :", e);
         }
     }
 
-    @Override public void onShutdown() {
-        this.closeParquet();
-        super.onShutdown();
-    }
-
-    @Override public void timeOut() {
+    public static Configuration createConf(String classpath) {
+        Configuration conf = new Configuration();
+        conf.addResource(new Path(classpath + "/core-site.xml"));
+        conf.addResource(new Path(classpath + "/hdfs-site.xml"));
+        return conf;
     }
 }
