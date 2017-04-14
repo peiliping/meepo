@@ -87,7 +87,7 @@ public class ParquetSink extends AbstractSink {
             if (!hdfs.exists(avscp)) {
                 FSDataOutputStream fsd = hdfs.create(avscp);
                 Schema avsc = (new AvroSchemaConverter()).convert(this.messageType);
-                fsd.write(avsc.toString().getBytes(Charset.forName("")));
+                fsd.write(avsc.toString().getBytes(Charset.forName("UTF-8")));
                 fsd.flush();
                 fsd.close();
                 hdfs.close();

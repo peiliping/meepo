@@ -14,6 +14,8 @@ import java.io.IOException;
  */
 public class ParquetSinkHelper extends ParquetWriter<Object[]> {
 
+    private boolean close = false;
+
     @SuppressWarnings("deprecation") public ParquetSinkHelper(Path file, MessageType schema) throws IOException {
         super(file, new ParquetSinkSupport(schema), CompressionCodecName.SNAPPY, ParquetWriter.DEFAULT_BLOCK_SIZE / 4, ParquetWriter.DEFAULT_PAGE_SIZE);
     }
@@ -23,4 +25,10 @@ public class ParquetSinkHelper extends ParquetWriter<Object[]> {
                 ParquetWriter.DEFAULT_PAGE_SIZE, ParquetWriter.DEFAULT_PAGE_SIZE, DEFAULT_IS_DICTIONARY_ENABLED, DEFAULT_IS_VALIDATING_ENABLED, DEFAULT_WRITER_VERSION, conf);
     }
 
+    @Override public void close() throws IOException {
+        if (this.close) {
+            return;
+        }
+        super.close();
+    }
 }

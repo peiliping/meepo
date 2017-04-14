@@ -131,6 +131,9 @@ public class Task {
                 return false;
             }
         }
+        if (!this.channel.isEmpty()) {
+            return false;
+        }
         close(false);
         return true;
     }
