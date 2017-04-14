@@ -104,14 +104,14 @@ public class Task {
         return result;
     }
 
-    public synchronized void close() {
+    public synchronized void close(boolean ignoreChannel) {
         LOG.info("Task[" + this.taskName + "]" + " is closing ...");
         this.RUNNING.set(false);
         this.sources.forEach(as -> as.stop());
         if (!this.sourcesPool.isShutdown()) {
             this.sourcesPool.shutdownNow();
         }
-        while (!this.channel.isEmpty()) {
+        while (!this.channel.isEmpty() && !ignoreChannel) {
             Util.sleep(1);
         }
         Util.sleep(5);
@@ -131,7 +131,7 @@ public class Task {
                 return false;
             }
         }
-        close();
+        close(false);
         return true;
     }
 }

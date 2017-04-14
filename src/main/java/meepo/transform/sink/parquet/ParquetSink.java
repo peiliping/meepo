@@ -101,7 +101,7 @@ public class ParquetSink extends AbstractSink {
             return;
         }
         try {
-            String fileName = this.outputDir + this.tableName + "-" + super.indexOfSinks + "-" + this.part + "-" + System.currentTimeMillis() / 1000 + ".parquet";
+            String fileName = this.outputDir + "/" + this.tableName + "-" + super.indexOfSinks + "-" + this.part + "-" + System.currentTimeMillis() / 1000 + ".parquet";
             this.sinkHelper = (this.hdfsConfDir == null ?
                     new ParquetSinkHelper(new Path(fileName), this.messageType) :
                     new ParquetSinkHelper(new Path(fileName), this.messageType, createConf(this.hdfsConfDir)));
