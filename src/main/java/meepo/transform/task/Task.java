@@ -114,7 +114,7 @@ public class Task {
         while (!this.channel.isEmpty() && !ignoreChannel) {
             Util.sleep(1);
         }
-        Util.sleep(5);
+        Util.sleep(8);
         this.sinks.forEach(ep -> ep.halt());
         if (!this.sinksPool.isShutdown()) {
             this.sinksPool.shutdownNow();

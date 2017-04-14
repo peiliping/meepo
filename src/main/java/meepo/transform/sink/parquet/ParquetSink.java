@@ -15,6 +15,7 @@ import org.apache.parquet.avro.AvroSchemaConverter;
 import org.apache.parquet.schema.MessageType;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * Created by peiliping on 17-3-9.
@@ -86,9 +87,10 @@ public class ParquetSink extends AbstractSink {
             if (!hdfs.exists(avscp)) {
                 FSDataOutputStream fsd = hdfs.create(avscp);
                 Schema avsc = (new AvroSchemaConverter()).convert(this.messageType);
-                fsd.writeChars(avsc.toString());
+                fsd.write(avsc.toString().getBytes(Charset.forName("")));
                 fsd.flush();
                 fsd.close();
+                hdfs.close();
             }
         } catch (Exception e) {
             LOG.error("Init HDFS Error :", e);
