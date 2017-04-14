@@ -119,8 +119,8 @@ public class ParquetSink extends AbstractSink {
             return;
         }
         try {
-            this.sinkHelper = null;
             this.sinkHelper.close();
+            this.sinkHelper = null;
             this.counter = 0;
             this.part++;
             super.RUNNING = false;
