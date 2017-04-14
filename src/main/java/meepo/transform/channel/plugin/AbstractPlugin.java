@@ -22,4 +22,6 @@ public abstract class AbstractPlugin {
 
     public abstract void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink);
 
+    public abstract void close();
+
 }

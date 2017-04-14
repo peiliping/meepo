@@ -41,4 +41,8 @@ public class GroupPlugin extends AbstractPlugin {
             ap.autoMatchSchema(source, sink);
         }
     }
+
+    @Override public void close() {
+        this.plugins.forEach(abstractPlugin -> abstractPlugin.close());
+    }
 }
