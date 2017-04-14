@@ -127,8 +127,8 @@ public class ParquetSink extends AbstractSink {
 
     public static Configuration createConf(String classpath) {
         Configuration conf = new Configuration();
-        conf.addResource(new Path(classpath + "core-site.xml"));
-        conf.addResource(new Path(classpath + "hdfs-site.xml"));
+        conf.addResource(new Path(classpath + "/core-site.xml"));
+        conf.addResource(new Path(classpath + "/hdfs-site.xml"));
         return conf;
     }
 }
