@@ -21,4 +21,7 @@ public class DefaultPlugin extends AbstractPlugin {
 
     @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
     }
+
+    @Override public void close() {
+    }
 }

@@ -1,5 +1,6 @@
 package meepo.transform.channel.plugin;
 
+import meepo.transform.channel.plugin.Merge.ReplacePlugin;
 import meepo.transform.channel.plugin.TypeConvert.ParquetTypeConvertPlugin;
 import meepo.transform.channel.plugin.TypeConvert.TypeConvertPlugin;
 
@@ -13,6 +14,8 @@ public enum PluginType {
     TYPECONVERT(TypeConvertPlugin.class),
 
     PARQUETTYPECONVERT(ParquetTypeConvertPlugin.class),
+
+    REPLACEPLUGIN(ReplacePlugin.class),
 
     GROUPPLUGIN(GroupPlugin.class);
 

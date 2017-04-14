@@ -127,6 +127,7 @@ public class Task {
         if (!this.sinksPool.isShutdown()) {
             this.sinksPool.shutdownNow();
         }
+        this.channel.close();
         if (this.finishedTime == 0) {
             this.finishedTime = System.currentTimeMillis();
         }

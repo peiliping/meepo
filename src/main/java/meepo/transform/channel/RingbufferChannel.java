@@ -101,4 +101,8 @@ public class RingbufferChannel {
         return ChannelReportItem.builder().name("channel").capacity(this.ringBuffer.getBufferSize()).remain(this.ringBuffer.remainingCapacity()).build();
     }
 
+    public void close() {
+        this.plugin.close();
+    }
+
 }
