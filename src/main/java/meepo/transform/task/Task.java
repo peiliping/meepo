@@ -59,6 +59,8 @@ public class Task {
 
     private List<EventProcessor> sinks = Lists.newArrayList();
 
+    private List<AbstractSink> handlerSinks = Lists.newArrayList();
+
     public Task(String name) {
         this.taskName = name;
         this.createTime = System.currentTimeMillis();
@@ -84,6 +86,7 @@ public class Task {
         AbstractSink[] sinkHandlers = new AbstractSink[this.sinkNum];
         for (int i = 0; i < this.sinkNum; i++) {
             sinkHandlers[i] = this.sinkClazz.getConstructor(String.class, int.class, TaskContext.class).newInstance(this.taskName, i, this.sinkContext);
+            this.handlerSinks.add(sinkHandlers[i]);
         }
         this.sinks.addAll(this.channel.integrateSinks(sinkHandlers));
         for (int i = 0; i < this.sourceNum; i++) {
@@ -114,8 +117,13 @@ public class Task {
         while (!this.channel.isEmpty() && !ignoreChannel) {
             Util.sleep(1);
         }
-        Util.sleep(8);
+        Util.sleep(5);
         this.sinks.forEach(ep -> ep.halt());
+        for (AbstractSink as : this.handlerSinks) {
+            while (as.isRunning()) {
+                Util.sleep(1);
+            }
+        }
         if (!this.sinksPool.isShutdown()) {
             this.sinksPool.shutdownNow();
         }
