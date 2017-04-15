@@ -7,6 +7,7 @@ import meepo.util.Constants;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 import meepo.util.dao.ICallable;
+import meepo.util.lrucache.LRUCache;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.sql.DataSource;
@@ -35,7 +36,11 @@ public class ReplacePlugin extends DefaultPlugin {
 
     private ICallable<Object> handler;
 
-    protected Object tmp;
+    private Object tmp;
+
+    private LRUCache<Object> cache;
+
+    private int cacheSize;
 
     public ReplacePlugin(TaskContext context) {
         super(context);
@@ -54,11 +59,17 @@ public class ReplacePlugin extends DefaultPlugin {
                 return r.next() ? r.getObject(1) : null;
             }
         };
+        this.cacheSize = context.getInteger("cacheSize", 0);
+        this.cache = this.cacheSize > 0 ? new LRUCache<Object>(this.cacheSize, true) : null;
     }
 
     @Override public void convert(DataEvent de) {
         this.tmp = de.getSource()[this.keyPosition];
-        de.getSource()[this.keyPosition] = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
+        if (this.cache == null) {
+            de.getSource()[this.keyPosition] = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
+        } else {
+            de.getSource()[this.keyPosition] = this.cache.get(this.tmp, () -> BasicDao.excuteQuery(dataSource, sql, handler));
+        }
         super.convert(de);
     }
 
