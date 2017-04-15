@@ -7,6 +7,7 @@ import meepo.util.Constants;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 import meepo.util.dao.ICallable;
+import meepo.util.lrucache.LRUCache;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.sql.DataSource;
@@ -35,7 +36,15 @@ public class ReplacePlugin extends DefaultPlugin {
 
     private ICallable<Object> handler;
 
-    protected Object tmp;
+    private Object tmpKey;
+
+    private Object tmpVal;
+
+    private LRUCache<Object> cache;
+
+    private int cacheSize;
+
+    private boolean Null4Null;
 
     public ReplacePlugin(TaskContext context) {
         super(context);
@@ -47,18 +56,29 @@ public class ReplacePlugin extends DefaultPlugin {
         this.sql = "SELECT " + this.valName + " FROM " + this.tableName + " WHERE " + this.keyName + " = ?";
         this.handler = new ICallable<Object>() {
             @Override public void handleParams(PreparedStatement p) throws Exception {
-                p.setObject(keyPosition, tmp, keyType);
+                p.setObject(keyPosition, tmpKey, keyType);
             }
 
             @Override public Object handleResultSet(ResultSet r) throws Exception {
                 return r.next() ? r.getObject(1) : null;
             }
         };
+        this.cacheSize = context.getInteger("cacheSize", 0);
+        this.cache = this.cacheSize > 0 ? new LRUCache<>(this.cacheSize, true) : null;
+        this.Null4Null = context.getBoolean("null4null", true);
     }
 
     @Override public void convert(DataEvent de) {
-        this.tmp = de.getSource()[this.keyPosition];
-        de.getSource()[this.keyPosition] = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
+        this.tmpKey = de.getSource()[this.keyPosition];
+        if (this.cache == null) {
+            this.tmpVal = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
+        } else {
+            this.tmpVal = this.cache.get(this.tmpKey, () -> BasicDao.excuteQuery(dataSource, sql, handler));
+        }
+        if (this.tmpVal == null) {
+            this.tmpVal = this.Null4Null ? null : this.tmpKey;
+        }
+        de.getSource()[this.keyPosition] = this.tmpVal;
         super.convert(de);
     }
 

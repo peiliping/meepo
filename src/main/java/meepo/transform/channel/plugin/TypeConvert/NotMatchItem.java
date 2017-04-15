@@ -41,11 +41,17 @@ import java.util.Map;
 
     private int targetFieldType;
 
+    private boolean useDefaultHandler;
+
     private Handler handler;
 
     public NotMatchItem init() {
         this.handler = HANDLERS.get(this.sourceFieldType + SPLIT + this.targetFieldType);
-        Validate.notNull(this.handler);
+        if (this.useDefaultHandler && this.handler == null) {
+            this.handler = new DefaultHandler();
+        } else {
+            Validate.notNull(this.handler);
+        }
         return this;
     }
 
@@ -56,4 +62,12 @@ import java.util.Map;
     interface Handler {
         Object handle(Object o);
     }
+
+
+    class DefaultHandler implements Handler {
+        @Override public Object handle(Object o) {
+            return o;
+        }
+    }
+
 }
