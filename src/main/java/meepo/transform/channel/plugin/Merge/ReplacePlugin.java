@@ -60,7 +60,7 @@ public class ReplacePlugin extends DefaultPlugin {
             }
         };
         this.cacheSize = context.getInteger("cacheSize", 0);
-        this.cache = this.cacheSize > 0 ? new LRUCache<Object>(this.cacheSize, true) : null;
+        this.cache = this.cacheSize > 0 ? new LRUCache<>(this.cacheSize, true) : null;
     }
 
     @Override public void convert(DataEvent de) {
