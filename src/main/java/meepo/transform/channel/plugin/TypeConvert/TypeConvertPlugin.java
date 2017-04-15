@@ -17,10 +17,13 @@ public class TypeConvertPlugin extends DefaultPlugin {
 
     private boolean needConvert = false;
 
+    private boolean useDefaultHandler;
+
     private List<NotMatchItem> notMatch = Lists.newArrayList();
 
     public TypeConvertPlugin(TaskContext context) {
         super(context);
+        this.useDefaultHandler = context.getBoolean("useDefaultHandler", false);
     }
 
     @Override public void convert(DataEvent de) {
@@ -48,7 +51,7 @@ public class TypeConvertPlugin extends DefaultPlugin {
                 continue;
             } else {
                 this.notMatch.add(NotMatchItem.builder().columnIndex(i).sourceFieldName(l.getLeft()).sourceFieldType(l.getRight()).targetFieldName(r.getLeft())
-                        .targetFieldType(r.getRight()).build().init());
+                        .targetFieldType(r.getRight()).useDefaultHandler(this.useDefaultHandler).build().init());
             }
         }
         if (this.notMatch.size() > 0) {

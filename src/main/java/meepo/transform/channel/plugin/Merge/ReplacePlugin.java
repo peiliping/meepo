@@ -36,11 +36,15 @@ public class ReplacePlugin extends DefaultPlugin {
 
     private ICallable<Object> handler;
 
-    private Object tmp;
+    private Object tmpKey;
+
+    private Object tmpVal;
 
     private LRUCache<Object> cache;
 
     private int cacheSize;
+
+    private boolean Null4Null;
 
     public ReplacePlugin(TaskContext context) {
         super(context);
@@ -52,7 +56,7 @@ public class ReplacePlugin extends DefaultPlugin {
         this.sql = "SELECT " + this.valName + " FROM " + this.tableName + " WHERE " + this.keyName + " = ?";
         this.handler = new ICallable<Object>() {
             @Override public void handleParams(PreparedStatement p) throws Exception {
-                p.setObject(keyPosition, tmp, keyType);
+                p.setObject(keyPosition, tmpKey, keyType);
             }
 
             @Override public Object handleResultSet(ResultSet r) throws Exception {
@@ -61,15 +65,20 @@ public class ReplacePlugin extends DefaultPlugin {
         };
         this.cacheSize = context.getInteger("cacheSize", 0);
         this.cache = this.cacheSize > 0 ? new LRUCache<>(this.cacheSize, true) : null;
+        this.Null4Null = context.getBoolean("null4null", true);
     }
 
     @Override public void convert(DataEvent de) {
-        this.tmp = de.getSource()[this.keyPosition];
+        this.tmpKey = de.getSource()[this.keyPosition];
         if (this.cache == null) {
-            de.getSource()[this.keyPosition] = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
+            this.tmpVal = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
         } else {
-            de.getSource()[this.keyPosition] = this.cache.get(this.tmp, () -> BasicDao.excuteQuery(dataSource, sql, handler));
+            this.tmpVal = this.cache.get(this.tmpKey, () -> BasicDao.excuteQuery(dataSource, sql, handler));
         }
+        if (this.tmpVal == null) {
+            this.tmpVal = this.Null4Null ? null : this.tmpKey;
+        }
+        de.getSource()[this.keyPosition] = this.tmpVal;
         super.convert(de);
     }
 
