@@ -2,7 +2,7 @@ Meepo 配置说明
 ===============
 
 ##### 声明任务列表
-meepo = test mysql2mysql mysql2mysqlbydate parquet2mysql mysql2parquet
+meepo = test mysql2mysql mysql2mysqlbydate parquet2mysql mysql2parquet mysql2mysqlreplace
 
 ##### Test 例子
 ```
@@ -104,3 +104,28 @@ meepo.mysql2parquet.sink.outputdir = /home/peiliping/dev/logs/
 #meepo.mysql2parquet.sink.rollingsize = 
 #meepo.mysql2parquet.sink.hdfsconfdir = 
 ```
+
+##### Mysql 2 Mysql Replace #####
+meepo.mysql2mysqlreplace.source.type = DBBYIDSOURCE
+meepo.mysql2mysqlreplace.tableName = app_entity
+meepo.mysql2mysqlreplace.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
+meepo.mysql2mysqlreplace.datasource.username = root
+meepo.mysql2mysqlreplace.datasource.password = root
+
+meepo.mysql2mysqlreplace.channel.bufferSize = 16
+meepo.mysql2mysqlreplace.plugin.type = REPLACEPLUGIN
+meepo.mysql2mysqlreplace.plugin.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
+meepo.mysql2mysqlreplace.plugin.datasource.username = root
+meepo.mysql2mysqlreplace.plugin.datasource.password = root
+meepo.mysql2mysqlreplace.plugin.tableName = vsid
+meepo.mysql2mysqlreplace.plugin.keyPosition = 3
+meepo.mysql2mysqlreplace.plugin.keyName = id
+meepo.mysql2mysqlreplace.plugin.valName = val
+meepo.mysql2mysqlreplace.plugin.cacheSize = 1000
+meepo.mysql2mysqlreplace.plugin.null4null = false
+
+meepo.mysql2mysqlreplace.sink.type = DBSINK
+meepo.mysql2mysqlreplace.sink.tableName = app_entity2
+meepo.mysql2mysqlreplace.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
+meepo.mysql2mysqlreplace.sink.datasource.username = root
+meepo.mysql2mysqlreplace.sink.datasource.password = root
