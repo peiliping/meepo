@@ -106,6 +106,7 @@ meepo.mysql2parquet.sink.outputdir = /home/peiliping/dev/logs/
 ```
 
 ##### Mysql 2 Mysql Replace #####
+```
 meepo.mysql2mysqlreplace.source.type = DBBYIDSOURCE
 meepo.mysql2mysqlreplace.tableName = app_entity
 meepo.mysql2mysqlreplace.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
@@ -129,3 +130,4 @@ meepo.mysql2mysqlreplace.sink.tableName = app_entity2
 meepo.mysql2mysqlreplace.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
 meepo.mysql2mysqlreplace.sink.datasource.username = root
 meepo.mysql2mysqlreplace.sink.datasource.password = root
+```
