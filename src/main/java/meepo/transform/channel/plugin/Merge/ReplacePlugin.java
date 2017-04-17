@@ -24,7 +24,9 @@ public class ReplacePlugin extends DefaultPlugin {
 
     private String tableName;
 
-    private int keyPosition;
+    private int replacePosition;
+
+    private String replaceFieldName;
 
     private int keyType;
 
@@ -50,13 +52,14 @@ public class ReplacePlugin extends DefaultPlugin {
         super(context);
         this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
-        this.keyPosition = context.getInteger("keyPosition");
+        this.replacePosition = context.getInteger("replacePosition", -1);
+        this.replaceFieldName = context.getString("replaceFieldName");
         this.keyName = context.getString("keyName");
         this.valName = context.getString("valName");
         this.sql = "SELECT " + this.valName + " FROM " + this.tableName + " WHERE " + this.keyName + " = ?";
         this.handler = new ICallable<Object>() {
             @Override public void handleParams(PreparedStatement p) throws Exception {
-                p.setObject(keyPosition, tmpKey, keyType);
+                p.setObject(replacePosition, tmpKey, keyType);
             }
 
             @Override public Object handleResultSet(ResultSet r) throws Exception {
@@ -69,7 +72,7 @@ public class ReplacePlugin extends DefaultPlugin {
     }
 
     @Override public void convert(DataEvent de) {
-        this.tmpKey = de.getSource()[this.keyPosition];
+        this.tmpKey = de.getSource()[this.replacePosition];
         if (this.cache == null) {
             this.tmpVal = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
         } else {
@@ -78,12 +81,18 @@ public class ReplacePlugin extends DefaultPlugin {
         if (this.tmpVal == null) {
             this.tmpVal = this.Null4Null ? null : this.tmpKey;
         }
-        de.getSource()[this.keyPosition] = this.tmpVal;
+        de.getSource()[this.replacePosition] = this.tmpVal;
         super.convert(de);
     }
 
     @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
-        this.keyType = source.get(this.keyPosition).getRight();
+        if (this.replacePosition < 0) {
+            source.forEach(i -> {
+                if (this.replaceFieldName.equals(i.getLeft()))
+                    this.replacePosition = source.indexOf(i);
+            });
+        }
+        this.keyType = source.get(this.replacePosition).getRight();
         super.autoMatchSchema(source, sink);
     }
 
