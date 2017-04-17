@@ -104,6 +104,7 @@ public class Task {
         List<IReportItem> result = Lists.newArrayList();
         this.sources.forEach(as -> result.add(as.report()));
         result.add(this.channel.report());
+        this.handlerSinks.forEach(hs -> result.add(hs.report()));
         return result;
     }
 
