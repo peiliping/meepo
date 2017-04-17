@@ -114,17 +114,17 @@ meepo.mysql2mysqlreplace.datasource.username = root
 meepo.mysql2mysqlreplace.datasource.password = root
 
 meepo.mysql2mysqlreplace.channel.bufferSize = 16
-meepo.mysql2mysqlreplace.plugin.type = REPLACEPLUGIN
-meepo.mysql2mysqlreplace.plugin.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
-meepo.mysql2mysqlreplace.plugin.datasource.username = root
-meepo.mysql2mysqlreplace.plugin.datasource.password = root
-meepo.mysql2mysqlreplace.plugin.tableName = vsid
-meepo.mysql2mysqlreplace.plugin.replacePosition = 3
-meepo.mysql2mysqlreplace.plugin.replaceFieldName = metric_id
-meepo.mysql2mysqlreplace.plugin.keyName = id
-meepo.mysql2mysqlreplace.plugin.valName = val
-meepo.mysql2mysqlreplace.plugin.cacheSize = 1000
-meepo.mysql2mysqlreplace.plugin.null4null = false
+meepo.mysql2mysqlreplace.channel.plugin.type = REPLACEPLUGIN
+meepo.mysql2mysqlreplace.channel.plugin.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
+meepo.mysql2mysqlreplace.channel.plugin.datasource.username = root
+meepo.mysql2mysqlreplace.channel.plugin.datasource.password = root
+meepo.mysql2mysqlreplace.channel.plugin.tableName = vsid
+meepo.mysql2mysqlreplace.channel.plugin.replacePosition = 3
+meepo.mysql2mysqlreplace.channel.plugin.replaceFieldName = metric_id
+meepo.mysql2mysqlreplace.channel.plugin.keyName = id
+meepo.mysql2mysqlreplace.channel.plugin.valName = val
+meepo.mysql2mysqlreplace.channel.plugin.cacheSize = 1000
+meepo.mysql2mysqlreplace.channel.plugin.null4null = false
 
 meepo.mysql2mysqlreplace.sink.type = DBSINK
 meepo.mysql2mysqlreplace.sink.tableName = app_entity2
