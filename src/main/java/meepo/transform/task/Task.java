@@ -8,7 +8,6 @@ import meepo.transform.report.IReportItem;
 import meepo.transform.sink.AbstractSink;
 import meepo.transform.sink.SinkType;
 import meepo.transform.source.AbstractSource;
-import meepo.transform.report.SourceReportItem;
 import meepo.transform.source.SourceType;
 import meepo.util.Constants;
 import meepo.util.Util;
@@ -104,6 +103,7 @@ public class Task {
         List<IReportItem> result = Lists.newArrayList();
         this.sources.forEach(as -> result.add(as.report()));
         result.add(this.channel.report());
+        result.add(this.channel.getPlugin().report());
         this.handlerSinks.forEach(hs -> result.add(hs.report()));
         return result;
     }

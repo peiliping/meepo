@@ -2,6 +2,7 @@ package meepo.transform.channel.plugin;
 
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.IReportItem;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,5 +24,7 @@ public abstract class AbstractPlugin {
     public abstract void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink);
 
     public abstract void close();
+
+    public abstract IReportItem report();
 
 }

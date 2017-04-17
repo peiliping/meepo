@@ -3,6 +3,7 @@ package meepo.transform.channel.plugin.Merge;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.plugin.DefaultPlugin;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.IReportItem;
 import meepo.util.Constants;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
@@ -48,6 +49,8 @@ public class ReplacePlugin extends DefaultPlugin {
 
     private boolean Null4Null;
 
+    private long metricReplaceByDB;
+
     public ReplacePlugin(TaskContext context) {
         super(context);
         this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
@@ -74,9 +77,13 @@ public class ReplacePlugin extends DefaultPlugin {
     @Override public void convert(DataEvent de) {
         this.tmpKey = de.getSource()[this.replacePosition];
         if (this.cache == null) {
+            this.metricReplaceByDB++;
             this.tmpVal = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
         } else {
-            this.tmpVal = this.cache.get(this.tmpKey, () -> BasicDao.excuteQuery(dataSource, sql, handler));
+            this.tmpVal = this.cache.get(this.tmpKey, () -> {
+                metricReplaceByDB++;
+                return BasicDao.excuteQuery(dataSource, sql, handler);
+            });
         }
         if (this.tmpVal == null) {
             this.tmpVal = this.Null4Null ? null : this.tmpKey;
@@ -100,4 +107,9 @@ public class ReplacePlugin extends DefaultPlugin {
         Util.closeDataSource(this.dataSource);
         super.close();
     }
+
+    @Override public IReportItem report() {
+        return ReplacePluginReport.builder().name(this.getClass().getSimpleName() + "[" + this.tableName + "]").replaceByDB(this.metricReplaceByDB).build();
+    }
+
 }
