@@ -1,13 +1,9 @@
 package meepo.transform.channel.plugin.Merge;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.plugin.DefaultPlugin;
 import meepo.transform.config.TaskContext;
 import meepo.transform.report.IReportItem;
-import meepo.transform.report.PluginReport;
 import meepo.util.Constants;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
@@ -116,10 +112,4 @@ public class ReplacePlugin extends DefaultPlugin {
         return ReplacePluginReport.builder().name(this.getClass().getSimpleName() + "[" + this.tableName + "]").replaceByDB(this.metricReplaceByDB).build();
     }
 
-    @Getter @Setter @Builder class ReplacePluginReport extends PluginReport {
-
-        private String name;
-
-        private long replaceByDB;
-    }
 }
