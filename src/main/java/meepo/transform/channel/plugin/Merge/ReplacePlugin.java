@@ -62,7 +62,7 @@ public class ReplacePlugin extends DefaultPlugin {
         this.sql = "SELECT " + this.valName + " FROM " + this.tableName + " WHERE " + this.keyName + " = ?";
         this.handler = new ICallable<Object>() {
             @Override public void handleParams(PreparedStatement p) throws Exception {
-                p.setObject(replacePosition, tmpKey, keyType);
+                p.setObject(1, tmpKey, keyType);
             }
 
             @Override public Object handleResultSet(ResultSet r) throws Exception {
