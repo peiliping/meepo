@@ -17,6 +17,7 @@ public class SlowLogSink extends AbstractSink {
     }
 
     @Override public void onEvent(Object event) throws Exception {
+        super.metricCount++;
         Util.sleepMS(sleep);
         super.LOG.info("event : " + event);
     }
@@ -24,5 +25,5 @@ public class SlowLogSink extends AbstractSink {
     @Override public void timeOut() {
         super.LOG.info("time out.");
     }
-    
+
 }

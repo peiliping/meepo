@@ -7,6 +7,8 @@ import com.lmax.disruptor.TimeoutHandler;
 import com.lmax.disruptor.WorkHandler;
 import lombok.Getter;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.IReportItem;
+import meepo.transform.report.SinkReportItem;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,12 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
     protected boolean RUNNING = false;
 
     @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
+
+    protected long metricCount;
+
+    protected long metricBatchCount;
+
+    protected long metricUnsaturatedBatch;
 
     public AbstractSink(String name, int index, TaskContext context) {
         this.taskName = name;
@@ -54,5 +62,10 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     public boolean isRunning() {
         return this.RUNNING;
+    }
+
+    public IReportItem report() {
+        return SinkReportItem.builder().name(this.taskName + "-Sink-" + this.indexOfSinks).count(this.metricCount).batchCount(this.metricBatchCount)
+                .unsaturatedBatch(this.metricUnsaturatedBatch).running(this.RUNNING).build();
     }
 }

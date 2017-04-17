@@ -92,7 +92,7 @@ public abstract class AbstractDBSource extends AbstractSource {
     }
 
     @Override public SourceReportItem report() {
-        return SourceReportItem.builder().name(this.taskName + "-Source-" + this.indexOfSources).start(this.start).current(this.currentPos).end(this.end).running(super.RUNNING)
+        return SourceReportItem.builder().name(super.taskName + "-Source-" + super.indexOfSources).start(this.start).current(this.currentPos).end(this.end).running(super.RUNNING)
                 .build();
     }
 }
