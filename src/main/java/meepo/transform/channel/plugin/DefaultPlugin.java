@@ -2,6 +2,8 @@ package meepo.transform.channel.plugin;
 
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.IReportItem;
+import meepo.transform.report.PluginReport;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -23,5 +25,9 @@ public class DefaultPlugin extends AbstractPlugin {
     }
 
     @Override public void close() {
+    }
+
+    @Override public IReportItem report() {
+        return new PluginReport();
     }
 }

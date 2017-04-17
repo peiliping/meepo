@@ -3,6 +3,7 @@ package meepo.transform.channel;
 import com.google.common.collect.Lists;
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.ProducerType;
+import lombok.Getter;
 import meepo.transform.channel.plugin.AbstractPlugin;
 import meepo.transform.channel.plugin.PluginType;
 import meepo.transform.config.TaskContext;
@@ -34,7 +35,7 @@ public class RingbufferChannel {
 
     private Sequence consumerSequence;
 
-    private AbstractPlugin plugin;
+    @Getter private AbstractPlugin plugin;
 
     public RingbufferChannel(int sourcesCount, TaskContext context) {
         int bufferSize = context.getInteger("bufferSize", 1024);

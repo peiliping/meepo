@@ -3,6 +3,8 @@ package meepo.transform.channel.plugin;
 import com.google.common.collect.Lists;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.IReportItem;
+import meepo.transform.report.MultiReport;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -46,5 +48,11 @@ public class GroupPlugin extends AbstractPlugin {
 
     @Override public void close() {
         this.plugins.forEach(abstractPlugin -> abstractPlugin.close());
+    }
+
+    @Override public IReportItem report() {
+        MultiReport mr = new MultiReport();
+        this.plugins.forEach(ap -> mr.getReports().add(ap.report()));
+        return mr;
     }
 }
