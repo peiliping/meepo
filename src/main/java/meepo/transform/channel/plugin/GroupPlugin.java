@@ -20,9 +20,11 @@ public class GroupPlugin extends AbstractPlugin {
         Validate.notNull(context.getString("array"));
         List<String> pluginsArrayStr = Lists.newArrayList(context.getString("array").split("\\s"));
         pluginsArrayStr.forEach(pluginName -> {
-            Class<? extends AbstractPlugin> pluginClazz = (PluginType.valueOf(pluginName)).clazz;
+            String ptype = pluginName.split("-")[0];
+            String pname = pluginName.split("-")[1];
+            Class<? extends AbstractPlugin> pluginClazz = (PluginType.valueOf(ptype)).clazz;
             try {
-                plugins.add(pluginClazz.getConstructor(TaskContext.class).newInstance(new TaskContext("plugin-" + pluginName, context.getSubProperties(pluginName + "."))));
+                plugins.add(pluginClazz.getConstructor(TaskContext.class).newInstance(new TaskContext("plugin-" + pluginName, context.getSubProperties(pname + "."))));
             } catch (Exception e) {
                 LOG.error("Plugin Init Error : ", e);
                 Validate.isTrue(false);
