@@ -174,8 +174,10 @@ public class DBSink extends AbstractSink {
 
         void justClose() {
             try {
-                p.close();
-                c.close();
+                if (p != null)
+                    p.close();
+                if (c != null)
+                    c.close();
             } catch (Exception e) {
                 LOG.error("DBSink-Handler-Flush Error :", e);
             }
