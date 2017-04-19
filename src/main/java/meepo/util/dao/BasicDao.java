@@ -23,7 +23,7 @@ public class BasicDao {
 
     public static String autoGetPrimaryKeyName(DataSource ds, String tableName) {
         String sql = "SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where table_name='" + tableName + "' AND COLUMN_KEY='PRI'";
-        return excuteQuery(ds, sql, new ResultSetICallable<String>() {
+        return executeQuery(ds, sql, new ResultSetICallable<String>() {
             @Override public String handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
                 return r.getString(1);
@@ -39,7 +39,7 @@ public class BasicDao {
         if (sql == null) {
             sql = buildAutoGetStartEndSql(tableName, primaryKeyName);
         }
-        return excuteQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
+        return executeQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
             @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
                 return Pair.of(r.getLong(1) - 1, r.getLong(2));
@@ -51,7 +51,7 @@ public class BasicDao {
         if (sql == null) {
             sql = buildAutoGetStartEndSql(tableName, primaryKeyName);
         }
-        return excuteQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
+        return executeQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
             @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
                 return Pair.of(r.getTimestamp(1).getTime() - 1, r.getTimestamp(2).getTime());
@@ -61,7 +61,7 @@ public class BasicDao {
 
     public static List<Pair<String, Integer>> parserSchema(DataSource ds, String tableName, String columnNames, String primaryKeyName) {
         String sql = "SELECT " + columnNames + " FROM " + tableName + " WHERE " + primaryKeyName + " = 0" + " LIMIT 1";
-        return excuteQuery(ds, sql, new ResultSetICallable<List<Pair<String, Integer>>>() {
+        return executeQuery(ds, sql, new ResultSetICallable<List<Pair<String, Integer>>>() {
             @Override public List<Pair<String, Integer>> handleResultSet(ResultSet r) throws Exception {
                 List<Pair<String, Integer>> result = Lists.newArrayList();
                 Validate.isTrue(r.getMetaData().getColumnCount() > 0);
@@ -74,7 +74,7 @@ public class BasicDao {
         });
     }
 
-    public static <E> E excuteQuery(DataSource ds, String sql, ICallable<E> cal) {
+    public static <E> E executeQuery(DataSource ds, String sql, ICallable<E> cal) {
         Connection c = null;
         PreparedStatement p = null;
         try {
@@ -86,7 +86,8 @@ public class BasicDao {
             r.close();
             return e;
         } catch (Exception e) {
-            LOG.error("basicdao.excutequery", e);
+            LOG.error("basicdao.executequery", e);
+            Validate.isTrue(false);
         } finally {
             try {
                 if (p != null)
@@ -94,11 +95,13 @@ public class BasicDao {
                 if (c != null)
                     c.close();
             } catch (SQLException e) {
-                LOG.error("basicdao.excutequery", e);
+                LOG.error("basicdao.executequery", e);
             }
         }
         return null;
     }
+
+
 
     public static <E> boolean excuteBatchAdd(DataSource ds, String sql, ICallable<E> cal) {
         Connection c = null;

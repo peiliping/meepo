@@ -86,11 +86,11 @@ public class ReplacePlugin extends DefaultPlugin {
         };
         if (this.cache == null) {
             this.metricReplaceByDB.incrementAndGet();
-            tmpVal = BasicDao.excuteQuery(this.dataSource, this.sql, handler);
+            tmpVal = BasicDao.executeQuery(this.dataSource, this.sql, handler);
         } else {
             tmpVal = this.cache.get(tmpKey, () -> {
                 metricReplaceByDB.incrementAndGet();
-                return BasicDao.excuteQuery(dataSource, sql, handler);
+                return BasicDao.executeQuery(dataSource, sql, handler);
             });
         }
         if (tmpVal == null) {
