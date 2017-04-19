@@ -1,5 +1,6 @@
 package meepo.transform.task;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.lmax.disruptor.EventProcessor;
 import meepo.transform.channel.RingbufferChannel;
@@ -132,7 +133,8 @@ public class Task {
         if (this.finishedTime == 0) {
             this.finishedTime = System.currentTimeMillis();
         }
-        LOG.info("Task[" + this.taskName + "]" + " closed ..." + LocalDateTime.now());
+        LOG.info("Task[" + this.taskName + "]" + " closed ... " + LocalDateTime.now());
+        LOG.info("Task[" + this.taskName + "]" + " Report ... " + JSON.toJSONString(report(), true));
     }
 
     public synchronized boolean recycle() {

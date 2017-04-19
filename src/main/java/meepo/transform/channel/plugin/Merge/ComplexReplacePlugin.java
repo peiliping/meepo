@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,7 +33,11 @@ public class ComplexReplacePlugin extends DefaultPlugin {
 
     private List<String> replaceFieldNames = Lists.newArrayList();
 
-    private int[] keyType;
+    private List<Integer> filterPositions = Lists.newArrayList();
+
+    private List<String> filterFieldNames = Lists.newArrayList();
+
+    private List<Integer> keyTypes = Lists.newArrayList();
 
     private List<String> keyNames = Lists.newArrayList();
 
@@ -40,13 +45,7 @@ public class ComplexReplacePlugin extends DefaultPlugin {
 
     private String sql;
 
-    private ICallable<Object> handler;
-
-    private Object[] tmpKey;
-
-    private Object[] tmpVal;
-
-    private LRUCache<Object> cache;
+    private LRUCache<Object[]> cache;
 
     private int cacheSize;
 
@@ -58,54 +57,94 @@ public class ComplexReplacePlugin extends DefaultPlugin {
         super(context);
         this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
-        List<String> rps = Lists.newArrayList(context.getString("replacePositions", "").split("\\s"));
-        rps.forEach(k -> replacePositions.add(Integer.valueOf(k)));
+
+        if (StringUtils.isNotBlank(context.getString("replacePositions"))) {
+            List<String> rps = Lists.newArrayList(context.getString("replacePositions").split("\\s"));
+            rps.forEach(k -> replacePositions.add(Integer.valueOf(k)));
+        }
         this.replaceFieldNames.addAll(Lists.newArrayList(context.getString("replaceFieldNames", "").split("\\s")));
+
+        if (StringUtils.isNotBlank(context.getString("filterPositions"))) {
+            List<String> fps = Lists.newArrayList(context.getString("filterPositions").split("\\s"));
+            fps.forEach(k -> filterPositions.add(Integer.valueOf(k)));
+        }
+        this.filterFieldNames.addAll(Lists.newArrayList(context.getString("filterFieldNames", "").split("\\s")));
+
         this.keyNames.addAll(Lists.newArrayList(context.getString("keyNames").split("\\s")));
         this.valNames.addAll(Lists.newArrayList(context.getString("valNames").split("\\s")));
-        this.sql = "SELECT " + StringUtils.join(this.keyNames, ",") + " FROM " + this.tableName + " WHERE " + StringUtils.join(valNames, " AND ");
-
-        //        this.handler = new ICallable<Object>() {
-        //            @Override public void handleParams(PreparedStatement p) throws Exception {
-        //                p.setObject(1, tmpKey, keyType);
-        //            }
-        //
-        //            @Override public Object handleResultSet(ResultSet r) throws Exception {
-        //                return r.next() ? r.getObject(1) : null;
-        //            }
-        //        };
+        this.sql = "SELECT " + StringUtils.join(this.keyNames, ",") + " FROM " + this.tableName + " WHERE " + StringUtils.join(this.valNames, " AND ");
         this.cacheSize = context.getInteger("cacheSize", 0);
         this.cache = this.cacheSize > 0 ? new LRUCache<>(this.cacheSize, true) : null;
         this.Null4Null = context.getBoolean("null4null", true);
     }
 
-    @Override public void convert(DataEvent de) {
-        //        this.tmpKey = de.getSource()[this.replacePosition];
-        //        if (this.cache == null) {
-        //            this.metricReplaceByDB++;
-        //            this.tmpVal = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
-        //        } else {
-        //            this.tmpVal = this.cache.get(this.tmpKey, () -> {
-        //                metricReplaceByDB++;
-        //                return BasicDao.excuteQuery(dataSource, sql, handler);
-        //            });
-        //        }
-        //        if (this.tmpVal == null) {
-        //            this.tmpVal = this.Null4Null ? null : this.tmpKey;
-        //        }
-        //        de.getSource()[this.replacePosition] = this.tmpVal;
-        super.convert(de);
+    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+        if (this.replacePositions.isEmpty()) {
+            this.replaceFieldNames.forEach(s -> source.forEach(i -> {
+                if (s.equals(i.getLeft())) {
+                    replacePositions.add(source.indexOf(i));
+                }
+            }));
+        }
+        if (this.filterPositions.isEmpty()) {
+            this.filterFieldNames.forEach(s -> source.forEach(i -> {
+                if (s.equals(i.getLeft())) {
+                    filterPositions.add(source.indexOf(i));
+                }
+            }));
+        }
+        this.filterPositions.forEach(i -> keyTypes.add(source.get(i).getRight()));
+        super.autoMatchSchema(source, sink);
     }
 
-    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
-        //        if (this.replacePosition < 0) {
-        //            source.forEach(i -> {
-        //                if (this.replaceFieldName.equals(i.getLeft()))
-        //                    this.replacePosition = source.indexOf(i);
-        //            });
-        //        }
-        //        this.keyType = source.get(this.replacePosition).getRight();
-        //        super.autoMatchSchema(source, sink);
+    @Override public void convert(DataEvent de) {
+        Object[] filters = new Object[this.filterPositions.size()];
+        for (int i = 0; i < this.filterPositions.size(); i++) {
+            filters[i] = de.getSource()[this.filterPositions.get(i)];
+        }
+
+        ICallable<Object[]> handler = new ICallable<Object[]>() {
+            @Override public void handleParams(PreparedStatement p) throws Exception {
+                for (int i = 0; i < filters.length; i++)
+                    p.setObject(i + 1, filters[i], keyTypes.get(i));
+            }
+
+            @Override public Object[] handleResultSet(ResultSet r) throws Exception {
+                if (r.next()) {
+                    Object[] vals = new Object[valNames.size()];
+                    for (int i = 0; i < vals.length; i++) {
+                        vals[i] = r.getObject(i + 1);
+                    }
+                    return vals;
+                } else {
+                    return null;
+                }
+            }
+        };
+
+        Object[] vals = null;
+        boolean result = true;
+        if (this.cache == null) {
+            this.metricReplaceByDB.incrementAndGet();
+            vals = BasicDao.excuteQuery(this.dataSource, this.sql, handler);
+        } else {
+            String key = Arrays.toString(filters);
+            vals = this.cache.get(key, () -> {
+                this.metricReplaceByDB.incrementAndGet();
+                return BasicDao.excuteQuery(dataSource, sql, handler);
+            });
+        }
+        if (vals == null) {
+            result = false;
+            vals = new Object[this.valNames.size()];
+        }
+
+        if (result || this.Null4Null) {
+            for (int i = 0; i < this.replacePositions.size(); i++) {
+                de.getSource()[this.replacePositions.get(i)] = vals[i];
+            }
+        }
+        super.convert(de);
     }
 
     @Override public void close() {

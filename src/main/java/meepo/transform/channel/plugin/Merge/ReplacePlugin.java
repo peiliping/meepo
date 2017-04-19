@@ -60,6 +60,18 @@ public class ReplacePlugin extends DefaultPlugin {
         this.Null4Null = context.getBoolean("null4null", true);
     }
 
+    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+        if (this.replacePosition < 0) {
+            source.forEach(i -> {
+                if (this.replaceFieldName.equals(i.getLeft())) {
+                    this.replacePosition = source.indexOf(i);
+                }
+            });
+        }
+        this.keyType = source.get(this.replacePosition).getRight();
+        super.autoMatchSchema(source, sink);
+    }
+
     @Override public void convert(DataEvent de) {
         Object tmpKey = de.getSource()[this.replacePosition];
         Object tmpVal = null;
@@ -86,17 +98,6 @@ public class ReplacePlugin extends DefaultPlugin {
         }
         de.getSource()[this.replacePosition] = tmpVal;
         super.convert(de);
-    }
-
-    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
-        if (this.replacePosition < 0) {
-            source.forEach(i -> {
-                if (this.replaceFieldName.equals(i.getLeft()))
-                    this.replacePosition = source.indexOf(i);
-            });
-        }
-        this.keyType = source.get(this.replacePosition).getRight();
-        super.autoMatchSchema(source, sink);
     }
 
     @Override public void close() {
