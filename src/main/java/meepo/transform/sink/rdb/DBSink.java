@@ -136,6 +136,7 @@ public class DBSink extends AbstractSink {
                 LOG.error("DBSink-Handler-Prepare Error :", e);
                 c = null;
                 p = null;
+                Util.sleep(1);
                 prepare();
             }
         }
@@ -159,6 +160,7 @@ public class DBSink extends AbstractSink {
                 c.commit();
             } catch (Exception e) {
                 LOG.error("DBSink-Handler-Flush Error :", e);
+                //((JDBC4PreparedStatement) ((DruidPooledPreparedStatement) p).getStatement()).getBatchedArgs().addAll(t);
             } finally {
                 try {
                     p.close();

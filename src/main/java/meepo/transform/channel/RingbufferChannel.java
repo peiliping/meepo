@@ -11,6 +11,7 @@ import meepo.transform.report.ChannelReportItem;
 import meepo.transform.report.IReportItem;
 import meepo.transform.sink.AbstractSink;
 import meepo.util.Constants;
+import meepo.util.Util;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -90,8 +91,14 @@ public class RingbufferChannel {
     }
 
     public void pushBySeq(long seq) {
-        this.plugin.convert(this.ringBuffer.get(seq));
-        this.ringBuffer.publish(seq);
+        try {
+            this.plugin.convert(this.ringBuffer.get(seq));
+            this.ringBuffer.publish(seq);
+        } catch (Throwable e) {
+            LOG.error("Convert Function Error :", e);
+            Util.sleep(1);
+            pushBySeq(seq);
+        }
     }
 
     public boolean isEmpty() {
