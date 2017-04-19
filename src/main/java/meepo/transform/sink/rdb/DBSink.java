@@ -36,8 +36,6 @@ public class DBSink extends AbstractSink {
 
     protected Handler handler;
 
-    protected long count;
-
     protected long lastCommit;
 
     protected long lastFlushTS;
@@ -76,12 +74,11 @@ public class DBSink extends AbstractSink {
     }
 
     @Override public void onEvent(Object event) throws Exception {
-        super.metricCount++;
         this.handler.prepare();
         super.RUNNING = true;
         this.handler.feed((DataEvent) event);
-        this.count++;
-        if (this.count - this.lastCommit >= this.stepSize) {
+        super.count++;
+        if (super.count - this.lastCommit >= this.stepSize) {
             sinkFlush();
         } else if (this.lastFlushTS - System.currentTimeMillis() > 3000) {
             sinkFlush();
@@ -93,15 +90,17 @@ public class DBSink extends AbstractSink {
     }
 
     private void sinkFlush() {
-        if (this.count - this.lastCommit > 0) {
+        if (super.count - this.lastCommit > 0) {
             super.metricBatchCount++;
-            if (this.count - this.lastCommit < this.stepSize) {
+            if (super.count - this.lastCommit < this.stepSize) {
                 super.metricUnsaturatedBatch++;
             }
             this.handler.flush();
             super.RUNNING = false;
-            this.lastCommit = this.count;
+            this.lastCommit = super.count;
             this.lastFlushTS = System.currentTimeMillis();
+        } else {
+            this.handler.justClose();
         }
     }
 
@@ -171,6 +170,17 @@ public class DBSink extends AbstractSink {
                 c = null;
                 p = null;
             }
+        }
+
+        void justClose() {
+            try {
+                p.close();
+                c.close();
+            } catch (Exception e) {
+                LOG.error("DBSink-Handler-Flush Error :", e);
+            }
+            c = null;
+            p = null;
         }
     }
 }

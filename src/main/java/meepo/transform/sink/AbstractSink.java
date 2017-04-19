@@ -31,7 +31,7 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
 
-    protected long metricCount;
+    protected long count;
 
     protected long metricBatchCount;
 
@@ -65,7 +65,7 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
     }
 
     public IReportItem report() {
-        return SinkReportItem.builder().name(this.taskName + "-Sink-" + this.indexOfSinks).count(this.metricCount).batchCount(this.metricBatchCount)
+        return SinkReportItem.builder().name(this.taskName + "-Sink-" + this.indexOfSinks).count(this.count).batchCount(this.metricBatchCount)
                 .unsaturatedBatch(this.metricUnsaturatedBatch).running(this.RUNNING).build();
     }
 }
