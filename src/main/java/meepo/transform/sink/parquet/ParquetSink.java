@@ -53,7 +53,7 @@ public class ParquetSink extends AbstractSink {
     }
 
     @Override public void onEvent(Object event) throws Exception {
-        super.metricCount++;
+        super.count++;
         initSinkHelper();
         try {
             this.sinkHelper.write(((DataEvent) event).getTarget());

@@ -21,8 +21,9 @@ public class DBByIdSource extends AbstractDBSource {
         super.stepSize = context.getInteger("stepSize", 100);
         super.start = context.getLong("start", ps.getLeft());
         super.end = context.getLong("end", ps.getRight());
-        long vStart = super.start - (super.start % super.stepSize);
-        super.currentPos = Math.max(vStart + index * super.stepSize, super.start);
+        //long vStart = super.start - (super.start % super.stepSize);
+        //super.currentPos = Math.max(vStart + index * super.stepSize, super.start);
+        super.currentPos = super.start + index * super.stepSize;
         super.handler = new ICallable<Boolean>() {
             @Override public void handleParams(PreparedStatement p) throws Exception {
                 p.setLong(1, currentPos);
