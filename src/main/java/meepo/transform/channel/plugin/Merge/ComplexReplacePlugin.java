@@ -72,7 +72,7 @@ public class ComplexReplacePlugin extends DefaultPlugin {
 
         this.keyNames.addAll(Lists.newArrayList(context.getString("keyNames").split("\\s")));
         this.valNames.addAll(Lists.newArrayList(context.getString("valNames").split("\\s")));
-        this.sql = "SELECT " + StringUtils.join(this.keyNames, ",") + " FROM " + this.tableName + " WHERE " + StringUtils.join(this.valNames, " AND ");
+        this.sql = "SELECT " + StringUtils.join(this.keyNames, ",") + " FROM " + this.tableName + " WHERE " + StringUtils.join(this.valNames , " = ? AND ") + " = ? ";
         this.cacheSize = context.getInteger("cacheSize", 0);
         this.cache = this.cacheSize > 0 ? new LRUCache<>(this.cacheSize, true) : null;
         this.Null4Null = context.getBoolean("null4null", true);
