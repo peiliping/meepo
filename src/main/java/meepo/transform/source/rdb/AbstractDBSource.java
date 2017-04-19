@@ -82,8 +82,12 @@ public abstract class AbstractDBSource extends AbstractSource {
     }
 
     protected boolean executeQuery() {
-        Boolean result = BasicDao.excuteQuery(this.dataSource, this.sql, this.handler);
-        return (result != null && result);
+        try {
+            BasicDao.executeQuery(this.dataSource, this.sql, this.handler);
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
     }
 
     @Override public void end() {
