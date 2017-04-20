@@ -1,6 +1,8 @@
 package meepo.transform.sink.rdb;
 
+import com.alibaba.druid.pool.DruidPooledPreparedStatement;
 import com.google.common.collect.Lists;
+import com.mysql.jdbc.JDBC4PreparedStatement;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
@@ -74,13 +76,11 @@ public class DBSink extends AbstractSink {
     }
 
     @Override public void onEvent(Object event) throws Exception {
-        this.handler.prepare();
         super.RUNNING = true;
-        this.handler.feed((DataEvent) event);
+        this.handler.prepare();
         super.count++;
-        if (super.count - this.lastCommit >= this.stepSize) {
-            sinkFlush();
-        } else if (this.lastFlushTS - System.currentTimeMillis() > 3000) {
+        this.handler.feed((DataEvent) event);
+        if (super.count - this.lastCommit >= this.stepSize || this.lastFlushTS - System.currentTimeMillis() > 3000) {
             sinkFlush();
         }
     }
@@ -98,10 +98,10 @@ public class DBSink extends AbstractSink {
             this.handler.flush();
             super.RUNNING = false;
             this.lastCommit = super.count;
-            this.lastFlushTS = System.currentTimeMillis();
         } else {
             this.handler.justClose();
         }
+        this.lastFlushTS = System.currentTimeMillis();
     }
 
     @Override public void onShutdown() {
@@ -126,7 +126,7 @@ public class DBSink extends AbstractSink {
 
         void prepare() {
             try {
-                if (c == null || c.isClosed() || p == null || p.isClosed()) {
+                if (c == null || p == null) {
                     c = dataSource.getConnection();
                     c.setAutoCommit(false);
                     p = c.prepareStatement(sql);
@@ -159,7 +159,7 @@ public class DBSink extends AbstractSink {
                 c.commit();
             } catch (Exception e) {
                 LOG.error("DBSink-Handler-Flush Error :", e);
-                //((JDBC4PreparedStatement) ((DruidPooledPreparedStatement) p).getStatement()).getBatchedArgs().addAll(t);
+                LOG.info("Missing : ", ((JDBC4PreparedStatement) ((DruidPooledPreparedStatement) p).getStatement()).getBatchedArgs().size());
             } finally {
                 try {
                     p.close();
