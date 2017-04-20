@@ -3,6 +3,7 @@ package meepo.transform.sink.rdb;
 import com.alibaba.druid.pool.DruidPooledPreparedStatement;
 import com.google.common.collect.Lists;
 import com.mysql.jdbc.JDBC4PreparedStatement;
+import com.mysql.jdbc.StatementImpl;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
@@ -13,6 +14,7 @@ import meepo.util.dao.BasicDao;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -159,17 +161,47 @@ public class DBSink extends AbstractSink {
                 c.commit();
             } catch (Exception e) {
                 LOG.error("DBSink-Handler-Flush Error :", e);
-                LOG.info("Missing : ", ((JDBC4PreparedStatement) ((DruidPooledPreparedStatement) p).getStatement()).getBatchedArgs().size());
+                while (retry()) {
+                    Util.sleep(1);
+                }
             } finally {
                 try {
-                    p.close();
-                    c.close();
+                    if (p != null)
+                        p.close();
+                    if (c != null)
+                        c.close();
                 } catch (Exception e) {
                     LOG.error("DBSink-Handler-Flush Error :", e);
                 }
                 c = null;
                 p = null;
             }
+        }
+
+        boolean retry() {
+            try {
+                List<Object> batchParams = ((JDBC4PreparedStatement) ((DruidPooledPreparedStatement) p).getStatement()).getBatchedArgs();
+                Connection tc = dataSource.getConnection();
+                tc.setAutoCommit(false);
+                PreparedStatement tp = tc.prepareStatement(sql);
+                try {
+                    tp.addBatch();
+                } catch (Exception e) {
+                }
+                StatementImpl target = (StatementImpl) ((DruidPooledPreparedStatement) tp).getStatement();
+                Field fd = StatementImpl.class.getDeclaredField("batchedArgs");
+                fd.setAccessible(true);
+                List<Object> newParams = (List<Object>) fd.get(target);
+                newParams.addAll(batchParams);
+                tp.executeBatch();
+                tc.commit();
+                tp.close();
+                tc.close();
+            } catch (Throwable e) {
+                LOG.error("DBSink-Handler-Retry Error :", e);
+                return false;
+            }
+            return true;
         }
 
         void justClose() {
@@ -179,7 +211,7 @@ public class DBSink extends AbstractSink {
                 if (c != null)
                     c.close();
             } catch (Exception e) {
-                LOG.error("DBSink-Handler-Flush Error :", e);
+                LOG.error("DBSink-Handler-JustClose Error :", e);
             }
             c = null;
             p = null;
