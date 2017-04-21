@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,6 +75,7 @@ public class DBSink extends AbstractSink {
 
         this.sql = buildSQL();
         this.handler = new Handler();
+        this.handler.init();
         this.lastFlushTS = System.currentTimeMillis();
     }
 
@@ -126,12 +128,24 @@ public class DBSink extends AbstractSink {
 
         private PreparedStatement p = null;
 
+        private Field batchArgsField;
+
+        void init() {
+            try {
+                batchArgsField = StatementImpl.class.getDeclaredField("batchedArgs");
+                batchArgsField.setAccessible(true);
+            } catch (Exception e) {
+            }
+        }
+
         void prepare() {
             try {
                 if (c == null || p == null) {
                     c = dataSource.getConnection();
                     c.setAutoCommit(false);
                     p = c.prepareStatement(sql);
+                    StatementImpl target = (StatementImpl) ((DruidPooledPreparedStatement) p).getStatement();
+                    batchArgsField.set(target, new ArrayList<Object>(stepSize + 10));
                 }
             } catch (Exception e) {
                 LOG.error("DBSink-Handler-Prepare Error :", e);
@@ -184,15 +198,9 @@ public class DBSink extends AbstractSink {
                 Connection tc = dataSource.getConnection();
                 tc.setAutoCommit(false);
                 PreparedStatement tp = tc.prepareStatement(sql);
-                try {
-                    tp.addBatch();
-                } catch (Exception e) {
-                }
                 StatementImpl target = (StatementImpl) ((DruidPooledPreparedStatement) tp).getStatement();
-                Field fd = StatementImpl.class.getDeclaredField("batchedArgs");
-                fd.setAccessible(true);
-                List<Object> newParams = (List<Object>) fd.get(target);
-                newParams.addAll(batchParams);
+                List<Object> newParams = new ArrayList<Object>(batchParams);
+                batchArgsField.set(target, newParams);
                 tp.executeBatch();
                 tc.commit();
                 tp.close();
