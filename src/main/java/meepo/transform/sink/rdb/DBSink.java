@@ -84,7 +84,7 @@ public class DBSink extends AbstractSink {
         this.handler.prepare();
         super.count++;
         this.handler.feed((DataEvent) event);
-        if (super.count - this.lastCommit >= this.stepSize || this.lastFlushTS - System.currentTimeMillis() > 3000) {
+        if (super.count - this.lastCommit >= this.stepSize || System.currentTimeMillis() - this.lastFlushTS > 3000) {
             sinkFlush();
         }
     }
