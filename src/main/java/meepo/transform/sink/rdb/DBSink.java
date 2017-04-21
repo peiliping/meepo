@@ -145,7 +145,7 @@ public class DBSink extends AbstractSink {
                     c.setAutoCommit(false);
                     p = c.prepareStatement(sql);
                     StatementImpl target = (StatementImpl) ((DruidPooledPreparedStatement) p).getStatement();
-                    batchArgsField.set(target, new ArrayList<Object>(stepSize));
+                    batchArgsField.set(target, new ArrayList<Object>(stepSize + 10));
                 }
             } catch (Exception e) {
                 LOG.error("DBSink-Handler-Prepare Error :", e);
