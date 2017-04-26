@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Created by peiliping on 17-3-7.
  */
-public class DBSink extends AbstractSink {
+public class DBInsertSink extends AbstractSink {
 
     protected DataSource dataSource;
 
@@ -47,7 +47,7 @@ public class DBSink extends AbstractSink {
 
     protected boolean sinkSharedDataSource;
 
-    public DBSink(String name, int index, TaskContext context) {
+    public DBInsertSink(String name, int index, TaskContext context) {
         super(name, index, context);
         this.sinkSharedDataSource = context.getBoolean("sharedDatasource", true);
         this.dataSource = this.sinkSharedDataSource ?
@@ -148,7 +148,7 @@ public class DBSink extends AbstractSink {
                     batchArgsField.set(target, new ArrayList<Object>(stepSize));
                 }
             } catch (Exception e) {
-                LOG.error("DBSink-Handler-Prepare Error :", e);
+                LOG.error("DBInsertSink-Handler-Prepare Error :", e);
                 c = null;
                 p = null;
                 Util.sleep(1);
@@ -163,7 +163,7 @@ public class DBSink extends AbstractSink {
                 }
                 p.addBatch();
             } catch (Exception e) {
-                LOG.error("DBSink-Handler-Feed Error :" + de.toString(), e);
+                LOG.error("DBInsertSink-Handler-Feed Error :" + de.toString(), e);
                 Util.sleep(1);
                 feed(de);
             }
@@ -174,7 +174,7 @@ public class DBSink extends AbstractSink {
                 p.executeBatch();
                 c.commit();
             } catch (Exception e) {
-                LOG.error("DBSink-Handler-Flush Error :", e);
+                LOG.error("DBInsertSink-Handler-Flush Error :", e);
                 while (retry()) {
                     Util.sleep(1);
                 }
@@ -185,7 +185,7 @@ public class DBSink extends AbstractSink {
                     if (c != null)
                         c.close();
                 } catch (Exception e) {
-                    LOG.error("DBSink-Handler-Flush Error :", e);
+                    LOG.error("DBInsertSink-Handler-Flush Error :", e);
                 }
                 c = null;
                 p = null;
@@ -206,7 +206,7 @@ public class DBSink extends AbstractSink {
                 tp.close();
                 tc.close();
             } catch (Throwable e) {
-                LOG.error("DBSink-Handler-Retry Error :", e);
+                LOG.error("DBInsertSink-Handler-Retry Error :", e);
                 return false;
             }
             return true;
@@ -219,7 +219,7 @@ public class DBSink extends AbstractSink {
                 if (c != null)
                     c.close();
             } catch (Exception e) {
-                LOG.error("DBSink-Handler-JustClose Error :", e);
+                LOG.error("DBInsertSink-Handler-JustClose Error :", e);
             }
             c = null;
             p = null;
