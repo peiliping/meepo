@@ -32,7 +32,7 @@ meepo.mysql2mysql.source.datasource.password = root
 meepo.mysql2mysql.channel.bufferSize = 16
 meepo.mysql2mysql.channel.plugin.type = TYPECONVERT
 
-meepo.mysql2mysql.sink.type = DBSINK
+meepo.mysql2mysql.sink.type = DBINSERTSINK
 meepo.mysql2mysql.sink.tableName = app_entity2
 #meepo.mysql2mysql.sink.workersNum = 1
 #meepo.mysql2mysql.sink.stepSize = 100
@@ -61,7 +61,7 @@ meepo.mysql2mysqlbydate.source.datasource.password = root
 meepo.mysql2mysqlbydate.channel.bufferSize = 16
 meepo.mysql2mysqlbydate.channel.plugin.type = TYPECONVERT
 
-meepo.mysql2mysqlbydate.sink.type = DBSINK
+meepo.mysql2mysqlbydate.sink.type = DBINSERTSINK
 meepo.mysql2mysqlbydate.sink.tableName = app_entity3
 #meepo.mysql2mysqlbydate.sink.workersNum = 1
 #meepo.mysql2mysqlbydate.sink .stepSize = 100
@@ -80,7 +80,7 @@ meepo.parquet2mysql.source.inputdir = /home/peiliping/dev/logs/
 meepo.parquet2mysql.channel.bufferSize = 16
 meepo.parquet2mysql.channel.plugin.type = TYPECONVERT
 
-meepo.parquet2mysql.sink.type = DBSINK
+meepo.parquet2mysql.sink.type = DBINSERTSINK
 meepo.parquet2mysql.sink.tableName = app_entity3
 meepo.parquet2mysql.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
 meepo.parquet2mysql.sink.datasource.username = root
@@ -126,7 +126,7 @@ meepo.mysql2mysqlreplace.channel.plugin.valName = val
 meepo.mysql2mysqlreplace.channel.plugin.cacheSize = 1000
 meepo.mysql2mysqlreplace.channel.plugin.null4null = false
 
-meepo.mysql2mysqlreplace.sink.type = DBSINK
+meepo.mysql2mysqlreplace.sink.type = DBINSERTSINK
 meepo.mysql2mysqlreplace.sink.tableName = app_entity2
 meepo.mysql2mysqlreplace.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
 meepo.mysql2mysqlreplace.sink.datasource.username = root
@@ -166,7 +166,7 @@ meepo.mysql2mysqlreplace.channel.plugin.rpp2.valName = val
 meepo.mysql2mysqlreplace.channel.plugin.rpp2.cacheSize = 1000
 meepo.mysql2mysqlreplace.channel.plugin.rpp2.null4null = false
 
-meepo.mysql2mysqlreplace.sink.type = DBSINK
+meepo.mysql2mysqlreplace.sink.type = DBINSERTSINK
 meepo.mysql2mysqlreplace.sink.tableName = app_entity2
 meepo.mysql2mysqlreplace.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
 meepo.mysql2mysqlreplace.sink.datasource.username = root
