@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +48,8 @@ public class DBInsertSink extends AbstractSink {
 
     protected boolean sinkSharedDataSource;
 
+    protected boolean truncateTable;
+
     public DBInsertSink(String name, int index, TaskContext context) {
         super(name, index, context);
         this.sinkSharedDataSource = context.getBoolean("sharedDatasource", true);
@@ -57,6 +60,7 @@ public class DBInsertSink extends AbstractSink {
         this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.tableName));
         this.stepSize = context.getInteger("stepSize", 100);
         this.columnNames = context.getString("columnNames", "*");
+        this.truncateTable = context.getBoolean("truncate", false);
 
         super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
         final List<String> columnsArray = Lists.newArrayList();
@@ -135,6 +139,16 @@ public class DBInsertSink extends AbstractSink {
                 batchArgsField = StatementImpl.class.getDeclaredField("batchedArgs");
                 batchArgsField.setAccessible(true);
             } catch (Exception e) {
+            }
+            if (truncateTable && indexOfSinks == 0) {
+                try {
+                    Connection con = dataSource.getConnection();
+                    Statement st = con.createStatement();
+                    st.execute("truncate table " + tableName);
+                    st.close();
+                    con.close();
+                } catch (Throwable e) {
+                }
             }
         }
 
