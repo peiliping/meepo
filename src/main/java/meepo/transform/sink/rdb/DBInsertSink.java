@@ -79,8 +79,12 @@ public class DBInsertSink extends AbstractSink {
 
         this.sql = buildSQL();
         this.handler = new Handler();
-        this.handler.init();
         this.lastFlushTS = System.currentTimeMillis();
+    }
+
+    @Override public void onStart() {
+        super.onStart();
+        this.handler.init();
     }
 
     @Override public void onEvent(Object event) throws Exception {
@@ -113,7 +117,7 @@ public class DBInsertSink extends AbstractSink {
     }
 
     @Override public void onShutdown() {
-        timeOut();
+        sinkFlush();
         if (this.sinkSharedDataSource) {
             DataSourceCache.close(super.taskName + "-sink");
         } else {
@@ -148,6 +152,7 @@ public class DBInsertSink extends AbstractSink {
                     st.close();
                     con.close();
                 } catch (Throwable e) {
+                    LOG.error("Truncate Table [" + tableName + "] Failed .");
                 }
             }
         }
@@ -158,8 +163,10 @@ public class DBInsertSink extends AbstractSink {
                     c = dataSource.getConnection();
                     c.setAutoCommit(false);
                     p = c.prepareStatement(sql);
-                    StatementImpl target = (StatementImpl) ((DruidPooledPreparedStatement) p).getStatement();
-                    batchArgsField.set(target, new ArrayList<Object>(stepSize));
+                    if (batchArgsField != null && ((DruidPooledPreparedStatement) p).getStatement() instanceof StatementImpl) {
+                        StatementImpl target = (StatementImpl) ((DruidPooledPreparedStatement) p).getStatement();
+                        batchArgsField.set(target, new ArrayList<Object>(stepSize));
+                    }
                 }
             } catch (Exception e) {
                 LOG.error("DBInsertSink-Handler-Prepare Error :", e);
