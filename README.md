@@ -64,7 +64,7 @@ meepo.mysql2mysqlbydate.channel.plugin.type = TYPECONVERT
 meepo.mysql2mysqlbydate.sink.type = DBINSERTSINK
 meepo.mysql2mysqlbydate.sink.tableName = app_entity3
 #meepo.mysql2mysqlbydate.sink.workersNum = 1
-#meepo.mysql2mysqlbydate.sink .stepSize = 100
+#meepo.mysql2mysqlbydate.sink.stepSize = 100
 #meepo.mysql2mysqlbydate.sink.primaryKeyName = [AUTO]
 #meepo.mysql2mysqlbydate.sink.columnNames = [AUTO]
 meepo.mysql2mysqlbydate.sink.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
