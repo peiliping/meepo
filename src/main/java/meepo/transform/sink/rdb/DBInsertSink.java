@@ -184,7 +184,8 @@ public class DBInsertSink extends AbstractSink {
                 }
                 p.addBatch();
             } catch (Exception e) {
-                LOG.error("DBInsertSink-Handler-Feed Error :" + de.toString(), e);
+                LOG.error("DBInsertSink-Handler-Feed Error :", e);
+                LOG.error("Data :", de.toString());
                 Util.sleep(1);
                 feed(de);
             }
