@@ -101,6 +101,10 @@ public class RingbufferChannel {
         }
     }
 
+    public boolean isCovered(long seq) {
+        return seq > this.ringBuffer.getBufferSize();
+    }
+
     public boolean isEmpty() {
         return this.ringBuffer.remainingCapacity() == this.ringBuffer.getBufferSize();
     }

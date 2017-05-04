@@ -61,9 +61,8 @@ public abstract class AbstractSource implements ISource {
     @Override public DataEvent feedOne() {
         this.tmpIndex = this.channel.getNextSeq();
         this.de = this.channel.getBySeq(this.tmpIndex);
-        if (!this.de.isInit()) {
+        if (!this.channel.isCovered(this.tmpIndex)) {
             this.de.setSource(new Object[this.columnsNum]);
-            this.de.setInit(true);
         }
         return this.de;
     }
