@@ -71,10 +71,10 @@ public class Util {
                 context.put("testOnReturn", "false");
             }
             if (context.get("poolPreparedStatements") == null) {
-                context.put("poolPreparedStatements", "true");
+                context.put("poolPreparedStatements", "false");
             }
             if (context.get("maxPoolPreparedStatementPerConnectionSize") == null) {
-                context.put("maxPoolPreparedStatementPerConnectionSize", "20");
+                context.put("maxPoolPreparedStatementPerConnectionSize", "-1");
             }
             if (context.get("removeAbandoned") == null) {
                 context.put("removeAbandoned", "true");
