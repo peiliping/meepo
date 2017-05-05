@@ -11,6 +11,7 @@ import meepo.util.Constants;
 import meepo.util.DataSourceCache;
 import meepo.util.Util;
 import meepo.util.dao.BasicDao;
+import meepo.util.date.DateFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
@@ -138,12 +139,20 @@ public class DBInsertSink extends AbstractSink {
 
         private Field batchArgsField;
 
+        private Field tsdf;
+
         void init() {
             try {
                 batchArgsField = StatementImpl.class.getDeclaredField("batchedArgs");
                 batchArgsField.setAccessible(true);
             } catch (Exception e) {
             }
+            try {
+                tsdf = com.mysql.jdbc.PreparedStatement.class.getDeclaredField("tsdf");
+                tsdf.setAccessible(true);
+            } catch (Exception e) {
+            }
+
             if (truncateTable && indexOfSinks == 0) {
                 try {
                     Connection con = dataSource.getConnection();
@@ -164,8 +173,8 @@ public class DBInsertSink extends AbstractSink {
                     c.setAutoCommit(false);
                     p = c.prepareStatement(sql);
                     if (batchArgsField != null && ((DruidPooledPreparedStatement) p).getStatement() instanceof StatementImpl) {
-                        StatementImpl target = (StatementImpl) ((DruidPooledPreparedStatement) p).getStatement();
-                        batchArgsField.set(target, new ArrayList<Object>(stepSize));
+                        batchArgsField.set((StatementImpl) ((DruidPooledPreparedStatement) p).getStatement(), new ArrayList<Object>(stepSize));
+                        tsdf.set(((com.mysql.jdbc.PreparedStatement) ((DruidPooledPreparedStatement) p).getStatement()), new DateFormatter("''yyyy-MM-dd HH:mm:ss"));
                     }
                 }
             } catch (Exception e) {
