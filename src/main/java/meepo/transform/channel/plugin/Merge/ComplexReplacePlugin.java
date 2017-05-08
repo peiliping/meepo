@@ -97,7 +97,7 @@ public class ComplexReplacePlugin extends DefaultPlugin {
         super.autoMatchSchema(source, sink);
     }
 
-    @Override public void convert(DataEvent de) {
+    @Override public void convert(DataEvent de, boolean theEnd) {
         Object[] filters = new Object[this.filterPositions.size()];
         for (int i = 0; i < this.filterPositions.size(); i++) {
             filters[i] = de.getSource()[this.filterPositions.get(i)];
@@ -144,7 +144,7 @@ public class ComplexReplacePlugin extends DefaultPlugin {
                 de.getSource()[this.replacePositions.get(i)] = vals[i];
             }
         }
-        super.convert(de);
+        super.convert(de, theEnd);
     }
 
     @Override public void close() {

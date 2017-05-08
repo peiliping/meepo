@@ -17,8 +17,9 @@ public class DefaultPlugin extends AbstractPlugin {
         super(context);
     }
 
-    @Override public void convert(DataEvent de) {
-        de.setTarget(de.getSource());
+    @Override public void convert(DataEvent de, boolean theEnd) {
+        if (theEnd)
+            de.setTarget(de.getSource());
     }
 
     @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {

@@ -92,7 +92,7 @@ public class RingbufferChannel {
 
     public void pushBySeq(long seq) {
         try {
-            this.plugin.convert(this.ringBuffer.get(seq));
+            this.plugin.convert(this.ringBuffer.get(seq), true);
             this.ringBuffer.publish(seq);
         } catch (Throwable e) {
             LOG.error("Convert Function Error :", e);

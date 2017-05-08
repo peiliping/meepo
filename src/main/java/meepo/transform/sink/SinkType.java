@@ -3,8 +3,8 @@ package meepo.transform.sink;
 import meepo.transform.sink.log.SlowLogSink;
 import meepo.transform.sink.parquet.ParquetSink;
 import meepo.transform.sink.rdb.DBIgnoreSink;
-import meepo.transform.sink.rdb.DBReplaceSink;
 import meepo.transform.sink.rdb.DBInsertSink;
+import meepo.transform.sink.rdb.DBReplaceSink;
 
 /**
  * Created by peiliping on 17-3-6.
