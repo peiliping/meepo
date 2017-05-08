@@ -17,6 +17,8 @@ public class GroupPlugin extends AbstractPlugin {
 
     private List<AbstractPlugin> plugins = Lists.newArrayList();
 
+    private int theEndPluginPosition;
+
     public GroupPlugin(TaskContext context) {
         super(context);
         Validate.notNull(context.getString("array"));
@@ -32,11 +34,12 @@ public class GroupPlugin extends AbstractPlugin {
                 Validate.isTrue(false);
             }
         });
+        this.theEndPluginPosition = this.plugins.size() - 1;
     }
 
-    @Override public void convert(DataEvent de) {
-        for (AbstractPlugin ap : this.plugins) {
-            ap.convert(de);
+    @Override public void convert(DataEvent de, boolean theEnd) {
+        for (int i = 0; i < this.plugins.size(); i++) {
+            this.plugins.get(i).convert(de, theEndPluginPosition == i);
         }
     }
 

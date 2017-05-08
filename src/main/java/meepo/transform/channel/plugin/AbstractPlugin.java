@@ -19,7 +19,7 @@ public abstract class AbstractPlugin {
     public AbstractPlugin(TaskContext context) {
     }
 
-    public abstract void convert(DataEvent de);
+    public abstract void convert(DataEvent de, boolean theEnd);
 
     public abstract void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink);
 

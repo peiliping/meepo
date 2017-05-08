@@ -72,7 +72,7 @@ public class ReplacePlugin extends DefaultPlugin {
         super.autoMatchSchema(source, sink);
     }
 
-    @Override public void convert(DataEvent de) {
+    @Override public void convert(DataEvent de, boolean theEnd) {
         Object tmpKey = de.getSource()[this.replacePosition];
         Object tmpVal = null;
         ICallable<Object> handler = new ICallable<Object>() {
@@ -97,7 +97,7 @@ public class ReplacePlugin extends DefaultPlugin {
             tmpVal = this.Null4Null ? null : tmpKey;
         }
         de.getSource()[this.replacePosition] = tmpVal;
-        super.convert(de);
+        super.convert(de, theEnd);
     }
 
     @Override public void close() {

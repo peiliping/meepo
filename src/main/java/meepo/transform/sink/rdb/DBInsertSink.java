@@ -188,7 +188,7 @@ public class DBInsertSink extends AbstractSink {
 
         void feed(DataEvent de) {
             try {
-                for (int i = 0; i < de.getTarget().length; i++) {
+                for (int i = 0; i < schema.size(); i++) {
                     p.setObject(i + 1, de.getTarget()[i], schema.get(i).getRight());
                 }
                 p.addBatch();

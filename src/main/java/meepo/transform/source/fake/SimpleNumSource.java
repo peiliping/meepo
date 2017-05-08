@@ -3,8 +3,8 @@ package meepo.transform.source.fake;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
-import meepo.transform.source.AbstractSource;
 import meepo.transform.report.SourceReportItem;
+import meepo.transform.source.AbstractSource;
 
 /**
  * Created by peiliping on 17-3-6.

@@ -26,11 +26,11 @@ public class TypeConvertPlugin extends DefaultPlugin {
         this.useDefaultHandler = context.getBoolean("useDefaultHandler", false);
     }
 
-    @Override public void convert(DataEvent de) {
+    @Override public void convert(DataEvent de, boolean theEnd) {
         if (this.needConvert) {
             this.notMatch.forEach(item -> item.convert(de));
         }
-        super.convert(de);
+        super.convert(de, theEnd);
     }
 
     @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
