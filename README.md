@@ -174,4 +174,6 @@ meepo.mysql2mysqlreplace.sink.datasource.password = root
 ```
 
 一个较为完整的jdbc url参数
+```
 rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;verifyServerCertificate=false&amp;failOverReadOnly=false&amp;autoReconnect=true&amp;autoReconnectForPools=true
+```
