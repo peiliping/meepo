@@ -34,6 +34,7 @@ public class RedisSink extends AbstractSink {
     static {
         CONST.put("COUPLE", IBuilder.COUPLE);
         CONST.put("ARRAY", IBuilder.ARRAY);
+        CONST.put("MAP", IBuilder.MAP);
     }
 
     public RedisSink(String name, int index, TaskContext context) {
@@ -59,7 +60,7 @@ public class RedisSink extends AbstractSink {
         checkBatch();
         super.count++;
         DataEvent de = (DataEvent) event;
-        this.builder.build(this.batch, de);
+        this.builder.build(this.batch, de, super.schema);
         if (super.count - this.lastCommit >= this.stepSize || System.currentTimeMillis() - this.lastFlushTS > 3000) {
             execBatch();
         }
