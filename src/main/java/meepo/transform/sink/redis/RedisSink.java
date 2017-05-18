@@ -1,5 +1,6 @@
 package meepo.transform.sink.redis;
 
+import com.google.common.collect.Maps;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
@@ -8,6 +9,7 @@ import org.redisson.api.RBatch;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,6 +29,13 @@ public class RedisSink extends AbstractSink {
 
     private IBuilder builder;
 
+    public static Map<String, IBuilder> CONST = Maps.newHashMap();
+
+    static {
+        CONST.put("COUPLE", IBuilder.COUPLE);
+        CONST.put("ARRAY", IBuilder.ARRAY);
+    }
+
     public RedisSink(String name, int index, TaskContext context) {
         super(name, index, context);
         Config conf = new Config();
@@ -37,7 +46,7 @@ public class RedisSink extends AbstractSink {
         this.redis = (Redisson) Redisson.create(conf);
         this.lastFlushTS = System.currentTimeMillis();
         this.stepSize = context.getInteger("stepSize", 100);
-        this.builder = IBuilder.CONST.get(context.getString("builder", "COUPLE"));
+        this.builder = CONST.get(context.getString("builder", "COUPLE"));
     }
 
     @Override public void onStart() {
