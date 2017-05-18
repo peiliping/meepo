@@ -173,6 +173,21 @@ meepo.mysql2mysqlreplace.sink.datasource.username = root
 meepo.mysql2mysqlreplace.sink.datasource.password = root
 ```
 
+##### Mysql 2 Redis #####
+```
+meepo.mysql2redis.source.type = DBBYIDSOURCE
+meepo.mysql2redis.source.tableName = app_entity
+meepo.mysql2redis.source.datasource.url = jdbc:mysql://127.0.0.1:3306/test?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8
+meepo.mysql2redis.source.datasource.username = root
+meepo.mysql2redis.source.datasource.password = root
+
+meepo.mysql2redis.channel.bufferSize = 16
+meepo.mysql2redis.channel.plugin.type = TYPECONVERT
+
+meepo.mysql2redis.sink.type = REDISSINK
+meepo.mysql2redis.sink.address = 127.0.0.1:6379
+```
+
 一个较为完整的jdbc url参数
 ```
 rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;verifyServerCertificate=false&amp;failOverReadOnly=false&amp;autoReconnect=true&amp;autoReconnectForPools=true
