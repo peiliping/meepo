@@ -1,4 +1,4 @@
-package meepo.transform.sink.kv;
+package meepo.transform.sink.redis;
 
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
@@ -7,6 +7,8 @@ import org.redisson.Redisson;
 import org.redisson.api.RBatch;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by peiliping on 17-5-18.
@@ -23,6 +25,8 @@ public class RedisSink extends AbstractSink {
 
     private long lastFlushTS;
 
+    private IBuilder builder;
+
     public RedisSink(String name, int index, TaskContext context) {
         super(name, index, context);
         Config conf = new Config();
@@ -33,6 +37,7 @@ public class RedisSink extends AbstractSink {
         this.redis = (Redisson) Redisson.create(conf);
         this.lastFlushTS = System.currentTimeMillis();
         this.stepSize = context.getInteger("stepSize", 100);
+        this.builder = IBuilder.CONST.get(context.getString("builder", "COUPLE"));
     }
 
     @Override public void onStart() {
@@ -45,7 +50,7 @@ public class RedisSink extends AbstractSink {
         checkBatch();
         super.count++;
         DataEvent de = (DataEvent) event;
-        this.batch.getBucket(String.valueOf(de.getTarget()[0])).setAsync(de.getTarget()[1]);
+        this.builder.build(this.batch, de);
         if (super.count - this.lastCommit >= this.stepSize || System.currentTimeMillis() - this.lastFlushTS > 3000) {
             execBatch();
         }
@@ -68,12 +73,15 @@ public class RedisSink extends AbstractSink {
     private void checkBatch() {
         if (this.batch == null) {
             this.batch = this.redis.createBatch();
+            this.batch.retryAttempts(3);
+            this.batch.retryInterval(3, TimeUnit.SECONDS);
+            this.batch.timeout(5, TimeUnit.SECONDS);
         }
     }
 
     private void execBatch() {
         if (this.batch != null && super.count - this.lastCommit > 0) {
-            this.batch.execute();
+            this.batch.executeSkipResultAsync();
             super.RUNNING = false;
             this.lastCommit = super.count;
         }

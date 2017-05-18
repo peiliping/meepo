@@ -1,6 +1,6 @@
 package meepo.transform.sink;
 
-import meepo.transform.sink.kv.RedisSink;
+import meepo.transform.sink.redis.RedisSink;
 import meepo.transform.sink.log.SlowLogSink;
 import meepo.transform.sink.parquet.ParquetSink;
 import meepo.transform.sink.rdb.DBIgnoreSink;
