@@ -5,6 +5,9 @@ import com.google.common.collect.Maps;
 import meepo.transform.channel.DataEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.redisson.api.RBatch;
+import org.redisson.client.codec.MapScanCodec;
+import org.redisson.client.codec.StringCodec;
+import org.redisson.codec.JsonJacksonCodec;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +29,7 @@ public interface IBuilder {
         Map<String, Object> item = Maps.newHashMapWithExpectedSize(schema.size());
         for (int i = 0; i < schema.size(); i++)
             item.put(schema.get(i).getLeft(), event.getTarget()[i]);
-        batch.getMap(String.valueOf(event.getTarget()[0])).putAllAsync(item);
+        batch.getMap(String.valueOf(event.getTarget()[0]), new MapScanCodec(StringCodec.INSTANCE, JsonJacksonCodec.INSTANCE)).putAllAsync(item);
     };
 
 }
