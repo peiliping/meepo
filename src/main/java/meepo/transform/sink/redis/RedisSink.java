@@ -43,6 +43,7 @@ public class RedisSink extends AbstractSink {
         SingleServerConfig sc = conf.useSingleServer();
         sc.setAddress(context.get("address"));
         sc.setPassword(context.get("password"));
+        sc.setDatabase(context.getInteger("dbnum", 0));
         sc.setClientName(name);
         this.redis = (Redisson) Redisson.create(conf);
         this.lastFlushTS = System.currentTimeMillis();
