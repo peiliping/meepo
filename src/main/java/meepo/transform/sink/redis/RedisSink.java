@@ -91,7 +91,7 @@ public class RedisSink extends AbstractSink {
 
     private void execBatch() {
         if (this.batch != null && super.count - this.lastCommit > 0) {
-            this.batch.executeSkipResultAsync();
+            this.batch.execute();
             super.RUNNING = false;
             this.lastCommit = super.count;
         }
