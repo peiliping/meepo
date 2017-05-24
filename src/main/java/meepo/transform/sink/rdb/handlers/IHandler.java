@@ -12,7 +12,7 @@ public interface IHandler {
 
     public void init();
 
-    public void truncate(String tableName);
+    public void truncate(String params);
 
     public void prepare(int stepSize);
 
