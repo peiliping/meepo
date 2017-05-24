@@ -2,7 +2,7 @@ package meepo.transform.sink.rdb;
 
 import com.google.common.collect.Lists;
 import meepo.transform.config.TaskContext;
-import meepo.transform.sink.AbstractBatchSink;
+import meepo.transform.sink.batch.AbstractBatchSink;
 import meepo.transform.sink.rdb.handlers.MysqlHandler;
 import meepo.util.Constants;
 import meepo.util.DataSourceCache;

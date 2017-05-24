@@ -1,8 +1,8 @@
-package meepo.transform.sink;
+package meepo.transform.sink.batch;
 
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
-import meepo.transform.sink.rdb.handlers.IHandler;
+import meepo.transform.sink.AbstractSink;
 
 /**
  * Created by peiliping on 17-5-24.
@@ -60,6 +60,7 @@ public abstract class AbstractBatchSink extends AbstractSink {
 
     @Override public void onShutdown() {
         sinkFlush();
+        this.handler.close();
         super.onShutdown();
     }
 }

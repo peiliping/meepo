@@ -1,4 +1,4 @@
-package meepo.transform.sink.rdb.handlers;
+package meepo.transform.sink.batch;
 
 import meepo.transform.channel.DataEvent;
 import org.apache.commons.lang3.tuple.Pair;

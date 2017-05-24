@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
-import meepo.transform.sink.rdb.handlers.IHandler;
+import meepo.transform.sink.batch.IHandler;
 import meepo.transform.sink.rdb.handlers.MysqlHandler;
 import meepo.util.Constants;
 import meepo.util.DataSourceCache;

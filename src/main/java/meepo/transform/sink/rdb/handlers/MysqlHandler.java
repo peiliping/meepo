@@ -4,6 +4,7 @@ import com.alibaba.druid.pool.DruidPooledPreparedStatement;
 import com.mysql.jdbc.JDBC4PreparedStatement;
 import com.mysql.jdbc.StatementImpl;
 import meepo.transform.channel.DataEvent;
+import meepo.transform.sink.batch.IHandler;
 import meepo.util.Util;
 import meepo.util.date.DateFormatter;
 import org.apache.commons.lang3.tuple.Pair;
