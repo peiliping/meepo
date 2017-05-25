@@ -29,7 +29,7 @@ public class RedisSink extends AbstractSink {
 
     private IBuilder builder;
 
-    public static Map<String, IBuilder> CONST = Maps.newHashMap();
+    private static Map<String, IBuilder> CONST = Maps.newHashMap();
 
     static {
         CONST.put("COUPLE", IBuilder.COUPLE);

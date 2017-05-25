@@ -61,7 +61,7 @@ public class DBInsertSinkV2 extends AbstractBatchSink {
         this.paramsStr = StringUtils.join(paramsArray, ",");
 
         this.sql = buildSQL();
-        super.handler = new MysqlHandler(this.dataSource, this.sql);
+        super.handler = new MysqlHandler(this.dataSource, this.sql, super.schema);
     }
 
     @Override public void onStart() {

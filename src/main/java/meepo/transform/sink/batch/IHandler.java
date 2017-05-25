@@ -1,9 +1,6 @@
 package meepo.transform.sink.batch;
 
 import meepo.transform.channel.DataEvent;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.List;
 
 /**
  * Created by peiliping on 17-5-11.
@@ -16,7 +13,7 @@ public interface IHandler {
 
     public void prepare(int stepSize);
 
-    public void feed(DataEvent de, List<Pair<String, Integer>> schema);
+    public void feed(DataEvent de);
 
     public void flush();
 

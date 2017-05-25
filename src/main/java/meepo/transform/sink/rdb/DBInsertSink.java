@@ -72,7 +72,7 @@ public class DBInsertSink extends AbstractSink {
         this.paramsStr = StringUtils.join(paramsArray, ",");
 
         this.sql = buildSQL();
-        this.handler = new MysqlHandler(this.dataSource, this.sql);
+        this.handler = new MysqlHandler(this.dataSource, this.sql, super.schema);
         this.lastFlushTS = System.currentTimeMillis();
     }
 
@@ -88,7 +88,7 @@ public class DBInsertSink extends AbstractSink {
         super.RUNNING = true;
         this.handler.prepare(this.stepSize);
         super.count++;
-        this.handler.feed((DataEvent) event, this.schema);
+        this.handler.feed((DataEvent) event);
         if (super.count - this.lastCommit >= this.stepSize || System.currentTimeMillis() - this.lastFlushTS > 3000) {
             sinkFlush();
         }

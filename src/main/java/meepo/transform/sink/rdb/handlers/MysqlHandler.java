@@ -38,9 +38,12 @@ public class MysqlHandler implements IHandler {
 
     protected Field tsdf;
 
-    public MysqlHandler(DataSource ds, String sql) {
+    protected List<Pair<String, Integer>> schema;
+
+    public MysqlHandler(DataSource ds, String sql, List<Pair<String, Integer>> schema) {
         this.dataSource = ds;
         this.sql = sql;
+        this.schema = schema;
     }
 
     @Override public void init() {
@@ -93,17 +96,17 @@ public class MysqlHandler implements IHandler {
         prepare(stepSize);
     }
 
-    @Override public void feed(DataEvent de, List<Pair<String, Integer>> schema) {
+    @Override public void feed(DataEvent de) {
         try {
-            for (int i = 0; i < schema.size(); i++) {
-                this.preparedStatement.setObject(i + 1, de.getTarget()[i], schema.get(i).getRight());
+            for (int i = 0; i < this.schema.size(); i++) {
+                this.preparedStatement.setObject(i + 1, de.getTarget()[i], this.schema.get(i).getRight());
             }
             this.preparedStatement.addBatch();
         } catch (Exception e) {
             LOG.error("Mysql-Handler-Feed Error :", e);
             LOG.error("Data :", de.toString());
             Util.sleep(1);
-            feed(de, schema);
+            feed(de);
         }
     }
 
