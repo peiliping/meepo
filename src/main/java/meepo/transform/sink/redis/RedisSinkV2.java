@@ -3,7 +3,6 @@ package meepo.transform.sink.redis;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.batch.AbstractBatchSink;
 import org.redisson.Redisson;
-import org.redisson.api.RBatch;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
 
@@ -14,8 +13,6 @@ public class RedisSinkV2 extends AbstractBatchSink {
 
     private Redisson redis;
 
-    private RBatch batch;
-
     public RedisSinkV2(String name, int index, TaskContext context) {
         super(name, index, context);
         Config conf = new Config();
@@ -25,7 +22,7 @@ public class RedisSinkV2 extends AbstractBatchSink {
         sc.setDatabase(context.getInteger("dbnum", 0));
         sc.setClientName(name);
         this.redis = (Redisson) Redisson.create(conf);
-        super.handler = new RedisHandler(this.redis);
+        super.handler = new RedisHandler(this.redis, super.schema, context.getString("builder", "COUPLE"));
     }
 
     @Override public void onShutdown() {

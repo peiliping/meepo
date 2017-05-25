@@ -34,8 +34,6 @@ public class RingbufferChannel {
 
     private final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-    private Sequence consumerSequence;
-
     @Getter private AbstractPlugin plugin;
 
     public RingbufferChannel(int sourcesCount, TaskContext context) {
@@ -58,14 +56,13 @@ public class RingbufferChannel {
         checkRunning();
         List<EventProcessor> wps = Lists.newArrayList();
         if (handlers.length == 1) {
-            BatchEventProcessor<DataEvent> processor = new BatchEventProcessor<>(this.ringBuffer, this.seqBarrier, handlers[0]);
-            this.consumerSequence = processor.getSequence();
-            this.ringBuffer.addGatingSequences(this.consumerSequence);
+            BatchEventProcessor<DataEvent> processor = new BatchEventProcessor<DataEvent>(this.ringBuffer, this.seqBarrier, handlers[0]);
+            this.ringBuffer.addGatingSequences(processor.getSequence());
             wps.add(processor);
         } else {
-            this.consumerSequence = new Sequence(-1);
+            Sequence consumerSequence = new Sequence(-1);
             for (AbstractSink wh : handlers) {
-                WorkProcessor<DataEvent> processor = new WorkProcessor<>(this.ringBuffer, this.seqBarrier, wh, new IgnoreExceptionHandler(), this.consumerSequence);
+                WorkProcessor<DataEvent> processor = new WorkProcessor<DataEvent>(this.ringBuffer, this.seqBarrier, wh, new IgnoreExceptionHandler(), consumerSequence);
                 this.ringBuffer.addGatingSequences(processor.getSequence());
                 wps.add(processor);
             }
