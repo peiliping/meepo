@@ -116,7 +116,8 @@ public class MysqlHandler implements IHandler {
             this.connection.commit();
         } catch (Exception e) {
             LOG.error("Mysql-Handler-Flush Error :", e);
-            while (retry()) {
+            int i = 0;
+            while (!retry() && i++ < 1024) {
                 Util.sleep(1);
             }
         } finally {
