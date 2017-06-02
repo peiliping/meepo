@@ -18,7 +18,8 @@ public class SlowLogSink extends AbstractSink {
 
     @Override public void onEvent(Object event) throws Exception {
         super.count++;
-        Util.sleepMS(sleep);
+        if (this.sleep > 0)
+            Util.sleepMS(this.sleep);
         super.LOG.info("event : " + event);
     }
 
