@@ -64,6 +64,7 @@ public abstract class AbstractSource implements ISource {
         if (!this.channel.isCovered(this.tmpIndex)) {
             this.de.setSource(new Object[this.columnsNum]);
         }
+        this.de.setTarget(null);
         return this.de;
     }
 
