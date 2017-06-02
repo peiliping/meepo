@@ -1,5 +1,6 @@
 package meepo.transform.channel;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.ProducerType;
@@ -72,6 +73,8 @@ public class RingbufferChannel {
 
     public void prepare(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
         this.plugin.autoMatchSchema(source, sink);
+        LOG.info("Source Schema : " + JSON.toJSONString(source, true));
+        LOG.info("Sink Schema : " + JSON.toJSONString(sink, true));
     }
 
     private void checkRunning() {

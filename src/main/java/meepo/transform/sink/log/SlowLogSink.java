@@ -20,11 +20,11 @@ public class SlowLogSink extends AbstractSink {
         super.count++;
         if (this.sleep > 0)
             Util.sleepMS(this.sleep);
-        super.LOG.info("event : " + event);
+        LOG.info("event : " + event);
     }
 
     @Override public void timeOut() {
-        super.LOG.info("time out.");
+        LOG.info("time out.");
     }
 
 }

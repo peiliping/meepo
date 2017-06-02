@@ -82,8 +82,8 @@ public class MysqlHandler implements IHandler {
             this.connection.setAutoCommit(false);
             this.preparedStatement = this.connection.prepareStatement(this.sql);
             if (this.batchArgsField != null && ((DruidPooledPreparedStatement) this.preparedStatement).getStatement() instanceof StatementImpl) {
-                this.batchArgsField.set((StatementImpl) ((DruidPooledPreparedStatement) this.preparedStatement).getStatement(), new ArrayList<Object>(stepSize));
-                this.tsdf.set(((com.mysql.jdbc.PreparedStatement) ((DruidPooledPreparedStatement) this.preparedStatement).getStatement()),
+                this.batchArgsField.set(((DruidPooledPreparedStatement) this.preparedStatement).getStatement(), new ArrayList<Object>(stepSize));
+                this.tsdf.set(((DruidPooledPreparedStatement) this.preparedStatement).getStatement(),
                         new DateFormatter("''yyyy-MM-dd HH:mm:ss"));
             }
             return;

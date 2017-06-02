@@ -44,9 +44,7 @@ public class GroupPlugin extends AbstractPlugin {
     }
 
     @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
-        for (AbstractPlugin ap : this.plugins) {
-            ap.autoMatchSchema(source, sink);
-        }
+        this.plugins.forEach(abstractPlugin -> abstractPlugin.autoMatchSchema(source,sink));
     }
 
     @Override public void close() {

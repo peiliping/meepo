@@ -7,18 +7,18 @@ import meepo.transform.channel.DataEvent;
  */
 public interface IHandler {
 
-    public void init();
+    void init();
 
-    public void truncate(String params);
+    void truncate(String params);
 
-    public void prepare(int stepSize);
+    void prepare(int stepSize);
 
-    public void feed(DataEvent de);
+    void feed(DataEvent de);
 
-    public void flush();
+    void flush();
 
-    public boolean retry();
+    boolean retry();
 
-    public void close();
+    void close();
 
 }
