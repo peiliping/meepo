@@ -17,15 +17,15 @@ import java.util.Map;
  */
 public interface IBuilder {
 
-    public void build(RBatch batch, DataEvent event, List<Pair<String, Integer>> schema);
+    void build(RBatch batch, DataEvent event, List<Pair<String, Integer>> schema);
 
     /*==================================================*/
 
-    public static IBuilder COUPLE = (batch, event, schema) -> batch.getBucket(String.valueOf(event.getTarget()[0])).setAsync(event.getTarget()[1]);
+    IBuilder COUPLE = (batch, event, schema) -> batch.getBucket(String.valueOf(event.getTarget()[0])).setAsync(event.getTarget()[1]);
 
-    public static IBuilder ARRAY = (batch, event, schema) -> batch.getList(String.valueOf(event.getTarget()[0])).addAllAsync(0, Lists.newArrayList(event.getTarget()));
+    IBuilder ARRAY = (batch, event, schema) -> batch.getList(String.valueOf(event.getTarget()[0])).addAllAsync(0, Lists.newArrayList(event.getTarget()));
 
-    public static IBuilder MAP = (batch, event, schema) -> {
+    IBuilder MAP = (batch, event, schema) -> {
         Map<String, Object> item = Maps.newHashMapWithExpectedSize(schema.size());
         for (int i = 0; i < schema.size(); i++)
             item.put(schema.get(i).getLeft(), event.getTarget()[i]);

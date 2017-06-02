@@ -28,7 +28,7 @@ public class CacheItem<V> {
     }
 
     public boolean isTimeOut(long expireTime) {
-        return expireTime == Long.MAX_VALUE ? false : (System.currentTimeMillis() - createTime > expireTime);
+        return expireTime != Long.MAX_VALUE && (System.currentTimeMillis() - createTime > expireTime);
     }
 
 }
