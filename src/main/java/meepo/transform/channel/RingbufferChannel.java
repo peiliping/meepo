@@ -70,7 +70,7 @@ public class RingbufferChannel {
         return wps;
     }
 
-    public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+    public void prepare(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
         this.plugin.autoMatchSchema(source, sink);
     }
 

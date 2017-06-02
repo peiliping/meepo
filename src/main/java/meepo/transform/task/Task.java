@@ -93,7 +93,7 @@ public class Task {
             this.sources.add(this.sourceClazz.getConstructor(String.class, int.class, int.class, TaskContext.class, RingbufferChannel.class)
                     .newInstance(this.taskName, i, this.sourceNum, this.sourceContext, this.channel));
         }
-        this.channel.autoMatchSchema(this.sources.get(0).getSchema(), sinkHandlers[0].getSchema());
+        this.channel.prepare(this.sources.get(0).getSchema(), sinkHandlers[0].getSchema());
         this.sinks.forEach(ep -> this.sinksPool.submit(ep));
         this.sources.forEach(as -> this.sourcesPool.submit(as));
         this.RUNNING.set(true);

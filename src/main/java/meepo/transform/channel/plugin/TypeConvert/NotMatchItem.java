@@ -27,7 +27,6 @@ import java.util.Map;
         HANDLERS.put(Types.BIGINT + SPLIT + Types.DATE, o -> new Date((Long) o));
 
         HANDLERS.put(Types.TIMESTAMP + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
-
         HANDLERS.put(Types.DATE + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
     }
 
