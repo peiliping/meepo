@@ -5,8 +5,7 @@ import meepo.transform.channel.DataEvent;
 import meepo.transform.sink.batch.IHandler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.delete.DeleteRequestBuilder;
-import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +64,12 @@ public class ElasticHandler implements IHandler {
 
     @Override
     public void flush() {
-        if (this.bulkRequest != null)
-            this.bulkRequest.execute().actionGet();
+        if (this.bulkRequest != null) {
+            BulkResponse r = this.bulkRequest.execute().actionGet(1000 * 10);
+            if (r.hasFailures()) {
+                LOG.info("status :" + r.buildFailureMessage());
+            }
+        }
         this.bulkRequest = null;
     }
 
