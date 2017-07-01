@@ -1,5 +1,6 @@
 package meepo.transform.sink;
 
+import meepo.transform.sink.elastic.ElasticSink;
 import meepo.transform.sink.log.SlowLogSink;
 import meepo.transform.sink.parquet.ParquetSink;
 import meepo.transform.sink.rdb.DBIgnoreSink;
@@ -21,6 +22,8 @@ public enum SinkType {
     DBREPLACESINK(DBReplaceSink.class),
 
     REDISSINK(RedisSink.class),
+
+    ELASTICSINK(ElasticSink.class),
 
     PARQUETSINK(ParquetSink.class);
 
