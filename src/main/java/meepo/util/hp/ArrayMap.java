@@ -13,11 +13,14 @@ public class ArrayMap<K, V> implements Map<K, V> {
 
     private V[] vals;
 
-    private int len = 0;
+    private short len = 0;
 
     public ArrayMap(Keys<K> keys) {
         if (keys == null || keys.size() == 0) {
             throw new IllegalArgumentException("ArrayMap Init Error : keys is empty .");
+        }
+        if (keys.size() > 128) {
+            throw new IllegalArgumentException("ArrayMap Init Error : keys is too big .");
         }
         this.keys = keys;
         this.vals = (V[]) new Object[keys.size()];
