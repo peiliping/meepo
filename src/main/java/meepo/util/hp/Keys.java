@@ -13,7 +13,7 @@ public class Keys<K> {
 
     private transient Map<K, Integer> kp = new HashMap<>();
 
-    private K[]                       pk;
+    private K[] pk;
 
     public Keys(K... pk) {
         if (pk == null || pk.length == 0) {
@@ -30,8 +30,10 @@ public class Keys<K> {
             throw new IllegalArgumentException("Keys Init Error : Empty");
         }
         this.pk = (K[]) new Object[items.length];
-        for (Pair<Integer, K> item : items)
+        for (Pair<Integer, K> item : items) {
             this.pk[item.getLeft()] = item.getRight();
+            this.kp.put(item.getRight(), item.getLeft());
+        }
     }
 
     public Integer getPosByKey(K k) {
