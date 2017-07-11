@@ -1,9 +1,9 @@
 package meepo.transform.channel.plugin;
 
-import meepo.transform.channel.plugin.Merge.ComplexReplacePlugin;
-import meepo.transform.channel.plugin.Merge.ReplacePlugin;
-import meepo.transform.channel.plugin.TypeConvert.ParquetTypeConvertPlugin;
-import meepo.transform.channel.plugin.TypeConvert.TypeConvertPlugin;
+import meepo.transform.channel.plugin.replace.ComplexReplacePlugin;
+import meepo.transform.channel.plugin.replace.ReplacePlugin;
+import meepo.transform.channel.plugin.typeconvert.ParquetTypeConvertPlugin;
+import meepo.transform.channel.plugin.typeconvert.TypeConvertPlugin;
 
 /**
  * Created by peiliping on 17-3-6.

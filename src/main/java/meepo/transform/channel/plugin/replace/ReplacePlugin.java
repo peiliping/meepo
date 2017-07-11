@@ -1,4 +1,4 @@
-package meepo.transform.channel.plugin.Merge;
+package meepo.transform.channel.plugin.replace;
 
 import meepo.transform.channel.DataEvent;
 import meepo.transform.channel.plugin.DefaultPlugin;
