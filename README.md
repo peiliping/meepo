@@ -188,6 +188,22 @@ meepo.mysql2redis.sink.type = REDISSINK
 meepo.mysql2redis.sink.address = 127.0.0.1:6379
 ```
 
+##### Parquet 2 ElasticSearch #####
+```
+meepo.parquet2es.source.type = PARQUETFILESOURCE
+meepo.parquet2es.source.workersNum = 1
+meepo.parquet2es.source.inputdir = /home/peiliping/dev/logs/
+
+meepo.parquet2es.channel.bufferSize = 16
+meepo.parquet2es.channel.plugin.type = TYPECONVERT
+
+meepo.parquet2es.sink.type = ELASTICSINK
+meepo.parquet2es.sink.workersNum = 1
+meepo.parquet2es.sink.stepsize = 1000
+meepo.parquet2es.sink.address = 127.0.0.1
+meepo.parquet2es.sink.port = 9300
+```
+
 一个较为完整的jdbc url参数
 ```
 rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;verifyServerCertificate=false&amp;failOverReadOnly=false&amp;autoReconnect=true&amp;autoReconnectForPools=true
