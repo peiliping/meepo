@@ -1,4 +1,4 @@
-package meepo.transform.channel.plugin.TypeConvert;
+package meepo.transform.channel.plugin.typeconvert;
 
 import meepo.transform.config.TaskContext;
 import meepo.util.ParquetTypeMapping;

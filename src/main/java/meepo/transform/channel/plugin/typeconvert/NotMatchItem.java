@@ -1,4 +1,4 @@
-package meepo.transform.channel.plugin.TypeConvert;
+package meepo.transform.channel.plugin.typeconvert;
 
 import com.google.common.collect.Maps;
 import lombok.Builder;
