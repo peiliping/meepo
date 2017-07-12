@@ -26,10 +26,11 @@ public class DBSyncByIdSource extends DBByIdSource {
         super.currentPos = super.start;
     }
 
-    @Override public void work() {
+    @Override
+    public void work() {
         this.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
         super.tmpEnd = (this.startEnd.getRight() - super.currentPos >= super.stepSize) ? super.currentPos + super.stepSize : this.startEnd.getRight();
-        if (executeQuery()) {
+        if ((super.currentPos != super.tmpEnd) && executeQuery()) {
             super.currentPos = super.tmpEnd;
         } else {
             Util.sleep(1);
