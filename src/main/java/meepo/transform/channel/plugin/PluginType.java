@@ -1,5 +1,6 @@
 package meepo.transform.channel.plugin;
 
+import meepo.transform.channel.plugin.custom.ConditionReplacePlugin;
 import meepo.transform.channel.plugin.replace.ComplexReplacePlugin;
 import meepo.transform.channel.plugin.replace.ReplacePlugin;
 import meepo.transform.channel.plugin.typeconvert.ParquetTypeConvertPlugin;
@@ -20,7 +21,9 @@ public enum PluginType {
 
     COMPLEXREPLACEPLUGIN(ComplexReplacePlugin.class),
 
-    GROUPPLUGIN(GroupPlugin.class);
+    GROUPPLUGIN(GroupPlugin.class),
+
+    CUSCONDITIONREPLACEPLUGIN(ConditionReplacePlugin.class);
 
     public Class<? extends AbstractPlugin> clazz;
 
