@@ -16,6 +16,8 @@ public class DBSyncByIdSource extends DBByIdSource {
 
     protected String rollingSql;
 
+    protected long deley4flush;
+
     public DBSyncByIdSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         Validate.isTrue(totalNum == 1);
@@ -24,13 +26,23 @@ public class DBSyncByIdSource extends DBByIdSource {
         this.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
         super.start = context.getLong("start", this.startEnd.getRight());
         super.currentPos = super.start;
+        this.deley4flush = context.getLong("delay4flush", 5L);
     }
 
     @Override
     public void work() {
         this.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
         super.tmpEnd = (this.startEnd.getRight() - super.currentPos >= super.stepSize) ? super.currentPos + super.stepSize : this.startEnd.getRight();
-        if ((super.currentPos != super.tmpEnd) && executeQuery()) {
+        if (super.currentPos == super.tmpEnd) {
+            Util.sleep(1);
+            return;
+        }
+
+        if (this.startEnd.getRight() - super.tmpEnd < super.stepSize) {
+            Util.sleep(this.deley4flush);
+        }
+        
+        if (executeQuery()) {
             super.currentPos = super.tmpEnd;
         } else {
             Util.sleep(1);
