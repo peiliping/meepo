@@ -47,7 +47,7 @@ public class BitMapLogSink extends AbstractSink {
     public void onEvent(Object event) throws Exception {
         Object x = ((DataEvent) event).getTarget()[this.columnPosition];
         if (x != null) {
-            this.bitmap.add(((Integer) x));
+            this.bitmap.add(((Long) x).intValue());
         }
     }
 

@@ -2,6 +2,7 @@ package meepo.controller;
 
 import meepo.storage.BitStore;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -21,19 +22,19 @@ public class StoreController {
 
     @RequestMapping("/task/bitresult/diff/{s1}/{s2}")
     @ResponseBody
-    public String diff(String s1, String s2) {
+    public String diff(@PathVariable String s1, @PathVariable String s2) {
         return BitStore.getInstance().diff(s1, s2);
     }
 
     @RequestMapping("/task/bitresult/count/{s1}")
     @ResponseBody
-    public int count(String s1) {
+    public int count(@PathVariable String s1) {
         return BitStore.getInstance().getSize(s1);
     }
 
     @RequestMapping("/task/bitresult/clean/{s1}")
     @ResponseBody
-    public String clean(String s1) {
+    public String clean(@PathVariable String s1) {
         BitStore.getInstance().clean(s1);
         return "OK";
     }
