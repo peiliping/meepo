@@ -1,6 +1,7 @@
 package meepo.transform.sink;
 
 import meepo.transform.sink.elastic.ElasticSink;
+import meepo.transform.sink.log.BitMapLogSink;
 import meepo.transform.sink.log.SlowLogSink;
 import meepo.transform.sink.parquet.ParquetSink;
 import meepo.transform.sink.rdb.DBIgnoreSink;
@@ -14,6 +15,8 @@ import meepo.transform.sink.redis.RedisSink;
 public enum SinkType {
 
     SLOWLOGSINK(SlowLogSink.class),
+
+    BITMAPLOGSINK(BitMapLogSink.class),
 
     DBINSERTSINK(DBInsertSink.class),
 
