@@ -1,6 +1,6 @@
 package meepo.transform.sink.log;
 
-import meepo.storage.BitStore;
+import meepo.storage.Bit32Store;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
@@ -30,11 +30,15 @@ public class BitMapLogSink extends AbstractSink {
     public void onStart() {
         super.onStart();
         if (this.columnPosition < 0) {
-            super.schema.forEach(x -> {
-                if (columnName.equals(x.getKey())) {
-                    columnPosition = super.schema.indexOf(x);
-                }
-            });
+            if (this.columnName == null) {
+                this.columnPosition = 0;
+            } else {
+                super.schema.forEach(x -> {
+                    if (columnName.equals(x.getKey())) {
+                        columnPosition = super.schema.indexOf(x);
+                    }
+                });
+            }
         }
         this.bitmap = new RoaringBitmap();
     }
@@ -47,7 +51,11 @@ public class BitMapLogSink extends AbstractSink {
     public void onEvent(Object event) throws Exception {
         Object x = ((DataEvent) event).getTarget()[this.columnPosition];
         if (x != null) {
-            this.bitmap.add(((Long) x).intValue());
+            Long i = (Long) x;
+            if (i > 0 && i < Integer.MAX_VALUE) {
+                this.bitmap.add(i.intValue());
+                super.count++;
+            }
         }
     }
 
@@ -55,7 +63,7 @@ public class BitMapLogSink extends AbstractSink {
     public void onShutdown() {
         super.onShutdown();
         this.bitmap.runOptimize();
-        BitStore.getInstance().save(this.keyName, this.bitmap);
+        Bit32Store.getInstance().save(this.keyName, this.bitmap);
         this.bitmap = null;
     }
 }

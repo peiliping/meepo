@@ -1,6 +1,6 @@
 package meepo.controller;
 
-import meepo.storage.BitStore;
+import meepo.storage.Bit32Store;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,30 +12,30 @@ import java.util.Set;
  * Created by peiliping on 17-7-13.
  */
 @Controller
-public class StoreController {
+public class BitStoreController {
 
-    @RequestMapping("/task/bitresult/list")
+    @RequestMapping("/task/bitstore/keys")
     @ResponseBody
-    public Set<String> list() {
-        return BitStore.getInstance().list();
+    public Set<String> keys() {
+        return Bit32Store.getInstance().keys();
     }
 
-    @RequestMapping("/task/bitresult/diff/{s1}/{s2}")
+    @RequestMapping("/task/bitstore/diff/{s1}/{s2}")
     @ResponseBody
     public String diff(@PathVariable String s1, @PathVariable String s2) {
-        return BitStore.getInstance().diff(s1, s2);
+        return Bit32Store.getInstance().diff(s1, s2);
     }
 
-    @RequestMapping("/task/bitresult/count/{s1}")
+    @RequestMapping("/task/bitstore/count/{s1}")
     @ResponseBody
     public int count(@PathVariable String s1) {
-        return BitStore.getInstance().getSize(s1);
+        return Bit32Store.getInstance().getSize(s1);
     }
 
     @RequestMapping("/task/bitresult/clean/{s1}")
     @ResponseBody
     public String clean(@PathVariable String s1) {
-        BitStore.getInstance().clean(s1);
+        Bit32Store.getInstance().clean(s1);
         return "OK";
     }
 }
