@@ -20,17 +20,24 @@ import java.util.List;
  * Created by peiliping on 17-2-21.
  */
 
-@Controller public class TaskController {
+@Controller
+public class TaskController {
 
-    @Autowired private Environment env;
+    @Autowired
+    private Environment env;
 
-    @Autowired private TasksManager tasksManager;
+    @Autowired
+    private TasksManager tasksManager;
 
-    @RequestMapping("/") @ResponseBody public String index() {
+    @RequestMapping("/")
+    @ResponseBody
+    public String index() {
         return "Hello World!";
     }
 
-    @RequestMapping("/task/preload") @ResponseBody public List<TaskContext> checkTasks() throws Exception {
+    @RequestMapping("/task/preload")
+    @ResponseBody
+    public List<TaskContext> checkTasks() throws Exception {
         TaskContext context = initTasksContext();
         List<String> taskNames = Lists.newArrayList(context.get(Constants.PROJECT_NAME).split("\\s"));
         List<TaskContext> taskConfigs = Lists.newArrayList();
@@ -38,11 +45,15 @@ import java.util.List;
         return taskConfigs;
     }
 
-    @RequestMapping("/task/list") @ResponseBody public List<TaskContext> listTasks() throws Exception {
+    @RequestMapping("/task/list")
+    @ResponseBody
+    public List<TaskContext> listTasks() throws Exception {
         return this.tasksManager.listTasks();
     }
 
-    @RequestMapping("/task/{taskName}/run") @ResponseBody public Boolean runTask(@PathVariable String taskName) throws Exception {
+    @RequestMapping("/task/{taskName}/run")
+    @ResponseBody
+    public Boolean runTask(@PathVariable String taskName) throws Exception {
         Validate.notBlank(taskName);
         TaskContext context = initTasksContext();
         List<String> taskNames = Lists.newArrayList(context.get(Constants.PROJECT_NAME).split("\\s"));
@@ -51,12 +62,16 @@ import java.util.List;
         return this.tasksManager.addTask(tc);
     }
 
-    @RequestMapping("/task/{taskName}/report") @ResponseBody public List<IReportItem> reportTask(@PathVariable String taskName) throws Exception {
+    @RequestMapping("/task/{taskName}/report")
+    @ResponseBody
+    public List<IReportItem> reportTask(@PathVariable String taskName) throws Exception {
         Validate.notBlank(taskName);
         return this.tasksManager.report(taskName);
     }
 
-    @RequestMapping("/task/{taskName}/kill") @ResponseBody public Boolean killTask(@PathVariable String taskName) throws Exception {
+    @RequestMapping("/task/{taskName}/kill")
+    @ResponseBody
+    public Boolean killTask(@PathVariable String taskName) throws Exception {
         Validate.notBlank(taskName);
         TaskContext context = initTasksContext();
         List<String> taskNames = Lists.newArrayList(context.get(Constants.PROJECT_NAME).split("\\s"));
