@@ -33,7 +33,8 @@ public abstract class AbstractSource implements ISource {
 
     protected long tmpIndex;
 
-    @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
+    @Getter
+    protected List<Pair<String, Integer>> schema = Lists.newArrayList();
 
     public AbstractSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         this.taskName = name;
@@ -42,37 +43,42 @@ public abstract class AbstractSource implements ISource {
         this.channel = rb;
     }
 
-    @Override public void start() {
+    @Override
+    public void start() {
         this.RUNNING = true;
         LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " start at " + LocalDateTime.now());
     }
 
-    @Override public void stop() {
+    @Override
+    public void stop() {
         this.RUNNING = false;
     }
 
-    @Override public void end() {
+    @Override
+    public void end() {
         this.RUNNING = false;
         LOG.info(this.taskName + "-Source-" + this.indexOfSources + "[" + this.getClass().getSimpleName() + "]" + " end at " + LocalDateTime.now());
     }
 
-    private DataEvent de;
-
-    @Override public DataEvent feedOne() {
+    @Override
+    public DataEvent feedOne() {
         this.tmpIndex = this.channel.getNextSeq();
-        this.de = this.channel.getBySeq(this.tmpIndex);
+        DataEvent de = this.channel.getBySeq(this.tmpIndex);
         if (!this.channel.isCovered(this.tmpIndex)) {
-            this.de.setSource(new Object[this.columnsNum]);
+            de.setSource(new Object[this.columnsNum]);
         }
-        this.de.setTarget(null);
-        return this.de;
+        de.setTarget(null);
+        de.setValid(true);
+        return de;
     }
 
-    @Override public void pushOne() {
+    @Override
+    public void pushOne() {
         this.channel.pushBySeq(this.tmpIndex);
     }
 
-    @Override public void run() {
+    @Override
+    public void run() {
         start();
         while (this.RUNNING) {
             try {
@@ -84,7 +90,8 @@ public abstract class AbstractSource implements ISource {
         end();
     }
 
-    @Override public boolean isRunning() {
+    @Override
+    public boolean isRunning() {
         return this.RUNNING;
     }
 }

@@ -23,16 +23,17 @@ public abstract class AbstractBatchSink extends AbstractSink {
         this.stepSize = context.getInteger("stepSize", 100);
     }
 
-    @Override public void onStart() {
+    @Override
+    public void onStart() {
         super.onStart();
         this.handler.init();
     }
 
-    @Override public void onEvent(Object event) throws Exception {
+    @Override
+    public void event(DataEvent de) {
         super.RUNNING = true;
         super.count++;
         this.handler.prepare(this.stepSize);
-        DataEvent de = (DataEvent) event;
         this.handler.feed(de);
         if (super.count - this.lastCommit >= this.stepSize || System.currentTimeMillis() - this.lastFlushTS > 3000) {
             sinkFlush();
@@ -54,11 +55,13 @@ public abstract class AbstractBatchSink extends AbstractSink {
         this.lastFlushTS = System.currentTimeMillis();
     }
 
-    @Override public void timeOut() {
+    @Override
+    public void timeOut() {
         sinkFlush();
     }
 
-    @Override public void onShutdown() {
+    @Override
+    public void onShutdown() {
         sinkFlush();
         super.onShutdown();
     }

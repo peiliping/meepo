@@ -6,6 +6,7 @@ import com.lmax.disruptor.LifecycleAware;
 import com.lmax.disruptor.TimeoutHandler;
 import com.lmax.disruptor.WorkHandler;
 import lombok.Getter;
+import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.report.IReportItem;
 import meepo.transform.report.SinkReportItem;
@@ -29,7 +30,8 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     protected boolean RUNNING = false;
 
-    @Getter protected List<Pair<String, Integer>> schema = Lists.newArrayList();
+    @Getter
+    protected List<Pair<String, Integer>> schema = Lists.newArrayList();
 
     protected long count;
 
@@ -44,19 +46,32 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     public abstract void timeOut();
 
-    @Override public void onEvent(Object event, long sequence, boolean endOfBatch) throws Exception {
+    @Override
+    public void onEvent(Object event, long sequence, boolean endOfBatch) throws Exception {
         onEvent(event);
     }
 
-    @Override public void onTimeout(long sequence) throws Exception {
+    @Override
+    public final void onEvent(Object event) throws Exception {
+        if (event == null || !((DataEvent) event).isValid())
+            return;
+
+    }
+
+    public abstract void event(DataEvent event);
+
+    @Override
+    public void onTimeout(long sequence) throws Exception {
         timeOut();
     }
 
-    @Override public void onStart() {
+    @Override
+    public void onStart() {
         LOG.info(this.taskName + "-Sink-" + this.indexOfSinks + "[" + this.getClass().getSimpleName() + "]" + " starting at " + LocalDateTime.now());
     }
 
-    @Override public void onShutdown() {
+    @Override
+    public void onShutdown() {
         LOG.info(this.taskName + "-Sink-" + this.indexOfSinks + "[" + this.getClass().getSimpleName() + "]" + " ending at " + LocalDateTime.now());
     }
 
