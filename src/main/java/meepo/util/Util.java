@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.Closeable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by peiliping on 17-3-6.
@@ -29,6 +31,16 @@ public class Util {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
         }
+    }
+
+    public static String matchDBName(TaskContext context) {
+        Validate.notNull(context.get("url"));
+        Pattern pattern = Pattern.compile("jdbc:(.+)://(.+)/(.+)\\?(.+)");
+        Matcher m = pattern.matcher(context.get("url"));
+        if (m.find())
+            return m.group(3);
+        Validate.isTrue(false, "no db info .");
+        return null;
     }
 
     public static DataSource createDataSource(TaskContext context) {

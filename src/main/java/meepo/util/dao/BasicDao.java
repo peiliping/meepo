@@ -20,10 +20,11 @@ public class BasicDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(BasicDao.class);
 
-    public static String autoGetPrimaryKeyName(DataSource ds, String tableName) {
-        String sql = "SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where table_name='" + tableName + "' AND COLUMN_KEY='PRI'";
+    public static String autoGetPrimaryKeyName(DataSource ds, String dbName, String tableName) {
+        String sql = "SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where table_schema='" + dbName + "' AND table_name='" + tableName + "' AND COLUMN_KEY='PRI'";
         return executeQuery(ds, sql, new ResultSetICallable<String>() {
-            @Override public String handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public String handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
                 return r.getString(1);
             }
@@ -39,7 +40,8 @@ public class BasicDao {
             sql = buildAutoGetStartEndSql(tableName, primaryKeyName);
         }
         return executeQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
-            @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
                 return Pair.of(r.getLong(1) - 1, r.getLong(2));
             }
@@ -51,7 +53,8 @@ public class BasicDao {
             sql = buildAutoGetStartEndSql(tableName, primaryKeyName);
         }
         return executeQuery(ds, sql, new ResultSetICallable<Pair<Long, Long>>() {
-            @Override public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public Pair<Long, Long> handleResultSet(ResultSet r) throws Exception {
                 Validate.isTrue(r.next());
                 return Pair.of(r.getTimestamp(1).getTime() - 1, r.getTimestamp(2).getTime());
             }
@@ -61,7 +64,8 @@ public class BasicDao {
     public static List<Pair<String, Integer>> parserSchema(DataSource ds, String tableName, String columnNames, String primaryKeyName) {
         String sql = "SELECT " + columnNames + " FROM " + tableName + " WHERE " + primaryKeyName + " = 0" + " LIMIT 1";
         return executeQuery(ds, sql, new ResultSetICallable<List<Pair<String, Integer>>>() {
-            @Override public List<Pair<String, Integer>> handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public List<Pair<String, Integer>> handleResultSet(ResultSet r) throws Exception {
                 List<Pair<String, Integer>> result = Lists.newArrayList();
                 Validate.isTrue(r.getMetaData().getColumnCount() > 0);
                 for (int i = 1; i <= r.getMetaData().getColumnCount(); i++) {
