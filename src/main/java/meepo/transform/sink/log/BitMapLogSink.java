@@ -48,8 +48,8 @@ public class BitMapLogSink extends AbstractSink {
     }
 
     @Override
-    public void onEvent(Object event) throws Exception {
-        Object x = ((DataEvent) event).getTarget()[this.columnPosition];
+    public void event(DataEvent event) {
+        Object x = event.getTarget()[this.columnPosition];
         if (x != null) {
             Long i = (Long) x;
             if (i > 0 && i < Integer.MAX_VALUE) {

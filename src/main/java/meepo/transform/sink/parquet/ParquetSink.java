@@ -46,17 +46,19 @@ public class ParquetSink extends AbstractSink {
         this.hdfsConfDir = context.get("hdfsconfdir");
     }
 
-    @Override public void onStart() {
+    @Override
+    public void onStart() {
         super.onStart();
         this.messageType = new MessageType(this.tableName, ParquetTypeMapping.convert2Types(super.schema));
         initHDFS();
     }
 
-    @Override public void onEvent(Object event) throws Exception {
+    @Override
+    public void event(DataEvent event) {
         super.count++;
         initSinkHelper();
         try {
-            this.sinkHelper.write(((DataEvent) event).getTarget());
+            this.sinkHelper.write(event.getTarget());
             if (++this.counter >= this.rollingSize) {
                 this.closeParquet();
             }
@@ -66,12 +68,14 @@ public class ParquetSink extends AbstractSink {
         }
     }
 
-    @Override public void onShutdown() {
+    @Override
+    public void onShutdown() {
         this.closeParquet();
         super.onShutdown();
     }
 
-    @Override public void timeOut() {
+    @Override
+    public void timeOut() {
     }
 
     public void initHDFS() {

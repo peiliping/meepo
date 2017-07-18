@@ -1,5 +1,6 @@
 package meepo.transform.sink.log;
 
+import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
 import meepo.util.Util;
@@ -16,14 +17,16 @@ public class SlowLogSink extends AbstractSink {
         this.sleep = context.getInteger("sleep", 1000);
     }
 
-    @Override public void onEvent(Object event) throws Exception {
+    @Override
+    public void event(DataEvent event) {
         super.count++;
         if (this.sleep > 0)
             Util.sleepMS(this.sleep);
         LOG.info("event : " + event);
     }
 
-    @Override public void timeOut() {
+    @Override
+    public void timeOut() {
         LOG.info("time out.");
     }
 
