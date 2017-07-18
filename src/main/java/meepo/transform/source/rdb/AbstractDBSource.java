@@ -47,7 +47,7 @@ public abstract class AbstractDBSource extends AbstractSource {
         super(name, index, totalNum, context, rb);
         this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
-        this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.tableName));
+        this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, Util.matchDBName(context), this.tableName));
         this.columnNames = context.getString("columnNames", "*");
         this.extraSQL = context.getString("extraSQL", "");
 
@@ -64,7 +64,8 @@ public abstract class AbstractDBSource extends AbstractSource {
         this.sql = buildSQL();
     }
 
-    @Override public void work() {
+    @Override
+    public void work() {
         if (this.currentPos >= this.end) {
             super.RUNNING = false;
             return;
@@ -90,12 +91,14 @@ public abstract class AbstractDBSource extends AbstractSource {
         }
     }
 
-    @Override public void end() {
+    @Override
+    public void end() {
         super.end();
         Util.closeDataSource(this.dataSource);
     }
 
-    @Override public SourceReportItem report() {
+    @Override
+    public SourceReportItem report() {
         return SourceReportItem.builder().name(super.taskName + "-Source-" + super.indexOfSources).start(this.start).current(this.currentPos).end(this.end).running(super.RUNNING)
                 .build();
     }

@@ -41,7 +41,7 @@ public class DBInsertSink extends AbstractBatchSink {
                 DataSourceCache.createDataSource(name + "-sink", new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_))) :
                 Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
-        this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.tableName));
+        this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, Util.matchDBName(context), this.tableName));
         this.columnNames = context.getString("columnNames", "*");
         this.truncateTable = context.getBoolean("truncate", false);
 
@@ -64,14 +64,16 @@ public class DBInsertSink extends AbstractBatchSink {
         super.handler = new MysqlHandler(this.dataSource, this.sql, super.schema);
     }
 
-    @Override public void onStart() {
+    @Override
+    public void onStart() {
         super.onStart();
         if (this.truncateTable && super.indexOfSinks == 0) {
             this.handler.truncate(this.tableName);
         }
     }
 
-    @Override public void onShutdown() {
+    @Override
+    public void onShutdown() {
         super.onShutdown();
         if (this.sinkSharedDataSource) {
             DataSourceCache.close(super.taskName + "-sink");
