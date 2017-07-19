@@ -51,7 +51,7 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
     public final void onEvent(Object event) throws Exception {
         if (event == null || !((DataEvent) event).isValid())
             return;
-
+        event((DataEvent) event);
     }
 
     public abstract void event(DataEvent event);
