@@ -39,10 +39,11 @@ public class DBInsertSink extends AbstractBatchSink {
     public DBInsertSink(String name, int index, TaskContext context) {
         super(name, index, context);
         this.sinkSharedDataSource = context.getBoolean("sharedDatasource", true);
+        TaskContext dataSourceContext = new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_));
         this.dataSource = this.sinkSharedDataSource ?
-                DataSourceCache.createDataSource(name + "-sink", new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_))) :
-                Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
-        this.dbName = context.getString("dbName", Util.matchDBName(context));
+                DataSourceCache.createDataSource(name + "-sink", dataSourceContext) :
+                Util.createDataSource(dataSourceContext);
+        this.dbName = context.getString("dbName", Util.matchDBName(dataSourceContext));
         this.tableName = context.getString("tableName");
         this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.dbName, this.tableName));
         this.columnNames = context.getString("columnNames", "*");

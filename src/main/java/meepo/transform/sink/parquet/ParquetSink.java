@@ -79,9 +79,11 @@ public class ParquetSink extends AbstractSink {
     }
 
     public void initHDFS() {
-        if (this.hdfsConfDir == null || super.indexOfSinks > 0) {
+        if (this.hdfsConfDir == null)
             return;
-        }
+        if (super.indexOfSinks > 0)
+            return;
+        
         try {
             FileSystem hdfs = FileSystem.get(createConf(this.hdfsConfDir));
             Path metap = new Path(this.outputDir + "/.metadata");
