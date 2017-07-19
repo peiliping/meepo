@@ -35,10 +35,6 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
 
     protected long count;
 
-    protected long metricBatchCount;
-
-    protected long metricUnsaturatedBatch;
-
     public AbstractSink(String name, int index, TaskContext context) {
         this.taskName = name;
         this.indexOfSinks = index;
@@ -80,7 +76,6 @@ public abstract class AbstractSink implements EventHandler, WorkHandler, Timeout
     }
 
     public IReportItem report() {
-        return SinkReportItem.builder().name(this.taskName + "-Sink-" + this.indexOfSinks).count(this.count).batchCount(this.metricBatchCount)
-                .unsaturatedBatch(this.metricUnsaturatedBatch).running(this.RUNNING).build();
+        return SinkReportItem.builder().name(this.taskName + "-Sink-" + this.indexOfSinks).count(this.count).running(this.RUNNING).build();
     }
 }

@@ -2,6 +2,8 @@ package meepo.transform.sink.batch;
 
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
+import meepo.transform.report.IReportItem;
+import meepo.transform.report.SinkReportItem;
 import meepo.transform.sink.AbstractSink;
 
 /**
@@ -16,6 +18,10 @@ public abstract class AbstractBatchSink extends AbstractSink {
     protected long lastFlushTS;
 
     protected IHandler handler;
+
+    protected long metricBatchCount;
+
+    protected long metricUnsaturatedBatch;
 
     public AbstractBatchSink(String name, int index, TaskContext context) {
         super(name, index, context);
@@ -42,9 +48,9 @@ public abstract class AbstractBatchSink extends AbstractSink {
 
     protected void sinkFlush() {
         if (super.count - this.lastCommit > 0) {
-            super.metricBatchCount++;
+            this.metricBatchCount++;
             if (super.count - this.lastCommit < this.stepSize) {
-                super.metricUnsaturatedBatch++;
+                this.metricUnsaturatedBatch++;
             }
             this.handler.flush();
         } else {
@@ -64,5 +70,11 @@ public abstract class AbstractBatchSink extends AbstractSink {
     public void onShutdown() {
         sinkFlush();
         super.onShutdown();
+    }
+
+    @Override
+    public IReportItem report() {
+        return SinkReportItem.builder().name(super.taskName + "-Sink-" + super.indexOfSinks).count(super.count).batchCount(this.metricBatchCount)
+                .unsaturatedBatch(this.metricUnsaturatedBatch).running(super.RUNNING).build();
     }
 }
