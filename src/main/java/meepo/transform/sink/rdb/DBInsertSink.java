@@ -20,6 +20,8 @@ public class DBInsertSink extends AbstractBatchSink {
 
     protected DataSource dataSource;
 
+    protected String dbName;
+
     protected String tableName;
 
     protected String primaryKeyName;
@@ -40,11 +42,11 @@ public class DBInsertSink extends AbstractBatchSink {
         this.dataSource = this.sinkSharedDataSource ?
                 DataSourceCache.createDataSource(name + "-sink", new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_))) :
                 Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
+        this.dbName = context.getString("dbName", Util.matchDBName(context));
         this.tableName = context.getString("tableName");
-        this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, Util.matchDBName(context), this.tableName));
+        this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.dbName, this.tableName));
         this.columnNames = context.getString("columnNames", "*");
         this.truncateTable = context.getBoolean("truncate", false);
-
         super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
         final List<String> columnsArray = Lists.newArrayList();
         final List<String> paramsArray = Lists.newArrayList();
@@ -59,7 +61,6 @@ public class DBInsertSink extends AbstractBatchSink {
         });
         this.columnNames = StringUtils.join(columnsArray, ",");
         this.paramsStr = StringUtils.join(paramsArray, ",");
-
         this.sql = buildSQL();
         super.handler = new MysqlHandler(this.dataSource, this.sql, super.schema);
     }
