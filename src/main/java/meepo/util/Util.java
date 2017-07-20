@@ -33,13 +33,23 @@ public class Util {
         }
     }
 
+    public static String matchDBType(TaskContext context) {
+        Validate.notNull(context.get("url"));
+        Pattern pattern = Pattern.compile("jdbc:(.+)://(.+)/(.+)\\?(.+)");
+        Matcher m = pattern.matcher(context.get("url"));
+        if (m.find())
+            return m.group(1);
+        Validate.isTrue(false, "no dbtype info .");
+        return null;
+    }
+
     public static String matchDBName(TaskContext context) {
         Validate.notNull(context.get("url"));
         Pattern pattern = Pattern.compile("jdbc:(.+)://(.+)/(.+)\\?(.+)");
         Matcher m = pattern.matcher(context.get("url"));
         if (m.find())
             return m.group(3);
-        Validate.isTrue(false, "no db info .");
+        Validate.isTrue(false, "no dbname info .");
         return null;
     }
 
