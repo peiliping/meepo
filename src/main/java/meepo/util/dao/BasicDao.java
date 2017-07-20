@@ -61,8 +61,8 @@ public class BasicDao {
         });
     }
 
-    public static List<Pair<String, Integer>> parserSchema(DataSource ds, String tableName, String columnNames, String primaryKeyName) {
-        String sql = "SELECT " + columnNames + " FROM " + tableName + " WHERE " + primaryKeyName + " = 0" + " LIMIT 1";
+    public static List<Pair<String, Integer>> parserSchema(DataSource ds, String tableName, String columnNames) {
+        String sql = "SELECT " + columnNames + " FROM " + tableName + " LIMIT 1";
         return executeQuery(ds, sql, new ResultSetICallable<List<Pair<String, Integer>>>() {
             @Override
             public List<Pair<String, Integer>> handleResultSet(ResultSet r) throws Exception {

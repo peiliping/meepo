@@ -24,8 +24,6 @@ public class DBInsertSink extends AbstractBatchSink {
 
     protected String tableName;
 
-    protected String primaryKeyName;
-
     protected String columnNames;
 
     protected String paramsStr;// ?,?,?,?
@@ -45,10 +43,9 @@ public class DBInsertSink extends AbstractBatchSink {
                 Util.createDataSource(dataSourceContext);
         this.dbName = context.getString("dbName", Util.matchDBName(dataSourceContext));
         this.tableName = context.getString("tableName");
-        this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.dbName, this.tableName));
         this.columnNames = context.getString("columnNames", "*");
         this.truncateTable = context.getBoolean("truncate", false);
-        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
+        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames);
         final List<String> columnsArray = Lists.newArrayList();
         final List<String> paramsArray = Lists.newArrayList();
         final boolean original = "*".equals(this.columnNames);
