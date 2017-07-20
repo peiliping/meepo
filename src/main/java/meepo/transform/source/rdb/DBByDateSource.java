@@ -24,8 +24,6 @@ public class DBByDateSource extends AbstractDBSource {
         super.stepSize = context.getInteger("stepSize", 60000);
         super.start = context.getLong("start", ps.getLeft());
         super.end = context.getLong("end", ps.getRight());
-        //long vStart = super.start - (super.start % super.stepSize);
-        //super.currentPos = Math.max(vStart + index * super.stepSize, super.start);
         super.currentPos = super.start + index * super.stepSize;
         super.handler = new ICallable<Boolean>() {
 

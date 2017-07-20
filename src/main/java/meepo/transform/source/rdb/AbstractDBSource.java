@@ -56,7 +56,7 @@ public abstract class AbstractDBSource extends AbstractSource {
         this.extraSQL = context.getString("extraSQL", "");
 
         final List<String> columnsArray = Lists.newArrayList();
-        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames, this.primaryKeyName);
+        super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames);
         final boolean original = "*".equals(this.columnNames);
         if (original) {
             super.schema.forEach(item -> columnsArray.add("`" + item.getLeft() + "`"));
