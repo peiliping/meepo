@@ -38,6 +38,8 @@ public class ParquetSink extends AbstractSink {
 
     private ParquetSinkHelper sinkHelper;
 
+    private FileSystem hdfs;
+
     public ParquetSink(String name, int index, TaskContext context) {
         super(name, index, context);
         this.tableName = context.getString("tableName");
@@ -71,6 +73,13 @@ public class ParquetSink extends AbstractSink {
     @Override
     public void onShutdown() {
         this.closeParquet();
+        if (this.hdfs != null) {
+            try {
+                this.hdfs.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         super.onShutdown();
     }
 
@@ -81,11 +90,15 @@ public class ParquetSink extends AbstractSink {
     public void initHDFS() {
         if (this.hdfsConfDir == null)
             return;
-        if (super.indexOfSinks > 0)
-            return;
-        
         try {
-            FileSystem hdfs = FileSystem.get(createConf(this.hdfsConfDir));
+            this.hdfs = FileSystem.get(createConf(this.hdfsConfDir));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (super.indexOfSinks > 0) {
+            return;
+        }
+        try {
             Path metap = new Path(this.outputDir + "/.metadata");
             if (!hdfs.exists(metap)) {
                 hdfs.mkdirs(metap);
@@ -97,7 +110,6 @@ public class ParquetSink extends AbstractSink {
                 fsd.write(avsc.toString().getBytes(Charset.forName("UTF-8")));
                 fsd.flush();
                 fsd.close();
-                hdfs.close();
             }
         } catch (Exception e) {
             LOG.error("Init HDFS Error :", e);
@@ -114,7 +126,7 @@ public class ParquetSink extends AbstractSink {
             super.RUNNING = true;
             this.sinkHelper = (this.hdfsConfDir == null ?
                     new ParquetSinkHelper(new Path(fileName), this.messageType) :
-                    new ParquetSinkHelper(new Path(fileName), this.messageType, createConf(this.hdfsConfDir)));
+                    new ParquetSinkHelper(this.hdfs.makeQualified(new Path(fileName)), this.messageType, createConf(this.hdfsConfDir)));
         } catch (Exception e) {
             LOG.error("Init Parquet File Error :", e);
             Validate.isTrue(false);
@@ -125,15 +137,18 @@ public class ParquetSink extends AbstractSink {
         if (this.sinkHelper == null) {
             return;
         }
-        try {
-            this.sinkHelper.close();
-            this.sinkHelper = null;
-            this.counter = 0;
-            this.part++;
-            super.RUNNING = false;
-        } catch (IOException e) {
-            LOG.error("Close Parquet File Error :", e);
+        while(!this.sinkHelper.isClose()){
+            try {
+                this.sinkHelper.close();
+            } catch (Exception e) {
+                LOG.error("Close Parquet File Error :", e);
+            }
+            Util.sleep(5);
         }
+        this.sinkHelper = null;
+        this.counter = 0;
+        this.part++;
+        super.RUNNING = false;
     }
 
     public static Configuration createConf(String classpath) {
