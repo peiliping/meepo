@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by peiliping on 17-7-21.
  */
-public class Roaring64BitMap {
+public class Roaring64BitMap implements Iterable<Long> {
 
     private Map<Long, RoaringBitmap> core = new HashMap<>();
 
@@ -99,5 +99,53 @@ public class Roaring64BitMap {
         }
         answer.append("}");
         return answer.toString();
+    }
+
+    @Override
+    public Iterator<Long> iterator() {
+        return new Roaring64BitMapInterator();
+    }
+
+    final class Roaring64BitMapInterator implements Iterator<Long> {
+
+        TreeSet<Long> keys;
+
+        Iterator<Long> keysIterator;
+
+        Long keyCurrent;
+
+        Iterator<Integer> valsIterator;
+
+        public Roaring64BitMapInterator() {
+            this.keys = new TreeSet<>(core.keySet());
+            this.keysIterator = this.keys.iterator();
+            if (this.keysIterator.hasNext()) {
+                this.keyCurrent = this.keysIterator.next();
+                this.valsIterator = core.get(this.keyCurrent).iterator();
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (this.valsIterator == null) {
+                return false;
+            }
+            if (this.valsIterator.hasNext()) {
+                return true;
+            }
+            while (this.keysIterator.hasNext()) {
+                this.keyCurrent = this.keysIterator.next();
+                this.valsIterator = core.get(this.keyCurrent).iterator();
+                if (this.valsIterator.hasNext()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Long next() {
+            return (this.keyCurrent << 31) + this.valsIterator.next();
+        }
     }
 }
