@@ -1,10 +1,10 @@
 package meepo.transform.sink.log;
 
-import meepo.storage.Bit32Store;
+import meepo.storage.Bit64Store;
+import meepo.storage.Roaring64BitMap;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
-import org.roaringbitmap.RoaringBitmap;
 
 /**
  * Created by peiliping on 17-7-13.
@@ -15,7 +15,7 @@ public class BitMapLogSink extends AbstractSink {
 
     private int columnPosition;
 
-    private RoaringBitmap bitmap;
+    private Roaring64BitMap bitmap;
 
     private String keyName;
 
@@ -40,7 +40,7 @@ public class BitMapLogSink extends AbstractSink {
                 });
             }
         }
-        this.bitmap = new RoaringBitmap();
+        this.bitmap = new Roaring64BitMap();
     }
 
     @Override
@@ -51,11 +51,8 @@ public class BitMapLogSink extends AbstractSink {
     public void event(DataEvent event) {
         Object x = event.getTarget()[this.columnPosition];
         if (x != null) {
-            Long i = (Long) x;
-            if (i > 0 && i < Integer.MAX_VALUE) {
-                this.bitmap.add(i.intValue());
-                super.count++;
-            }
+            this.bitmap.add((Long) x);
+            super.count++;
         }
     }
 
@@ -63,7 +60,7 @@ public class BitMapLogSink extends AbstractSink {
     public void onShutdown() {
         super.onShutdown();
         this.bitmap.runOptimize();
-        Bit32Store.getInstance().save(this.keyName, this.bitmap);
+        Bit64Store.getInstance().save(this.keyName, this.bitmap);
         this.bitmap = null;
     }
 }

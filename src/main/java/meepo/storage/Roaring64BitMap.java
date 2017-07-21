@@ -16,10 +16,12 @@ public class Roaring64BitMap {
             return;
         long seq = data >> 31;
         int val = (int) (data & Integer.MAX_VALUE);
-        if (!this.core.containsKey(seq)) {
-            this.core.put(seq, new RoaringBitmap());
+        RoaringBitmap rb = this.core.get(seq);
+        if (rb == null) {
+            rb = new RoaringBitmap();
+            this.core.put(seq, rb);
         }
-        this.core.get(seq).add(val);
+        rb.add(val);
     }
 
     public long getCardinality() {
@@ -27,6 +29,11 @@ public class Roaring64BitMap {
         for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
             size += entry.getValue().getCardinality();
         return size;
+    }
+
+    public void runOptimize() {
+        for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
+            entry.getValue().runOptimize();
     }
 
     public static Roaring64BitMap and(Roaring64BitMap r1, Roaring64BitMap r2) {
