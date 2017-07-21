@@ -31,6 +31,11 @@ public class Roaring64BitMap {
         return size;
     }
 
+    public void runOptimize() {
+        for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
+            entry.getValue().runOptimize();
+    }
+
     public static Roaring64BitMap and(Roaring64BitMap r1, Roaring64BitMap r2) {
         Roaring64BitMap result = new Roaring64BitMap();
         Set<Long> resultKeys = new HashSet<>();
