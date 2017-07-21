@@ -28,7 +28,7 @@ public class BitStoreController {
 
     @RequestMapping("/task/bitstore/count/{s1}")
     @ResponseBody
-    public int count(@PathVariable String s1) {
+    public long count(@PathVariable String s1) {
         return Bit32Store.getInstance().getSize(s1);
     }
 
