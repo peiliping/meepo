@@ -67,7 +67,7 @@ public class Roaring64BitMap implements Iterable<Long>, Cloneable {
             result.core.put(key, r1.core.get(key).clone());
         Set<Long> crossKeys = new HashSet<>();
         crossKeys.addAll(r1.core.keySet());
-        crossKeys.removeAll(r2.core.keySet());
+        crossKeys.retainAll(r2.core.keySet());
         for (Long key : crossKeys) {
             RoaringBitmap t = RoaringBitmap.andNot(r1.core.get(key), r2.core.get(key));
             if (t.getCardinality() > 0)
