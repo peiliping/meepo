@@ -25,7 +25,8 @@ public class DBSyncByTSSource extends DBSyncByIdSource {
         super.currentPos = super.start;
     }
 
-    @Override public void work() {
+    @Override
+    public void work() {
         super.startEnd = BasicDao.autoGetStartEndPoint(super.dataSource, super.tableName, super.primaryKeyName, super.rollingSql);
         this.now = System.currentTimeMillis();
         super.tmpEnd = Math.min(super.currentPos + super.stepSize, Math.min(this.now - this.delay, super.startEnd.getRight()));

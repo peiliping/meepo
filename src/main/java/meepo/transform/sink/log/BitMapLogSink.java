@@ -1,10 +1,10 @@
 package meepo.transform.sink.log;
 
-import meepo.storage.Bit64Store;
-import meepo.storage.Roaring64BitMap;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
+import meepo.util.hp.bit.Bit64Store;
+import meepo.util.hp.bit.Roaring64BitMap;
 
 /**
  * Created by peiliping on 17-7-13.

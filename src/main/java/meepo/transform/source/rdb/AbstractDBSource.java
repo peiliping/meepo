@@ -48,8 +48,8 @@ public abstract class AbstractDBSource extends AbstractSource {
     public AbstractDBSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         TaskContext dataSourceContext = new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_));
-        this.dataSource = Util.createDataSource(dataSourceContext);
-        this.dbName = context.getString("dbName", Util.matchDBName(dataSourceContext));
+        this.dataSource = BasicDao.createDataSource(dataSourceContext);
+        this.dbName = context.getString("dbName", BasicDao.matchDBName(dataSourceContext));
         this.tableName = context.getString("tableName");
         this.primaryKeyName = context.getString("primaryKeyName", BasicDao.autoGetPrimaryKeyName(this.dataSource, this.dbName, this.tableName));
         this.columnNames = context.getString("columnNames", "*");
@@ -98,7 +98,7 @@ public abstract class AbstractDBSource extends AbstractSource {
     @Override
     public void end() {
         super.end();
-        Util.closeDataSource(this.dataSource);
+        BasicDao.closeDataSource(this.dataSource);
     }
 
     @Override

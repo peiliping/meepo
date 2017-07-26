@@ -1,4 +1,4 @@
-package meepo.storage;
+package meepo.util.hp.bit;
 
 import org.roaringbitmap.RoaringBitmap;
 
@@ -10,42 +10,6 @@ import java.util.*;
 public class Roaring64BitMap implements Iterable<Long>, Cloneable {
 
     private Map<Long, RoaringBitmap> core = new HashMap<>();
-
-    public void add(Long data) {
-        if (data == null)
-            return;
-        long seq = data >> 31;
-        int val = (int) (data & Integer.MAX_VALUE);
-        RoaringBitmap rb = this.core.get(seq);
-        if (rb == null) {
-            rb = new RoaringBitmap();
-            this.core.put(seq, rb);
-        }
-        rb.add(val);
-    }
-
-    public void remove(Long data) {
-        if (data == null)
-            return;
-        long seq = data >> 31;
-        int val = (int) (data & Integer.MAX_VALUE);
-        RoaringBitmap rb = this.core.get(seq);
-        if (rb != null) {
-            rb.remove(val);
-        }
-    }
-
-    public long getCardinality() {
-        long size = 0;
-        for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
-            size += entry.getValue().getCardinality();
-        return size;
-    }
-
-    public void runOptimize() {
-        for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
-            entry.getValue().runOptimize();
-    }
 
     public static Roaring64BitMap and(Roaring64BitMap r1, Roaring64BitMap r2) {
         Roaring64BitMap result = new Roaring64BitMap();
@@ -112,6 +76,42 @@ public class Roaring64BitMap implements Iterable<Long>, Cloneable {
             }
         }
         return result;
+    }
+
+    public void add(Long data) {
+        if (data == null)
+            return;
+        long seq = data >> 31;
+        int val = (int) (data & Integer.MAX_VALUE);
+        RoaringBitmap rb = this.core.get(seq);
+        if (rb == null) {
+            rb = new RoaringBitmap();
+            this.core.put(seq, rb);
+        }
+        rb.add(val);
+    }
+
+    public void remove(Long data) {
+        if (data == null)
+            return;
+        long seq = data >> 31;
+        int val = (int) (data & Integer.MAX_VALUE);
+        RoaringBitmap rb = this.core.get(seq);
+        if (rb != null) {
+            rb.remove(val);
+        }
+    }
+
+    public long getCardinality() {
+        long size = 0;
+        for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
+            size += entry.getValue().getCardinality();
+        return size;
+    }
+
+    public void runOptimize() {
+        for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
+            entry.getValue().runOptimize();
     }
 
     @Override

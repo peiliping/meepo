@@ -1,6 +1,6 @@
 package meepo.controller;
 
-import meepo.storage.Bit64Store;
+import meepo.util.hp.bit.Bit64Store;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

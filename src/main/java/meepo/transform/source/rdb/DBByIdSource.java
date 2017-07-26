@@ -23,12 +23,14 @@ public class DBByIdSource extends AbstractDBSource {
         super.end = context.getLong("end", ps.getRight());
         super.currentPos = super.start + index * super.stepSize;
         super.handler = new ICallable<Boolean>() {
-            @Override public void handleParams(PreparedStatement p) throws Exception {
+            @Override
+            public void handleParams(PreparedStatement p) throws Exception {
                 p.setLong(1, currentPos);
                 p.setLong(2, tmpEnd);
             }
 
-            @Override public Boolean handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public Boolean handleResultSet(ResultSet r) throws Exception {
                 while (r.next() && RUNNING) {
                     DataEvent de = feedOne();
                     for (int i = 1; i <= columnsNum; i++) {

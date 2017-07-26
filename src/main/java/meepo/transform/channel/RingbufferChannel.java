@@ -35,7 +35,8 @@ public class RingbufferChannel {
 
     private final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-    @Getter private AbstractPlugin plugin;
+    @Getter
+    private AbstractPlugin plugin;
 
     public RingbufferChannel(int sourcesCount, TaskContext context) {
         int bufferSize = context.getInteger("bufferSize", 1024);
