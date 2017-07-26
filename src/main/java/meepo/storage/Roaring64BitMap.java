@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Created by peiliping on 17-7-21.
  */
-public class Roaring64BitMap implements Iterable<Long> {
+public class Roaring64BitMap implements Iterable<Long>, Cloneable {
 
     private Map<Long, RoaringBitmap> core = new HashMap<>();
 
@@ -22,6 +22,17 @@ public class Roaring64BitMap implements Iterable<Long> {
             this.core.put(seq, rb);
         }
         rb.add(val);
+    }
+
+    public void remove(Long data) {
+        if (data == null)
+            return;
+        long seq = data >> 31;
+        int val = (int) (data & Integer.MAX_VALUE);
+        RoaringBitmap rb = this.core.get(seq);
+        if (rb != null) {
+            rb.remove(val);
+        }
     }
 
     public long getCardinality() {
@@ -47,21 +58,20 @@ public class Roaring64BitMap implements Iterable<Long> {
         return result;
     }
 
-    public static Roaring64BitMap xor(Roaring64BitMap r1, Roaring64BitMap r2) {
-        Roaring64BitMap result = new Roaring64BitMap();
-        Set<Long> resultKeys = new HashSet<>();
-        resultKeys.addAll(r1.core.keySet());
-        resultKeys.addAll(r2.core.keySet());
-        for (Long key : resultKeys) {
-            if (r1.core.containsKey(key)) {
-                if (r2.core.containsKey(key)) {
-                    result.core.put(key, RoaringBitmap.xor(r1.core.get(key), r2.core.get(key)));
-                } else {
-                    result.core.put(key, r1.core.get(key).clone());
-                }
-            } else {
-                result.core.put(key, r2.core.get(key).clone());
-            }
+    public static Roaring64BitMap andNot(Roaring64BitMap r1, Roaring64BitMap r2) {
+        Roaring64BitMap result = r1.clone();
+        Set<Long> leftKeys = new HashSet<>();
+        leftKeys.addAll(r1.core.keySet());
+        leftKeys.removeAll(r2.core.keySet());
+        for (Long key : leftKeys)
+            result.core.put(key, r1.core.get(key).clone());
+        Set<Long> crossKeys = new HashSet<>();
+        crossKeys.addAll(r1.core.keySet());
+        crossKeys.removeAll(r2.core.keySet());
+        for (Long key : crossKeys) {
+            RoaringBitmap t = RoaringBitmap.andNot(r1.core.get(key), r2.core.get(key));
+            if (t.getCardinality() > 0)
+                result.core.put(key, t);
         }
         return result;
     }
@@ -75,6 +85,25 @@ public class Roaring64BitMap implements Iterable<Long> {
             if (r1.core.containsKey(key)) {
                 if (r2.core.containsKey(key)) {
                     result.core.put(key, RoaringBitmap.or(r1.core.get(key), r2.core.get(key)));
+                } else {
+                    result.core.put(key, r1.core.get(key).clone());
+                }
+            } else {
+                result.core.put(key, r2.core.get(key).clone());
+            }
+        }
+        return result;
+    }
+
+    public static Roaring64BitMap xor(Roaring64BitMap r1, Roaring64BitMap r2) {
+        Roaring64BitMap result = new Roaring64BitMap();
+        Set<Long> resultKeys = new HashSet<>();
+        resultKeys.addAll(r1.core.keySet());
+        resultKeys.addAll(r2.core.keySet());
+        for (Long key : resultKeys) {
+            if (r1.core.containsKey(key)) {
+                if (r2.core.containsKey(key)) {
+                    result.core.put(key, RoaringBitmap.xor(r1.core.get(key), r2.core.get(key)));
                 } else {
                     result.core.put(key, r1.core.get(key).clone());
                 }
@@ -99,6 +128,14 @@ public class Roaring64BitMap implements Iterable<Long> {
         }
         answer.append("}");
         return answer.toString();
+    }
+
+    @Override
+    public Roaring64BitMap clone() {
+        Roaring64BitMap result = new Roaring64BitMap();
+        for (Map.Entry<Long, RoaringBitmap> entry : this.core.entrySet())
+            result.core.put(entry.getKey(), entry.getValue().clone());
+        return result;
     }
 
     @Override
