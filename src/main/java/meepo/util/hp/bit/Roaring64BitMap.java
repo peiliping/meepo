@@ -1,4 +1,4 @@
-package meepo.storage;
+package meepo.util.hp.bit;
 
 import org.roaringbitmap.RoaringBitmap;
 
