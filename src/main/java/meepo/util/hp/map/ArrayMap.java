@@ -1,4 +1,4 @@
-package meepo.util.hp;
+package meepo.util.hp.map;
 
 import org.apache.commons.lang3.tuple.Pair;
 

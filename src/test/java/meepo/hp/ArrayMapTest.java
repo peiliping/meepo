@@ -1,7 +1,7 @@
 package meepo.hp;
 
-import meepo.util.hp.ArrayMap;
-import meepo.util.hp.Keys;
+import meepo.util.hp.map.ArrayMap;
+import meepo.util.hp.map.Keys;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
