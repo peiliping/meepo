@@ -16,7 +16,8 @@ import java.util.*;
  */
 public class TaskContext {
 
-    @Getter private String taskName;
+    @Getter
+    private String taskName;
 
     private Map<String, String> parameters;
 
@@ -42,6 +43,14 @@ public class TaskContext {
 
     public TaskContext(String taskName, String propertyFilePath) throws IOException {
         this(taskName, loadFile(propertyFilePath));
+    }
+
+    private static Properties loadFile(String configPath) throws IOException {
+        InputStream in = new BufferedInputStream(new FileInputStream(configPath));
+        Properties properties = new Properties();
+        properties.load(in);
+        in.close();
+        return properties;
     }
 
     public ImmutableMap<String, String> getParameters() {
@@ -123,7 +132,7 @@ public class TaskContext {
     public Double getDouble(String key) {
         return getDouble(key, null);
     }
-    
+
     public String getString(String key, String defaultValue) {
         return get(key, defaultValue);
     }
@@ -144,16 +153,9 @@ public class TaskContext {
         return get(key, null);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "{ parameters:" + parameters + " }";
-    }
-
-    private static Properties loadFile(String configPath) throws IOException {
-        InputStream in = new BufferedInputStream(new FileInputStream(configPath));
-        Properties properties = new Properties();
-        properties.load(in);
-        in.close();
-        return properties;
     }
 
 }

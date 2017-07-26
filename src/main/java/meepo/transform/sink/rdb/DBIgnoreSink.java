@@ -11,7 +11,8 @@ public class DBIgnoreSink extends DBInsertSink {
         super(name, index, context);
     }
 
-    @Override public String buildSQL() {
+    @Override
+    public String buildSQL() {
         return "INSERT IGNORE INTO " + super.tableName + " (" + super.columnNames + ") VALUES ( " + super.paramsStr + ")";
     }
 }

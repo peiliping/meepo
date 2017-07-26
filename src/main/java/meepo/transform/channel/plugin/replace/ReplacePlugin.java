@@ -59,7 +59,8 @@ public class ReplacePlugin extends DefaultPlugin {
         this.Null4Null = context.getBoolean("null4null", true);
     }
 
-    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+    @Override
+    public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
         if (this.replacePosition < 0) {
             source.forEach(i -> {
                 if (this.replaceFieldName.equals(i.getLeft())) {
@@ -71,15 +72,18 @@ public class ReplacePlugin extends DefaultPlugin {
         super.autoMatchSchema(source, sink);
     }
 
-    @Override public void convert(DataEvent de, boolean theEnd) {
+    @Override
+    public void convert(DataEvent de, boolean theEnd) {
         Object tmpKey = de.getSource()[this.replacePosition];
         Object tmpVal = null;
         ICallable<Object> handler = new ICallable<Object>() {
-            @Override public void handleParams(PreparedStatement p) throws Exception {
+            @Override
+            public void handleParams(PreparedStatement p) throws Exception {
                 p.setObject(1, tmpKey, keyType);
             }
 
-            @Override public Object handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public Object handleResultSet(ResultSet r) throws Exception {
                 return r.next() ? r.getObject(1) : null;
             }
         };
@@ -99,12 +103,14 @@ public class ReplacePlugin extends DefaultPlugin {
         super.convert(de, theEnd);
     }
 
-    @Override public void close() {
+    @Override
+    public void close() {
         BasicDao.closeDataSource(this.dataSource);
         super.close();
     }
 
-    @Override public IReportItem report() {
+    @Override
+    public IReportItem report() {
         return ReplacePluginReport.builder().name(this.getClass().getSimpleName() + "[" + this.tableName + "]").replaceByDB(this.metricReplaceByDB.get()).build();
     }
 

@@ -32,7 +32,8 @@ public class DBSyncByDateSource extends DBByDateSource {
         super.currentPos = super.start;
     }
 
-    @Override public void work() {
+    @Override
+    public void work() {
         this.startEnd = BasicDao.autoGetStartEndDatePoint(super.dataSource, super.tableName, super.primaryKeyName, this.rollingSql);
         this.now = System.currentTimeMillis();
         super.tmpEnd = Math.min(super.currentPos + super.stepSize, Math.min(this.now - this.delay, this.startEnd.getRight()));

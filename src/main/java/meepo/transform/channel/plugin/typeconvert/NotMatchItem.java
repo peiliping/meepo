@@ -14,7 +14,10 @@ import java.util.Map;
 /**
  * Created by peiliping on 17-3-8.
  */
-@Getter @Setter @Builder public class NotMatchItem {
+@Getter
+@Setter
+@Builder
+public class NotMatchItem {
 
     private final static Map<String, Handler> HANDLERS = Maps.newHashMap();
 
@@ -64,7 +67,8 @@ import java.util.Map;
 
 
     class DefaultHandler implements Handler {
-        @Override public Object handle(Object o) {
+        @Override
+        public Object handle(Object o) {
             return o;
         }
     }

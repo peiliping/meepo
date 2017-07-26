@@ -7,7 +7,8 @@ import lombok.Getter;
  */
 public class CacheItem<V> {
 
-    @Getter private V value;
+    @Getter
+    private V value;
 
     private long createTime;
 

@@ -30,14 +30,16 @@ public class DBByDateSource extends AbstractDBSource {
             Timestamp vStart = new Timestamp(System.currentTimeMillis());
             Timestamp vEnd = new Timestamp(System.currentTimeMillis());
 
-            @Override public void handleParams(PreparedStatement p) throws Exception {
+            @Override
+            public void handleParams(PreparedStatement p) throws Exception {
                 vStart.setTime(currentPos);
                 vEnd.setTime(tmpEnd);
                 p.setTimestamp(1, vStart);
                 p.setTimestamp(2, vEnd);
             }
 
-            @Override public Boolean handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public Boolean handleResultSet(ResultSet r) throws Exception {
                 while (r.next() && RUNNING) {
                     DataEvent de = feedOne();
                     for (int i = 1; i <= columnsNum; i++) {

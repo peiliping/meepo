@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by peiliping on 17-3-6.
  */
-@Component public class TasksManager {
+@Component
+public class TasksManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(TasksManager.class);
 

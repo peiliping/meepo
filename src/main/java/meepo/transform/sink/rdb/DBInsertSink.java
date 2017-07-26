@@ -5,8 +5,8 @@ import meepo.transform.config.TaskContext;
 import meepo.transform.sink.batch.AbstractBatchSink;
 import meepo.transform.sink.rdb.handlers.MysqlHandler;
 import meepo.util.Constants;
-import meepo.util.DataSourceCache;
 import meepo.util.dao.BasicDao;
+import meepo.util.dao.DataSourceCache;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;

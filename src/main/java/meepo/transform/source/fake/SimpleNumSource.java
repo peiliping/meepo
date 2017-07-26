@@ -16,14 +16,16 @@ public class SimpleNumSource extends AbstractSource {
         super.columnsNum = 2;
     }
 
-    @Override public void work() {
+    @Override
+    public void work() {
         DataEvent de = super.feedOne();
         de.getSource()[0] = Long.valueOf(super.indexOfSources);
         de.getSource()[1] = super.tmpIndex;
         super.pushOne();
     }
 
-    @Override public SourceReportItem report() {
+    @Override
+    public SourceReportItem report() {
         return null;
     }
 

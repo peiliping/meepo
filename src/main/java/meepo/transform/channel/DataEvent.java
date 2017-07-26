@@ -13,12 +13,9 @@ import lombok.ToString;
 @ToString
 public class DataEvent {
 
-    protected transient Object[] source;
-
-    protected Object[] target;
-
-    private boolean valid = true;
-
     public static EventFactory<DataEvent> INT_ENEVT_FACTORY = () -> new DataEvent();
+    protected transient Object[] source;
+    protected Object[] target;
+    private boolean valid = true;
 
 }

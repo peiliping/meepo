@@ -1,8 +1,7 @@
-package meepo.util;
+package meepo.util.dao;
 
 import com.google.common.collect.Maps;
 import meepo.transform.config.TaskContext;
-import meepo.util.dao.BasicDao;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;

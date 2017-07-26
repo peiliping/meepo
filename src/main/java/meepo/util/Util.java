@@ -1,16 +1,7 @@
 package meepo.util;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.pool.DruidDataSourceFactory;
-import meepo.transform.config.TaskContext;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import java.io.Closeable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by peiliping on 17-3-6.

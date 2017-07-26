@@ -1,7 +1,7 @@
 package meepo.transform.channel.plugin.typeconvert;
 
 import meepo.transform.config.TaskContext;
-import meepo.util.ParquetTypeMapping;
+import meepo.util.parquet.ParquetTypeMapping;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -15,7 +15,8 @@ public class ParquetTypeConvertPlugin extends TypeConvertPlugin {
         super(context);
     }
 
-    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+    @Override
+    public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
         sink.addAll(source);
         ParquetTypeMapping.jdbcTypeMatchParquet(sink);
         _autoMatchSchema(source, sink);

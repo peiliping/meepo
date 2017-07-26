@@ -6,7 +6,7 @@ import meepo.transform.channel.RingbufferChannel;
 import meepo.transform.config.TaskContext;
 import meepo.transform.report.SourceReportItem;
 import meepo.transform.source.AbstractSource;
-import meepo.util.ParquetTypeMapping;
+import meepo.util.parquet.ParquetTypeMapping;
 import org.apache.commons.lang3.Validate;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -33,6 +33,8 @@ public class ParquetFileSource extends AbstractSource {
     private MessageType msgType;
 
     private List<PrimitiveType.PrimitiveTypeName> typeNames = Lists.newArrayList();
+    private Group record;
+    private int fileIndex;
 
     public ParquetFileSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
@@ -63,11 +65,8 @@ public class ParquetFileSource extends AbstractSource {
         }
     }
 
-    private Group record;
-
-    private int fileIndex;
-
-    @Override public void work() throws Exception {
+    @Override
+    public void work() throws Exception {
         if (this.fileIndex >= this.readers.length) {
             super.RUNNING = false;
             return;
@@ -110,7 +109,8 @@ public class ParquetFileSource extends AbstractSource {
         super.pushOne();
     }
 
-    @Override public SourceReportItem report() {
+    @Override
+    public SourceReportItem report() {
         return SourceReportItem.builder().name(this.taskName + "-Source-" + this.indexOfSources).start(0).current(this.fileIndex).end(this.readers.length).running(super.RUNNING)
                 .build();
     }
