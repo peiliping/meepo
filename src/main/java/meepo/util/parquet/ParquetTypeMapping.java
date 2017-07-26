@@ -1,4 +1,4 @@
-package meepo.util;
+package meepo.util.parquet;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -22,7 +22,7 @@ public class ParquetTypeMapping {
 
     private static final Map<PrimitiveType.PrimitiveTypeName, Integer> P2J = Maps.newHashMap();
     private static final Map<Integer, PrimitiveType.PrimitiveTypeName> J2P = Maps.newHashMap();
-    private static final Map<Integer, Integer>                         J2J = Maps.newHashMap();
+    private static final Map<Integer, Integer> J2J = Maps.newHashMap();
 
     static {
         P2J.put(INT32, Types.INTEGER);

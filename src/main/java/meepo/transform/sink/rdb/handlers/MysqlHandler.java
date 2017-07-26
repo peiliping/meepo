@@ -46,7 +46,8 @@ public class MysqlHandler implements IHandler {
         this.schema = schema;
     }
 
-    @Override public void init() {
+    @Override
+    public void init() {
         try {
             this.batchArgsField = StatementImpl.class.getDeclaredField("batchedArgs");
             this.batchArgsField.setAccessible(true);
@@ -61,7 +62,8 @@ public class MysqlHandler implements IHandler {
         }
     }
 
-    @Override public void truncate(String tableName) {
+    @Override
+    public void truncate(String tableName) {
         try {
             Connection con = this.dataSource.getConnection();
             Statement st = con.createStatement();
@@ -73,7 +75,8 @@ public class MysqlHandler implements IHandler {
         }
     }
 
-    @Override public void prepare(int stepSize) {
+    @Override
+    public void prepare(int stepSize) {
         if (this.connection != null && this.preparedStatement != null) {
             return;
         }
@@ -96,7 +99,8 @@ public class MysqlHandler implements IHandler {
         prepare(stepSize);
     }
 
-    @Override public void feed(DataEvent de) {
+    @Override
+    public void feed(DataEvent de) {
         try {
             for (int i = 0; i < this.schema.size(); i++) {
                 this.preparedStatement.setObject(i + 1, de.getTarget()[i], this.schema.get(i).getRight());
@@ -110,7 +114,8 @@ public class MysqlHandler implements IHandler {
         }
     }
 
-    @Override public void flush() {
+    @Override
+    public void flush() {
         try {
             this.preparedStatement.executeBatch();
             this.connection.commit();
@@ -125,7 +130,8 @@ public class MysqlHandler implements IHandler {
         }
     }
 
-    @Override public boolean retry() {
+    @Override
+    public boolean retry() {
         try {
             List<Object> batchParams = ((JDBC4PreparedStatement) ((DruidPooledPreparedStatement) this.preparedStatement).getStatement()).getBatchedArgs();
             Connection tc = this.dataSource.getConnection();
@@ -145,7 +151,8 @@ public class MysqlHandler implements IHandler {
         return true;
     }
 
-    @Override public void close() {
+    @Override
+    public void close() {
         try {
             if (this.preparedStatement != null)
                 this.preparedStatement.close();

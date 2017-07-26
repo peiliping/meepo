@@ -14,7 +14,8 @@ public class DateFormatter extends SimpleDateFormat {
         super("", Locale.US);
     }
 
-    @Override public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition pos) {
+    @Override
+    public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition pos) {
         super.calendar.setTime(date);
         toAppendTo.append("'");
         toAppendTo.append(super.calendar.get(1));

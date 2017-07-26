@@ -21,23 +21,25 @@ public class ParquetSinkSupport extends WriteSupport<Object[]> {
     private MessageType schema;
 
     private List<ColumnDescriptor> columns;
+    private Object val;
 
     public ParquetSinkSupport(MessageType schema) {
         this.schema = schema;
         this.columns = schema.getColumns();
     }
 
-    @Override public WriteContext init(Configuration configuration) {
+    @Override
+    public WriteContext init(Configuration configuration) {
         return new WriteContext(schema, Maps.newHashMap());
     }
 
-    @Override public void prepareForWrite(RecordConsumer recordConsumer) {
+    @Override
+    public void prepareForWrite(RecordConsumer recordConsumer) {
         this.recordConsumer = recordConsumer;
     }
 
-    private Object val;
-
-    @Override public void write(Object[] record) {
+    @Override
+    public void write(Object[] record) {
         if (record.length != this.columns.size()) {
             throw new ParquetEncodingException(
                     "Invalid input data. Expecting " + this.columns.size() + " columns. Input had " + record.length + " columns (" + this.columns + ") : " + record);

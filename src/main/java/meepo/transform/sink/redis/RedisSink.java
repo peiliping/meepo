@@ -25,7 +25,8 @@ public class RedisSink extends AbstractBatchSink {
         super.handler = new RedisHandler(this.redis, super.schema, context.getString("builder", "COUPLE"));
     }
 
-    @Override public void onShutdown() {
+    @Override
+    public void onShutdown() {
         super.onShutdown();
         try {
             this.redis.shutdown();

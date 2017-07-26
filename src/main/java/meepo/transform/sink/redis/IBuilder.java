@@ -17,19 +17,17 @@ import java.util.Map;
  */
 public interface IBuilder {
 
-    void build(RBatch batch, DataEvent event, List<Pair<String, Integer>> schema);
-
-    /*==================================================*/
-
     IBuilder COUPLE = (batch, event, schema) -> batch.getBucket(String.valueOf(event.getTarget()[0])).setAsync(event.getTarget()[1]);
 
+    /*==================================================*/
     IBuilder ARRAY = (batch, event, schema) -> batch.getList(String.valueOf(event.getTarget()[0])).addAllAsync(0, Lists.newArrayList(event.getTarget()));
-
     IBuilder MAP = (batch, event, schema) -> {
         Map<String, Object> item = Maps.newHashMapWithExpectedSize(schema.size());
         for (int i = 0; i < schema.size(); i++)
             item.put(schema.get(i).getLeft(), event.getTarget()[i]);
         batch.getMap(String.valueOf(event.getTarget()[0]), new MapScanCodec(StringCodec.INSTANCE, JsonJacksonCodec.INSTANCE)).putAllAsync(item);
     };
+
+    void build(RBatch batch, DataEvent event, List<Pair<String, Integer>> schema);
 
 }

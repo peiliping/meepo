@@ -3,8 +3,8 @@ package meepo.transform.sink.parquet;
 import meepo.transform.channel.DataEvent;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.AbstractSink;
-import meepo.util.ParquetTypeMapping;
 import meepo.util.Util;
+import meepo.util.parquet.ParquetTypeMapping;
 import org.apache.avro.Schema;
 import org.apache.commons.lang3.Validate;
 import org.apache.hadoop.conf.Configuration;
@@ -46,6 +46,13 @@ public class ParquetSink extends AbstractSink {
         this.outputDir = context.get("outputdir");
         this.rollingSize = context.getLong("rollingsize", Long.MAX_VALUE);
         this.hdfsConfDir = context.get("hdfsconfdir");
+    }
+
+    public static Configuration createConf(String classpath) {
+        Configuration conf = new Configuration();
+        conf.addResource(new Path(classpath + "/core-site.xml"));
+        conf.addResource(new Path(classpath + "/hdfs-site.xml"));
+        return conf;
     }
 
     @Override
@@ -137,7 +144,7 @@ public class ParquetSink extends AbstractSink {
         if (this.sinkHelper == null) {
             return;
         }
-        while(!this.sinkHelper.isClose()){
+        while (!this.sinkHelper.isClose()) {
             try {
                 this.sinkHelper.close();
             } catch (Exception e) {
@@ -149,12 +156,5 @@ public class ParquetSink extends AbstractSink {
         this.counter = 0;
         this.part++;
         super.RUNNING = false;
-    }
-
-    public static Configuration createConf(String classpath) {
-        Configuration conf = new Configuration();
-        conf.addResource(new Path(classpath + "/core-site.xml"));
-        conf.addResource(new Path(classpath + "/hdfs-site.xml"));
-        return conf;
     }
 }

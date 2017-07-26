@@ -37,21 +37,25 @@ public class GroupPlugin extends AbstractPlugin {
         this.theEndPluginPosition = this.plugins.size() - 1;
     }
 
-    @Override public void convert(DataEvent de, boolean theEnd) {
+    @Override
+    public void convert(DataEvent de, boolean theEnd) {
         for (int i = 0; i < this.plugins.size(); i++) {
             this.plugins.get(i).convert(de, theEndPluginPosition == i);
         }
     }
 
-    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
-        this.plugins.forEach(abstractPlugin -> abstractPlugin.autoMatchSchema(source,sink));
+    @Override
+    public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+        this.plugins.forEach(abstractPlugin -> abstractPlugin.autoMatchSchema(source, sink));
     }
 
-    @Override public void close() {
+    @Override
+    public void close() {
         this.plugins.forEach(abstractPlugin -> abstractPlugin.close());
     }
 
-    @Override public IReportItem report() {
+    @Override
+    public IReportItem report() {
         MultiReport mr = new MultiReport();
         this.plugins.forEach(ap -> mr.getReports().add(ap.report()));
         return mr;

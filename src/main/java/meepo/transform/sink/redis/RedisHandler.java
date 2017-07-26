@@ -42,13 +42,16 @@ public class RedisHandler implements IHandler {
         this.schema = schema;
     }
 
-    @Override public void init() {
+    @Override
+    public void init() {
     }
 
-    @Override public void truncate(String params) {
+    @Override
+    public void truncate(String params) {
     }
 
-    @Override public void prepare(int stepSize) {
+    @Override
+    public void prepare(int stepSize) {
         if (this.batch == null) {
             this.batch = this.redis.createBatch();
             this.batch.retryAttempts(3);
@@ -57,11 +60,13 @@ public class RedisHandler implements IHandler {
         }
     }
 
-    @Override public void feed(DataEvent de) {
+    @Override
+    public void feed(DataEvent de) {
         this.builder.build(this.batch, de, this.schema);
     }
 
-    @Override public void flush() {
+    @Override
+    public void flush() {
         try {
             this.batch.execute();
         } catch (Exception e) {
@@ -71,11 +76,13 @@ public class RedisHandler implements IHandler {
         }
     }
 
-    @Override public boolean retry() {
+    @Override
+    public boolean retry() {
         return false;
     }
 
-    @Override public void close() {
+    @Override
+    public void close() {
         if (this.batch != null) {
             this.batch = null;
         }

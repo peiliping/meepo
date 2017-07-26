@@ -6,7 +6,6 @@ import meepo.transform.channel.plugin.DefaultPlugin;
 import meepo.transform.config.TaskContext;
 import meepo.transform.report.IReportItem;
 import meepo.util.Constants;
-import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 import meepo.util.dao.ICallable;
 import meepo.util.lrucache.LRUCache;
@@ -55,7 +54,7 @@ public class ComplexReplacePlugin extends DefaultPlugin {
 
     public ComplexReplacePlugin(TaskContext context) {
         super(context);
-        this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
+        this.dataSource = BasicDao.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
 
         if (StringUtils.isNotBlank(context.getString("replacePositions"))) {
@@ -78,7 +77,8 @@ public class ComplexReplacePlugin extends DefaultPlugin {
         this.Null4Null = context.getBoolean("null4null", true);
     }
 
-    @Override public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
+    @Override
+    public void autoMatchSchema(List<Pair<String, Integer>> source, List<Pair<String, Integer>> sink) {
         if (this.replacePositions.isEmpty()) {
             this.replaceFieldNames.forEach(s -> source.forEach(i -> {
                 if (s.equals(i.getLeft())) {
@@ -97,19 +97,22 @@ public class ComplexReplacePlugin extends DefaultPlugin {
         super.autoMatchSchema(source, sink);
     }
 
-    @Override public void convert(DataEvent de, boolean theEnd) {
+    @Override
+    public void convert(DataEvent de, boolean theEnd) {
         Object[] filters = new Object[this.filterPositions.size()];
         for (int i = 0; i < this.filterPositions.size(); i++) {
             filters[i] = de.getSource()[this.filterPositions.get(i)];
         }
 
         ICallable<Object[]> handler = new ICallable<Object[]>() {
-            @Override public void handleParams(PreparedStatement p) throws Exception {
+            @Override
+            public void handleParams(PreparedStatement p) throws Exception {
                 for (int i = 0; i < filters.length; i++)
                     p.setObject(i + 1, filters[i], keyTypes.get(i));
             }
 
-            @Override public Object[] handleResultSet(ResultSet r) throws Exception {
+            @Override
+            public Object[] handleResultSet(ResultSet r) throws Exception {
                 if (r.next()) {
                     Object[] vals = new Object[valNames.size()];
                     for (int i = 0; i < vals.length; i++) {
@@ -147,12 +150,14 @@ public class ComplexReplacePlugin extends DefaultPlugin {
         super.convert(de, theEnd);
     }
 
-    @Override public void close() {
-        Util.closeDataSource(this.dataSource);
+    @Override
+    public void close() {
+        BasicDao.closeDataSource(this.dataSource);
         super.close();
     }
 
-    @Override public IReportItem report() {
+    @Override
+    public IReportItem report() {
         return ReplacePluginReport.builder().name(this.getClass().getSimpleName() + "[" + this.tableName + "]").replaceByDB(this.metricReplaceByDB.get()).build();
     }
 

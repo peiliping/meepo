@@ -14,6 +14,7 @@ public class ArrayMap<K, V> implements Map<K, V> {
     private V[] vals;
 
     private short len = 0;
+    private transient Set<Map.Entry<K, V>> entrySet;
 
     public ArrayMap(Keys<K> keys) {
         if (keys == null || keys.size() == 0) {
@@ -124,8 +125,6 @@ public class ArrayMap<K, V> implements Map<K, V> {
         }
         return list;
     }
-
-    private transient Set<Map.Entry<K, V>> entrySet;
 
     @Override
     public Set<Map.Entry<K, V>> entrySet() {

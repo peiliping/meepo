@@ -1,4 +1,4 @@
-package meepo.util;
+package meepo.util.dao;
 
 import com.google.common.collect.Maps;
 import meepo.transform.config.TaskContext;
@@ -27,7 +27,7 @@ public class DataSourceCache {
             return item.getLeft();
         } else {
             LOG.info("Create DataSource : " + name);
-            DataSource ds = Util.createDataSource(context);
+            DataSource ds = BasicDao.createDataSource(context);
             CACHES.put(name, Pair.of(ds, new AtomicInteger(1)));
             return ds;
         }
@@ -37,7 +37,7 @@ public class DataSourceCache {
         Pair<DataSource, AtomicInteger> item = CACHES.get(name);
         Validate.notNull(item);
         if (item.getRight().decrementAndGet() == 0) {
-            Util.closeDataSource(item.getLeft());
+            BasicDao.closeDataSource(item.getLeft());
             LOG.info("Close DataSource : " + name);
             CACHES.remove(name);
         }
