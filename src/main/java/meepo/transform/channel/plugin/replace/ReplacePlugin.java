@@ -5,7 +5,6 @@ import meepo.transform.channel.plugin.DefaultPlugin;
 import meepo.transform.config.TaskContext;
 import meepo.transform.report.IReportItem;
 import meepo.util.Constants;
-import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 import meepo.util.dao.ICallable;
 import meepo.util.lrucache.LRUCache;
@@ -48,7 +47,7 @@ public class ReplacePlugin extends DefaultPlugin {
 
     public ReplacePlugin(TaskContext context) {
         super(context);
-        this.dataSource = Util.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
+        this.dataSource = BasicDao.createDataSource(new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_)));
         this.tableName = context.getString("tableName");
         this.replacePosition = context.getInteger("replacePosition", -1);
         this.replaceFieldName = context.getString("replaceFieldName");
@@ -101,7 +100,7 @@ public class ReplacePlugin extends DefaultPlugin {
     }
 
     @Override public void close() {
-        Util.closeDataSource(this.dataSource);
+        BasicDao.closeDataSource(this.dataSource);
         super.close();
     }
 

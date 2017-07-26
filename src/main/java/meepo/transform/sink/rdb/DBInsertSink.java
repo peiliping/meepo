@@ -6,7 +6,6 @@ import meepo.transform.sink.batch.AbstractBatchSink;
 import meepo.transform.sink.rdb.handlers.MysqlHandler;
 import meepo.util.Constants;
 import meepo.util.DataSourceCache;
-import meepo.util.Util;
 import meepo.util.dao.BasicDao;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,8 +39,8 @@ public class DBInsertSink extends AbstractBatchSink {
         TaskContext dataSourceContext = new TaskContext(Constants.DATASOURCE, context.getSubProperties(Constants.DATASOURCE_));
         this.dataSource = this.sinkSharedDataSource ?
                 DataSourceCache.createDataSource(name + "-sink", dataSourceContext) :
-                Util.createDataSource(dataSourceContext);
-        this.dbName = context.getString("dbName", Util.matchDBName(dataSourceContext));
+                BasicDao.createDataSource(dataSourceContext);
+        this.dbName = context.getString("dbName", BasicDao.matchDBName(dataSourceContext));
         this.tableName = context.getString("tableName");
         this.columnNames = context.getString("columnNames", "*");
         this.truncateTable = context.getBoolean("truncate", false);
@@ -77,7 +76,7 @@ public class DBInsertSink extends AbstractBatchSink {
         if (this.sinkSharedDataSource) {
             DataSourceCache.close(super.taskName + "-sink");
         } else {
-            Util.closeDataSource(this.dataSource);
+            BasicDao.closeDataSource(this.dataSource);
         }
     }
 
