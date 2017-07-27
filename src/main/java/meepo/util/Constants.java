@@ -17,6 +17,10 @@ public class Constants {
 
     public static final String CHANNEL_ = "channel.";
 
+    public static final String PLUGIN = "plugin";
+
+    public static final String PLUGIN_ = "plugin.";
+
     public static final String SINK = "sink";
 
     public static final String SINK_ = "sink.";
@@ -25,8 +29,8 @@ public class Constants {
 
     public static final String DATASOURCE_ = "datasource.";
 
-    public static final String PLUGIN = "plugin";
+    public static final String KAFKA = "kafka";
 
-    public static final String PLUGIN_ = "plugin.";
+    public static final String KAFKA_ = "kafka.";
 
 }

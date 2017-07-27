@@ -18,9 +18,9 @@ import java.util.List;
  */
 public abstract class SparseDBSource extends AbstractDBSource {
 
-    protected Iterator<Integer> sparse;
+    protected Iterator<Long> sparse;
 
-    protected List<Integer> params = Lists.newArrayList();
+    protected List<Long> params = Lists.newArrayList();
 
     public SparseDBSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
