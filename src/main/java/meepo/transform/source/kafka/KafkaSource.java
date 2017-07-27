@@ -10,6 +10,8 @@ import meepo.transform.source.kafka.serialize.IKafkaSerialize;
 import meepo.util.Constants;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Properties;
+
 /**
  * Created by peiliping on 17-7-27.
  */
@@ -24,6 +26,14 @@ public abstract class KafkaSource extends AbstractSource {
     public KafkaSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         this.kafkaContext = new TaskContext(Constants.KAFKA, context.getSubProperties(Constants.KAFKA_));
+        String serializeClass = context.getString("serialize");
+        try {
+            Class clazz = Class.forName(serializeClass);
+            this.serialize = (IKafkaSerialize) clazz.getConstructor().newInstance();
+        } catch (Exception e) {
+            LOG.error("kafka source serialize :", e);
+        }
+        this.serialize.initSchema(super.schema);
     }
 
     protected abstract Pair<String, byte[]> poll(long remain);
@@ -37,6 +47,8 @@ public abstract class KafkaSource extends AbstractSource {
         this.serialize.parse(msg.getRight(), de);
         super.pushOne();
     }
+
+    public abstract Properties toProps();
 
     @Override
     public IReportItem report() {

@@ -1,6 +1,8 @@
 package meepo.transform.source;
 
 import meepo.transform.source.fake.SimpleNumSource;
+import meepo.transform.source.kafka.Kafka010Source;
+import meepo.transform.source.kafka.Kafka08Source;
 import meepo.transform.source.parquet.ParquetFileSource;
 import meepo.transform.source.rdb.*;
 
@@ -21,7 +23,11 @@ public enum SourceType {
 
     DBSYNCBYDATESOURCE(DBSyncByDateSource.class),
 
-    PARQUETFILESOURCE(ParquetFileSource.class);
+    PARQUETFILESOURCE(ParquetFileSource.class),
+
+    KAFKA08SOURCE(Kafka08Source.class),
+
+    KAFKA010SOURCE(Kafka010Source.class);
 
     public Class<? extends AbstractSource> clazz;
 
