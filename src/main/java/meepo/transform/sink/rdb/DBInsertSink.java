@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import meepo.transform.config.TaskContext;
 import meepo.transform.sink.batch.AbstractBatchSink;
 import meepo.transform.sink.rdb.handlers.MysqlHandler;
+import meepo.transform.sink.rdb.handlers.VerticaHandler;
 import meepo.util.Constants;
 import meepo.util.dao.BasicDao;
 import meepo.util.dao.DataSourceCache;
@@ -21,9 +22,13 @@ public class DBInsertSink extends AbstractBatchSink {
 
     protected String dbName;
 
+    protected String dbType;
+
     protected String tableName;
 
     protected String columnNames;
+
+    protected boolean escapeColumnNames;
 
     protected String paramsStr;// ?,?,?,?
 
@@ -41,8 +46,10 @@ public class DBInsertSink extends AbstractBatchSink {
                 DataSourceCache.createDataSource(name + "-sink", dataSourceContext) :
                 BasicDao.createDataSource(dataSourceContext);
         this.dbName = context.getString("dbName", BasicDao.matchDBName(dataSourceContext));
+        this.dbType = context.getString("dbType", BasicDao.matchDBType(dataSourceContext));
         this.tableName = context.getString("tableName");
         this.columnNames = context.getString("columnNames", "*");
+        this.escapeColumnNames = context.getBoolean("escapeColumnNames", true);
         this.truncateTable = context.getBoolean("truncate", false);
         super.schema = BasicDao.parserSchema(this.dataSource, this.tableName, this.columnNames);
         final List<String> columnsArray = Lists.newArrayList();
@@ -50,7 +57,7 @@ public class DBInsertSink extends AbstractBatchSink {
         final boolean original = "*".equals(this.columnNames);
         super.schema.forEach(item -> {
             paramsArray.add("?");
-            if (original) {
+            if (original && escapeColumnNames) {
                 columnsArray.add("`" + item.getLeft() + "`");
             } else {
                 columnsArray.add(item.getLeft());
@@ -59,7 +66,10 @@ public class DBInsertSink extends AbstractBatchSink {
         this.columnNames = StringUtils.join(columnsArray, ",");
         this.paramsStr = StringUtils.join(paramsArray, ",");
         this.sql = buildSQL();
-        super.handler = new MysqlHandler(this.dataSource, this.sql, super.schema);
+        if ("mysql".equals(this.dbType))
+            super.handler = new MysqlHandler(this.dataSource, this.sql, super.schema);
+        if ("vertica".equals(this.dbType))
+            super.handler = new VerticaHandler(this.dataSource, this.sql, super.schema);
     }
 
     @Override

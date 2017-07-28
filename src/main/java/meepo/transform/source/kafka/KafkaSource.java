@@ -26,10 +26,11 @@ public abstract class KafkaSource extends AbstractSource {
     public KafkaSource(String name, int index, int totalNum, TaskContext context, RingbufferChannel rb) {
         super(name, index, totalNum, context, rb);
         this.kafkaContext = new TaskContext(Constants.KAFKA, context.getSubProperties(Constants.KAFKA_));
-        String serializeClass = context.getString("serialize");
+        String serializeClass = context.getString("serializeClass");
         try {
+            TaskContext serializeContext = new TaskContext(Constants.SERIALIZE, context.getSubProperties(Constants.SERIALIZE_));
             Class clazz = Class.forName(serializeClass);
-            this.serialize = (IKafkaSerialize) clazz.getConstructor().newInstance();
+            this.serialize = (IKafkaSerialize) clazz.getConstructor(TaskContext.class).newInstance(serializeContext);
         } catch (Exception e) {
             LOG.error("kafka source serialize :", e);
         }

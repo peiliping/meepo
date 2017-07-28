@@ -224,6 +224,29 @@ meepo.parquet2es.sink.address = 127.0.0.1
 meepo.parquet2es.sink.port = 9300
 ```
 
+##### Parquet 2 Vertica #####
+```
+meepo.parquet2vertica.source.type = PARQUETFILESOURCE
+meepo.parquet2vertica.source.workersNum = 1
+meepo.parquet2vertica.source.inputdir = /data/software/meepo/data/
+
+meepo.parquet2vertica.channel.bufferSize = 8192
+meepo.parquet2vertica.channel.plugin.type = TYPECONVERT
+
+meepo.parquet2vertica.sink.type = DBINSERTSINK
+meepo.parquet2vertica.sink.tableName = xxx
+meepo.parquet2vertica.sink.escapeColumnNames = false
+meepo.parquet2vertica.sink.workersNum = 1
+meepo.parquet2vertica.sink.stepsize = 100
+meepo.parquet2vertica.sink.truncate = true
+meepo.parquet2vertica.sink.datasource.url = jdbc:vertica://127.0.0.1:5433/vertica?ssl=false
+meepo.parquet2vertica.sink.datasource.driverClassName = com.vertica.jdbc.Driver
+meepo.parquet2vertica.sink.datasource.validationQuery = select 1
+meepo.parquet2vertica.sink.datasource.username = vertica
+meepo.parquet2vertica.sink.datasource.password = vertica
+
+```
+
 一个较为完整的jdbc url参数
 ```
 rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;verifyServerCertificate=false&amp;failOverReadOnly=false&amp;autoReconnect=true&amp;autoReconnectForPools=true

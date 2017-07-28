@@ -33,4 +33,8 @@ public class Constants {
 
     public static final String KAFKA_ = "kafka.";
 
+    public static final String SERIALIZE = "serialize";
+
+    public static final String SERIALIZE_ = "serialize.";
+
 }

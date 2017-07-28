@@ -38,12 +38,15 @@ public class MysqlHandler implements IHandler {
 
     protected Field tsdf;
 
+    protected String type;
+
     protected List<Pair<String, Integer>> schema;
 
     public MysqlHandler(DataSource ds, String sql, List<Pair<String, Integer>> schema) {
         this.dataSource = ds;
         this.sql = sql;
         this.schema = schema;
+        this.type = "mysql";
     }
 
     @Override
@@ -91,7 +94,7 @@ public class MysqlHandler implements IHandler {
             }
             return;
         } catch (Exception e) {
-            LOG.error("Mysql-Handler-Prepare Error :", e);
+            LOG.error(this.type + "-Handler-Prepare Error :", e);
             this.connection = null;
             this.preparedStatement = null;
             Util.sleep(1);
@@ -107,7 +110,7 @@ public class MysqlHandler implements IHandler {
             }
             this.preparedStatement.addBatch();
         } catch (Exception e) {
-            LOG.error("Mysql-Handler-Feed Error :", e);
+            LOG.error(this.type + "-Handler-Feed Error :", e);
             LOG.error("Data :", de.toString());
             Util.sleep(1);
             feed(de);
@@ -120,7 +123,7 @@ public class MysqlHandler implements IHandler {
             this.preparedStatement.executeBatch();
             this.connection.commit();
         } catch (Exception e) {
-            LOG.error("Mysql-Handler-Flush Error :", e);
+            LOG.error(this.type + "-Handler-Flush Error :", e);
             int i = 0;
             while (!retry() && i++ < 1024) {
                 Util.sleep(1);
@@ -145,7 +148,7 @@ public class MysqlHandler implements IHandler {
             tp.close();
             tc.close();
         } catch (Throwable e) {
-            LOG.error("Mysql-Handler-Retry Error :", e);
+            LOG.error(this.type + "-Handler-Retry Error :", e);
             return false;
         }
         return true;
@@ -159,7 +162,7 @@ public class MysqlHandler implements IHandler {
             if (this.connection != null)
                 this.connection.close();
         } catch (Exception e) {
-            LOG.error("Mysql-Handler-Close Error :", e);
+            LOG.error(this.type + "-Handler-Close Error :", e);
         }
         this.connection = null;
         this.preparedStatement = null;
