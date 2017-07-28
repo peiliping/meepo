@@ -31,6 +31,8 @@ public class NotMatchItem {
 
         HANDLERS.put(Types.TIMESTAMP + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
         HANDLERS.put(Types.DATE + SPLIT + Types.BIGINT, o -> ((Date) o).getTime());
+
+        HANDLERS.put(Types.VARCHAR + SPLIT + Types.LONGVARCHAR, o -> o);
     }
 
     private int columnIndex;
@@ -52,7 +54,7 @@ public class NotMatchItem {
         if (this.useDefaultHandler && this.handler == null) {
             this.handler = new DefaultHandler();
         } else {
-            Validate.notNull(this.handler);
+            Validate.notNull(this.handler, "sourceFieldName:" + this.sourceFieldName + " sourceFieldType:" + this.sourceFieldType + " targetFieldType:" + this.targetFieldType);
         }
         return this;
     }
