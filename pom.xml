@@ -99,6 +99,14 @@
         </dependency>
 
         <dependency>
+            <groupId>com.vertica</groupId>
+            <artifactId>vertica-jdbc</artifactId>
+            <version>7.2.2-1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/vertica-jdbc-7.2.2-1.jar</systemPath>
+        </dependency>
+
+        <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>3.4.2</version>
@@ -182,6 +190,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
     </build>
