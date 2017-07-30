@@ -121,14 +121,16 @@ public class Task {
         if (!this.sourcesPool.isShutdown()) {
             this.sourcesPool.shutdownNow();
         }
-        while (!this.channel.isEmpty() && !ignoreChannel) {
-            Util.sleep(1);
-        }
-        Util.sleep(5);
-        this.sinks.forEach(ep -> ep.halt());
-        for (AbstractSink as : this.handlerSinks) {
-            while (as.isRunning()) {
+        if (!ignoreChannel) {
+            while (!this.channel.isEmpty()) {
                 Util.sleep(1);
+            }
+            Util.sleep(5);
+            this.sinks.forEach(ep -> ep.halt());
+            for (AbstractSink as : this.handlerSinks) {
+                while (as.isRunning()) {
+                    Util.sleep(1);
+                }
             }
         }
         if (!this.sinksPool.isShutdown()) {
