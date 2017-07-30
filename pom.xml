@@ -12,7 +12,7 @@
 
     <groupId>meepo</groupId>
     <artifactId>data-transform</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>meepo-data-transform</name>
