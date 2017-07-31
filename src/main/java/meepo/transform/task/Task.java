@@ -126,11 +126,11 @@ public class Task {
                 Util.sleep(1);
             }
             Util.sleep(5);
-            this.sinks.forEach(ep -> ep.halt());
-            for (AbstractSink as : this.handlerSinks) {
-                while (as.isRunning()) {
-                    Util.sleep(1);
-                }
+        }
+        this.sinks.forEach(ep -> ep.halt());
+        for (AbstractSink as : this.handlerSinks) {
+            while (as.isRunning()) {
+                Util.sleep(1);
             }
         }
         if (!this.sinksPool.isShutdown()) {

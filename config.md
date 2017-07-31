@@ -1,17 +1,15 @@
 Meepo 配置说明
 ===============
 
-##### 声明任务列表
+### 声明任务列表(空格间隔)
+
 meepo = test mysql2mysql mysql2mysqlbydate parquet2mysql mysql2parquet mysql2mysqlreplace
 
-##### Test 例子
+#### Test 例子
 ```
 meepo.test.source.type = SIMPLENUMSOURCE
-meepo.test.channel.bufferSize = 16
+meepo.test.channel.plugin.type = DEFAULT
 meepo.test.sink.type = SLOWLOGSINK
-#meepo.test.channel.delay = 3
-#meepo.test.channel.plugin.type = DEFAULT
-#meepo.test.sink.sleep = 1000
 ```
 
 ##### Mysql 2 Mysql #####

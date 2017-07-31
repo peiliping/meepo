@@ -33,6 +33,8 @@ public class RingbufferChannel {
 
     private final SequenceBarrier seqBarrier;
 
+    private final List<EventProcessor> eps = Lists.newArrayList();
+
     private final AtomicBoolean STARTED = new AtomicBoolean(false);
 
     @Getter
@@ -69,6 +71,7 @@ public class RingbufferChannel {
                 wps.add(processor);
             }
         }
+        this.eps.addAll(wps);
         return wps;
     }
 
@@ -115,6 +118,9 @@ public class RingbufferChannel {
     }
 
     public void close() {
+        for (EventProcessor ep : this.eps) {
+            this.ringBuffer.removeGatingSequence(ep.getSequence());
+        }
         this.plugin.close();
     }
 
